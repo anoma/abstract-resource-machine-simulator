@@ -6,7 +6,7 @@ See [Simulator.juvix](Simulator.juvix) for the API.
 
 ## Tests
 
-Run:
+Install the [Juvix](https://juvix.org) compiler and run:
 
 ``` shell
 make
