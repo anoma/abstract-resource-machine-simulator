@@ -1,0 +1,39 @@
+module Simulator.Balance;
+
+open import Stdlib.Prelude;
+open import Data.ByteString;
+open import Data.List;
+
+import Data.Map as Map;
+import Stdlib.Data.Int as Int;
+import Stdlib.Data.Int.Ord as Int;
+
+type Balance :=
+  | balance : List (ByteString × Int) -> Balance;
+
+emptyBalance : Balance;
+emptyBalance := balance nil;
+
+addBalance : Balance -> Balance -> Balance;
+addBalance (balance xs) (balance ys) :=
+  balance
+    (Map.to-list
+      (Map.from-list-with orderingByteString (Int.+) (xs ++ ys)));
+
+negateBalance : Balance -> Balance;
+negateBalance (balance xs) :=
+  balance
+    (map
+      λ {
+        | (bs, q) := bs, neg q
+      }
+      xs);
+
+subBalance : Balance -> Balance -> Balance;
+subBalance b1 b2 := addBalance b1 (negateBalance b2);
+
+sumBalances : List Balance -> Balance;
+sumBalances := foldl addBalance emptyBalance;
+
+balanceIsZero : Balance -> Bool;
+balanceIsZero (balance bs) := all ((Int.==) 0 ∘ snd) bs;

@@ -1,0 +1,34 @@
+module Simulator.PartialTx;
+
+open import Simulator.Resource;
+
+import Data.Set as Set;
+open Set using {Set};
+
+open import Stdlib.Prelude;
+open import Stdlib.Data.Ord;
+
+import Data.Ord as Ord;
+open Ord using {Ord;ord};
+
+type PartialTx :=
+  | partialTx : Set Resource
+      -> Set Resource
+      -> PartialTx;
+
+partialtx-ordering : Ord PartialTx;
+partialtx-ordering :=
+  let
+    prod : PartialTx -> Set Resource × Set Resource;
+    prod (partialTx inr outr) := inr , outr;
+
+    setResourceOrd : Ord (Set Resource);
+    setResourceOrd := Set.set-ordering resource-ordering;
+
+    prodOrd : Ord (Set Resource × Set Resource);
+    prodOrd := Ord.pair-ordering setResourceOrd setResourceOrd;
+
+    go : Ord (Set Resource × Set Resource) -> PartialTx -> PartialTx -> Ordering;
+    go (ord prod-ord) p1 p2 := prod-ord (prod p1) (prod p2);
+  in
+    ord (go prodOrd);

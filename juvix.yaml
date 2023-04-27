@@ -1,0 +1,5 @@
+dependencies:
+- .juvix-build/stdlib/
+- ../containers
+name: taiga-simulator
+version: 0.0.0

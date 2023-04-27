@@ -1,0 +1,63 @@
+module Simulator;
+
+open import Simulator.Resource public;
+open import Simulator.Balance public;
+open import Simulator.PartialTx public;
+
+open import Stdlib.Prelude;
+open import Stdlib.Debug.Fail;
+open import Data.List;
+open import Data.ByteString;
+
+import Data.Set as Set;
+open Set using {Set};
+
+import Data.Map as Map;
+open Map using {Map};
+
+LogicFunction : Type;
+LogicFunction := Set Resource -> Set Resource -> Bool;
+
+validPartialTx :
+  Map LogicHash LogicFunction -> PartialTx -> Bool;
+validPartialTx m (partialTx inr outr) :=
+  let
+    resources : List Resource;
+    resources := Set.to-list inr ++ Set.to-list outr;
+    getLogicFn : Resource -> LogicFunction;
+    getLogicFn (resource logicHash _ _ _) :=
+      fromMaybe
+        (fail
+          ("Could not find function associated with hash: "
+            ++str natToString logicHash))
+        (Map.lookup logicHash m);
+  in all
+    λ {
+      | r := getLogicFn r inr outr
+    }
+    resources;
+
+denomination : Resource -> ByteString;
+denomination (resource logicHash staticData _ _) :=
+  logicHash :: staticData;
+
+mkBalance : Resource -> Balance;
+mkBalance r@(resource _ _ _ quantity) :=
+  balance ((denomination r, quantity) :: nil);
+
+balanceDelta : PartialTx -> Balance;
+balanceDelta (partialTx inr outr) :=
+  subBalance
+    (sumBalances (map mkBalance (Set.to-list inr)))
+    (sumBalances (map mkBalance (Set.to-list outr)));
+
+checkTransaction :
+  Map LogicHash LogicFunction -> Set PartialTx -> Bool;
+checkTransaction m ptxs :=
+  let
+    ptxsList : List PartialTx := Set.to-list ptxs;
+    allValid : Bool := all (validPartialTx m) ptxsList;
+    sumDeltasIsZero :
+        Bool :=
+          balanceIsZero (sumBalances (map balanceDelta ptxsList));
+  in allValid && sumDeltasIsZero;

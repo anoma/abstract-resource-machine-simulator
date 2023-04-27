@@ -1,0 +1,10 @@
+module Simulator.Ord;
+
+import Stdlib.Data.Ord as StdlibOrd;
+import Data.Ord as Ord;
+open Ord using {Ord;ord};
+
+open import Stdlib.Prelude;
+
+orderingByteString : Ord (List Nat);
+orderingByteString := Ord.list-ordering Ord.nat-ordering;

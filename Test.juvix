@@ -1,0 +1,34 @@
+module Test;
+
+open import Simulator;
+
+import Data.Set as Set;
+open Set using {Set};
+
+import Data.Map as Map;
+open Map using {Map};
+
+import Data.Ord as Ord;
+open Ord using {Ord;ord};
+
+open import Stdlib.Prelude;
+
+open import Data.Eq;
+open import Test.JuvixUnit;
+
+tests : List Test;
+tests :=
+  let
+    emptyFunctions : Map LogicHash LogicFunction;
+    emptyFunctions := Map.empty Ord.nat-ordering;
+    emptyTxs : Set PartialTx;
+    emptyTxs := Set.empty partialtx-ordering;
+  in testCase
+      "The empty set of partial transactions validates"
+      (assertTrue
+        "expected transactions to validate"
+        (checkTransaction emptyFunctions emptyTxs))
+    :: nil;
+
+main : IO;
+main := runTestSuite (testSuite "Taiga simulator" tests);
