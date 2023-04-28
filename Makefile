@@ -5,7 +5,7 @@ deps/containers:
 	@mkdir -p deps/
 	@git clone --branch v0.1.0 --depth 1 https://github.com/paulcadman/containers.git deps/containers
 
-build/Test: Test.juvix deps/containers
+build/Test: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps/containers
 	@mkdir -p build
 	juvix compile -o build/Test Test.juvix
 
