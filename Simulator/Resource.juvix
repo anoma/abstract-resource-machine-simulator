@@ -7,6 +7,9 @@ open import Stdlib.Data.Ord;
 import Data.Ord as Ord;
 open Ord using {Ord;ord};
 
+Quantity : Type;
+Quantity := Int;
+
 LogicHash : Type;
 LogicHash := Nat;
 
@@ -20,16 +23,22 @@ type Resource :=
 resource-ordering : Ord Resource;
 resource-ordering :=
   let
-    prod : Resource -> LogicHash × (ByteString × (ByteString × Int));
-    prod (resource l s d q) := l , (s , (d , q));
-
-    prodOrd : Ord (LogicHash × (ByteString × (ByteString × Int)));
+    prod :
+        Resource
+          -> LogicHash × ByteString × ByteString × Quantity;
+    prod (resource l s d q) := l, s, d, q;
+    prodOrd :
+        Ord (LogicHash × ByteString × ByteString × Quantity);
     prodOrd :=
-       Ord.pair-ordering Ord.nat-ordering
-         (Ord.pair-ordering orderingByteString
-            (Ord.pair-ordering orderingByteString Ord.int-ordering));
-
-    go : Ord (LogicHash × (ByteString × (ByteString × Int))) -> Resource -> Resource -> Ordering;
+      Ord.pair-ordering
+        Ord.nat-ordering
+        (Ord.pair-ordering
+          orderingByteString
+          (Ord.pair-ordering orderingByteString Ord.int-ordering));
+    go :
+        Ord (LogicHash × ByteString × ByteString × Quantity)
+          -> Resource
+          -> Resource
+          -> Ordering;
     go (ord prod-ord) r1 r2 := prod-ord (prod r1) (prod r2);
- in
-   ord (go prodOrd);
+  in ord (go prodOrd);
