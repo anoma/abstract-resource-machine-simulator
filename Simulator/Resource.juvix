@@ -30,11 +30,11 @@ resource-ordering :=
     prodOrd :
         Ord (LogicHash × ByteString × ByteString × Quantity);
     prodOrd :=
-      Ord.pair-ordering
-        Ord.nat-ordering
-        (Ord.pair-ordering
+      Ord.pair
+        Ord.nat
+        (Ord.pair
           orderingByteString
-          (Ord.pair-ordering orderingByteString Ord.int-ordering));
+          (Ord.pair orderingByteString Ord.int));
     go :
         Ord (LogicHash × ByteString × ByteString × Quantity)
           -> Resource

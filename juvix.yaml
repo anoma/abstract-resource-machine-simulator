@@ -1,5 +1,6 @@
 dependencies:
 - .juvix-build/stdlib/
 - deps/containers
+- deps/traits
 name: taiga-simulator
 version: 0.0.0

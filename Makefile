@@ -3,9 +3,16 @@ all: test
 
 deps/containers:
 	@mkdir -p deps/
-	@git clone --branch v0.1.0 --depth 1 https://github.com/paulcadman/containers.git deps/containers
+	@git clone --branch v0.2.0 --depth 1 https://github.com/paulcadman/containers.git deps/containers
+	$(MAKE) -C deps/containers deps
 
-build/Test: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps/containers
+deps/traits:
+	@mkdir -p deps/
+	@git clone --branch v0.1.0 --depth 1 https://github.com/paulcadman/traits.git deps/traits
+
+deps: deps/containers deps/traits
+
+build/Test: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps
 	@mkdir -p build
 	juvix compile -o build/Test Test.juvix
 

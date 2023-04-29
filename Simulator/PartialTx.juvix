@@ -22,7 +22,7 @@ partialtx-ordering :=
     setResourceOrd : Ord (Set Resource);
     setResourceOrd := Set.set-ordering resource-ordering;
     prodOrd : Ord (Set Resource × Set Resource);
-    prodOrd := Ord.pair-ordering setResourceOrd setResourceOrd;
+    prodOrd := Ord.pair setResourceOrd setResourceOrd;
     go :
         Ord (Set Resource × Set Resource)
           -> PartialTx

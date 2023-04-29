@@ -9,4 +9,4 @@ ByteString : Type;
 ByteString := List Nat;
 
 orderingByteString : Ord (List Nat);
-orderingByteString := Ord.list-ordering Ord.nat-ordering;
+orderingByteString := Ord.list Ord.nat;

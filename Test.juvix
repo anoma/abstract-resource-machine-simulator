@@ -20,7 +20,7 @@ tests : List Test;
 tests :=
   let
     emptyFunctions : Map LogicHash LogicFunction;
-    emptyFunctions := Map.empty Ord.nat-ordering;
+    emptyFunctions := Map.empty Ord.nat;
     emptyTxs : Set PartialTx;
     emptyTxs := Set.empty partialtx-ordering;
   in testCase
