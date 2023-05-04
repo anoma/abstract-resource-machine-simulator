@@ -1,6 +1,0 @@
-module Data.List;
-
-open import Stdlib.Prelude;
-
-all : {A : Type} → (A → Bool) → List A → Bool;
-all f := foldl and true ∘ map f;

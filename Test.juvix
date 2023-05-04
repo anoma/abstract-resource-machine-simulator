@@ -8,26 +8,54 @@ open Set using {Set};
 import Data.Map as Map;
 open Map using {Map};
 
-import Data.Ord as Ord;
-open Ord using {Ord;ord};
-
 open import Stdlib.Prelude;
 
-open import Data.Eq;
 open import Test.JuvixUnit;
+
+import Sudoku;
+
+sudokuTest :
+  ByteString -> Map LogicHash LogicFunction × Set PartialTx;
+sudokuTest proposedSolution :=
+  let
+    logicFunction : LogicFunction;
+    logicFunction := const (Sudoku.logic (0 :: nil));
+    sudokuLogicHash : LogicHash;
+    sudokuLogicHash := zero;
+    mapList : List (LogicHash × LogicFunction);
+    mapList := (sudokuLogicHash, logicFunction) :: nil;
+    proposedResource : Resource;
+    proposedResource :=
+      resource sudokuLogicHash proposedSolution nil 0;
+    trans : PartialTx;
+    trans :=
+      partialTx
+        Set.empty
+        (Set.insert resource-ordering proposedResource Set.empty);
+  in Map.insert
+      NatTraits.Ord
+      sudokuLogicHash
+      logicFunction
+      Map.empty
+    , Set.insert partialtx-ordering trans Set.empty;
 
 tests : List Test;
 tests :=
   let
     emptyFunctions : Map LogicHash LogicFunction;
-    emptyFunctions := Map.empty Ord.nat;
+    emptyFunctions := Map.empty;
     emptyTxs : Set PartialTx;
-    emptyTxs := Set.empty partialtx-ordering;
+    emptyTxs := Set.empty;
   in testCase
       "The empty set of partial transactions validates"
       (assertTrue
         "expected transactions to validate"
         (checkTransaction emptyFunctions emptyTxs))
+    :: testCase
+      "Sudoku failing transaction"
+      (assertFalse
+        "expected transaction to be invalid"
+        (uncurry checkTransaction (sudokuTest (1 :: nil))))
     :: nil;
 
 main : IO;

@@ -6,8 +6,7 @@ open import Simulator.PartialTx public;
 
 open import Stdlib.Prelude;
 open import Stdlib.Debug.Fail;
-open import Data.List;
-open import Data.ByteString;
+open import Data.ByteString public;
 
 import Data.Set as Set;
 open Set using {Set};
@@ -16,21 +15,21 @@ import Data.Map as Map;
 open Map using {Map};
 
 LogicFunction : Type;
-LogicFunction := Set Resource -> Set Resource -> Bool;
+LogicFunction := LogicHash -> Set Resource -> Set Resource -> Bool;
 
 validPartialTx :
   Map LogicHash LogicFunction -> PartialTx -> Bool;
 validPartialTx m (partialTx inr outr) :=
   let
     resources : List Resource;
-    resources := Set.to-list inr ++ Set.to-list outr;
-    getLogicFn : Resource -> LogicFunction;
+    resources := Set.toList inr ++ Set.toList outr;
+    getLogicFn : Resource -> (Set Resource -> Set Resource -> Bool);
     getLogicFn (resource logicHash _ _ _) :=
-      fromMaybe
-        (fail
+      case Map.lookup NatTraits.Ord logicHash m
+      | just f := f logicHash
+      | _ := (fail
           ("Could not find function associated with hash: "
-            ++str natToString logicHash))
-        (Map.lookup logicHash m);
+            ++str natToString logicHash));
   in all
     λ {
       | r := getLogicFn r inr outr
@@ -48,14 +47,14 @@ mkBalance r@(resource _ _ _ quantity) :=
 balanceDelta : PartialTx -> Balance;
 balanceDelta (partialTx inr outr) :=
   subBalance
-    (sumBalances (map mkBalance (Set.to-list inr)))
-    (sumBalances (map mkBalance (Set.to-list outr)));
+    (sumBalances (map mkBalance (Set.toList inr)))
+    (sumBalances (map mkBalance (Set.toList outr)));
 
 checkTransaction :
   Map LogicHash LogicFunction -> Set PartialTx -> Bool;
 checkTransaction m ptxs :=
   let
-    ptxsList : List PartialTx := Set.to-list ptxs;
+    ptxsList : List PartialTx := Set.toList ptxs;
     allValid : Bool := all (validPartialTx m) ptxsList;
     sumDeltasIsZero :
         Bool :=

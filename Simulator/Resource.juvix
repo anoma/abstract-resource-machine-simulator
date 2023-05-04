@@ -2,10 +2,6 @@ module Simulator.Resource;
 
 open import Stdlib.Prelude;
 open import Data.ByteString;
-open import Stdlib.Data.Ord;
-
-import Data.Ord as Ord;
-open Ord using {Ord;ord};
 
 Quantity : Type;
 Quantity := Int;
@@ -30,15 +26,15 @@ resource-ordering :=
     prodOrd :
         Ord (LogicHash × ByteString × ByteString × Quantity);
     prodOrd :=
-      Ord.pair
-        Ord.nat
-        (Ord.pair
+            ProductTraits.Ord
+        NatTraits.Ord
+        (ProductTraits.Ord
           orderingByteString
-          (Ord.pair orderingByteString Ord.int));
+          (ProductTraits.Ord orderingByteString IntTraits.Ord));
     go :
         Ord (LogicHash × ByteString × ByteString × Quantity)
           -> Resource
           -> Resource
           -> Ordering;
-    go (ord prod-ord) r1 r2 := prod-ord (prod r1) (prod r2);
-  in ord (go prodOrd);
+    go (mkOrd prod-ord) r1 r2 := prod-ord (prod r1) (prod r2);
+  in mkOrd (go prodOrd);

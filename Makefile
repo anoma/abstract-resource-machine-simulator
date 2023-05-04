@@ -3,14 +3,20 @@ all: test
 
 deps/containers:
 	@mkdir -p deps/
-	@git clone --branch v0.2.0 --depth 1 https://github.com/paulcadman/containers.git deps/containers
+	@git clone --branch v0.4.1 --depth 1 https://github.com/paulcadman/containers.git deps/containers
 	$(MAKE) -C deps/containers deps
 
-deps/traits:
+deps/stdlib:
 	@mkdir -p deps/
-	@git clone --branch v0.1.0 --depth 1 https://github.com/paulcadman/traits.git deps/traits
+	@git clone https://github.com/anoma/juvix-stdlib.git deps/stdlib
+	@git -C deps/stdlib checkout caffc3b9bfde589e5ef3fca3f835200ce78ab312
 
-deps: deps/containers deps/traits
+deps/test:
+	@mkdir -p deps/
+	@git clone --branch v0.4.0 --depth 1 https://github.com/paulcadman/test.git deps/test
+	$(MAKE) -C deps/test deps
+
+deps: deps/containers deps/stdlib deps/test
 
 build/Test: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps
 	@mkdir -p build

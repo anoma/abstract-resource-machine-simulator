@@ -2,11 +2,8 @@ module Data.ByteString;
 
 open import Stdlib.Prelude;
 
-import Data.Ord as Ord;
-open Ord using {Ord;ord};
-
 ByteString : Type;
 ByteString := List Nat;
 
 orderingByteString : Ord (List Nat);
-orderingByteString := Ord.list Ord.nat;
+orderingByteString := ListTraits.Ord NatTraits.Ord;

@@ -1,15 +1,12 @@
 module Simulator.PartialTx;
 
+open import Stdlib.Prelude;
 open import Simulator.Resource;
 
 import Data.Set as Set;
-open Set using {Set};
-
-open import Stdlib.Prelude;
-open import Stdlib.Data.Ord;
-
-import Data.Ord as Ord;
-open Ord using {Ord;ord};
+import Data.Set.AVL as AVL;
+open AVL using {AVLTraits};
+open Set using {Set;SetTraits};
 
 type PartialTx :=
   | partialTx : Set Resource -> Set Resource -> PartialTx;
@@ -20,13 +17,13 @@ partialtx-ordering :=
     prod : PartialTx -> Set Resource × Set Resource;
     prod (partialTx inr outr) := inr, outr;
     setResourceOrd : Ord (Set Resource);
-    setResourceOrd := Set.set-ordering resource-ordering;
+    setResourceOrd := AVLTraits.Ord resource-ordering;
     prodOrd : Ord (Set Resource × Set Resource);
-    prodOrd := Ord.pair setResourceOrd setResourceOrd;
+    prodOrd := ProductTraits.Ord setResourceOrd setResourceOrd;
     go :
         Ord (Set Resource × Set Resource)
           -> PartialTx
           -> PartialTx
           -> Ordering;
-    go (ord prod-ord) p1 p2 := prod-ord (prod p1) (prod p2);
-  in ord (go prodOrd);
+    go (mkOrd prod-ord) p1 p2 := prod-ord (prod p1) (prod p2);
+  in mkOrd (go prodOrd);
