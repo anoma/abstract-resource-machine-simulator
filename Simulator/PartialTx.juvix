@@ -9,7 +9,9 @@ open AVL using {AVLTraits};
 open Set using {Set;SetTraits};
 
 type PartialTx :=
-  | partialTx : Set Resource -> Set Resource -> PartialTx;
+  | --- A partial transaction consists of a set of consumed resources and a set
+    --- of created resources
+    partialTx : Set Resource -> Set Resource -> PartialTx;
 
 partialtx-ordering : Ord PartialTx;
 partialtx-ordering :=
