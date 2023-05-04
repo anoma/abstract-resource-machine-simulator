@@ -16,6 +16,18 @@ type Resource :=
       -> Int
       -> Resource;
 
+hash : Resource -> LogicHash;
+hash (resource logicHash _ _ _) := logicHash;
+
+dynamicData : Resource -> ByteString;
+dynamicData (resource _ _ d _) := d;
+
+staticData : Resource -> ByteString;
+staticData (resource _ s _ _) := s;
+
+quantity : Resource -> Int;
+quantity (resource _ _ _ q) := q;
+
 resource-ordering : Ord Resource;
 resource-ordering :=
   let
