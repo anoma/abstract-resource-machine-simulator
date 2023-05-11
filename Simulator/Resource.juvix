@@ -3,9 +3,6 @@ module Simulator.Resource;
 open import Stdlib.Prelude;
 open import Data.ByteString;
 
-Quantity : Type;
-Quantity := Int;
-
 LogicHash : Type;
 LogicHash := Nat;
 
@@ -32,11 +29,9 @@ resource-ordering : Ord Resource;
 resource-ordering :=
   let
     prod :
-        Resource
-          -> LogicHash × ByteString × ByteString × Quantity;
+        Resource -> LogicHash × ByteString × ByteString × Int;
     prod (resource l s d q) := l, s, d, q;
-    prodOrd :
-        Ord (LogicHash × ByteString × ByteString × Quantity);
+    prodOrd : Ord (LogicHash × ByteString × ByteString × Int);
     prodOrd :=
       ProductTraits.Ord
         NatTraits.Ord
@@ -44,7 +39,7 @@ resource-ordering :=
           orderingByteString
           (ProductTraits.Ord orderingByteString IntTraits.Ord));
     go :
-        Ord (LogicHash × ByteString × ByteString × Quantity)
+        Ord (LogicHash × ByteString × ByteString × Int)
           -> Resource
           -> Resource
           -> Ordering;

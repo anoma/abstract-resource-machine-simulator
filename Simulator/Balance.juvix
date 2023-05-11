@@ -9,7 +9,7 @@ import Stdlib.Data.Int as Int;
 import Stdlib.Data.Int.Ord as Int;
 
 type Balance :=
-  | balance : List (ByteString × Quantity) -> Balance;
+  | balance : List (ByteString × Int) -> Balance;
 
 emptyBalance : Balance;
 emptyBalance := balance nil;

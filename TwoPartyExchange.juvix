@@ -15,54 +15,54 @@ import Stdlib.Data.Nat.Ord as Nat;
 import Stdlib.Data.Int.Ord as Int;
 
 module Dolphin;
-
+  
   hash : LogicHash;
   hash := 0;
-
+  
   staticData : ByteString;
   staticData := nil;
-
+  
   denom : ByteString;
   denom := hash :: staticData;
-
+  
   mkResource : Int -> Resource;
   mkResource := resource hash staticData nil;
 
 end;
 
 module A;
-
+  
   hash : LogicHash;
   hash := 1;
-
+  
   staticData : ByteString;
   staticData := nil;
-
+  
   denom : ByteString;
   denom := hash :: staticData;
-
+  
   mkResource : Int -> Resource;
   mkResource := resource hash staticData nil;
 
 end;
 
 module B;
-
+  
   hash : LogicHash;
   hash := 2;
-
+  
   staticData : ByteString;
   staticData := nil;
-
+  
   denom : ByteString;
   denom := hash :: staticData;
-
+  
   mkResource : Int -> Resource;
   mkResource := resource hash staticData nil;
 end;
 
 module AliceIntent;
-
+  
   logicFunction : LogicFunction;
   logicFunction h consumedRs createdRs :=
     -- check if the resource associated to this logic function is among the created (output)
@@ -76,10 +76,10 @@ module AliceIntent;
       && quantityOfDenom A.denom createdRs Int.== 1
       || quantityOfDenom Dolphin.denom createdRs Int.== 1
       && quantityOfDenom B.denom createdRs Int.== 2;
-
+  
   hash : LogicHash;
   hash := 3;
-
+  
   mkResource : Int -> Resource;
   mkResource := resource hash nil nil;
 
