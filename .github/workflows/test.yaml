@@ -1,0 +1,19 @@
+name: Taiga Simulator tests
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout our repository
+        uses: actions/checkout@v3
+
+      - name: Install the latest Juvix compiler
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
+        with:
+          repo: anoma/juvix
+          tag: latest
+          chmod: 0755
+
+      - name: run test
+        run: |
+          make
