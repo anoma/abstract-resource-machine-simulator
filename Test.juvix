@@ -123,6 +123,38 @@ solverPartialTx :=
     (Set.fromList resource-ordering consumedResources)
     (Set.fromList resource-ordering createdResources);
 
+alwaysValid : LogicFunction;
+alwaysValid :=
+  λ {
+    | _ _ _ := true
+  };
+
+twoPartyExchange : Test;
+twoPartyExchange :=
+  let
+    logicFunctions : Map LogicHash LogicFunction;
+    logicFunctions :=
+      Map.fromList
+        NatTraits.Ord
+        ((aHash, alwaysValid)
+          :: (bHash, alwaysValid)
+          :: (dolphinHash, alwaysValid)
+          :: (aliceIntentLogicHash, aliceIntentLogic)
+          :: nil);
+    txs : Set PartialTx;
+    txs :=
+      Set.fromList
+        partialtx-ordering
+        (aliceIntentPartialTx
+          :: bobIntentPartialTx
+          :: solverPartialTx
+          :: nil);
+  in testCase
+    "two party exchange"
+    (assertTrue
+      "expected two-party exchange transactions to validate"
+      (checkTransaction logicFunctions txs));
+
 tests : List Test;
 tests :=
   let
@@ -135,6 +167,7 @@ tests :=
       (assertTrue
         "expected transactions to validate"
         (checkTransaction emptyFunctions emptyTxs))
+    :: twoPartyExchange
     :: nil;
 
 main : IO;
