@@ -10,165 +10,80 @@ open Map using {Map};
 
 open import Stdlib.Prelude;
 
-import Stdlib.Data.Nat.Ord as Nat;
-import Stdlib.Data.Int.Ord as Int;
-import Stdlib.Data.Int as Int;
+import TwoPartyExchange;
+open TwoPartyExchange hiding {logicFunctions};
 
 open import Test.JuvixUnit;
-
--- Taiga two party exchange example
--- https://github.com/anoma/taiga/blob/main/book/src/exec_examples.md#1-two-party-exchange-with-an-intent-uservp
-dolphinHash : LogicHash;
-dolphinHash := 0;
-
-dolphinStaticData : ByteString;
-dolphinStaticData := nil;
-
-dolphinDenom : ByteString;
-dolphinDenom := dolphinHash :: dolphinStaticData;
-
-aHash : LogicHash;
-aHash := 1;
-
-aStaticData : ByteString;
-aStaticData := nil;
-
-aDenom : ByteString;
-aDenom := aHash :: aStaticData;
-
-bHash : LogicHash;
-bHash := 2;
-
-bStaticData : ByteString;
-bStaticData := nil;
-
-bDenom : ByteString;
-bDenom := bHash :: aStaticData;
-
-quantityOfDenom : ByteString -> List Resource -> Int;
-quantityOfDenom d rs :=
-  let
-    resourcesForDenom : List Resource;
-    resourcesForDenom :=
-      filter
-        λ {
-          | r :=
-            case ListTraits.Eq NatTraits.Eq
-              | mkEq eqList := eqList (denomination r) d
-        }
-        rs;
-  in foldl
-    (Int.+)
-    (Int.ofNat 0)
-    (map quantity resourcesForDenom);
-
-aliceIntentLogic : LogicFunction;
-aliceIntentLogic h consumedRs createdRs :=
-  -- check if the resource associated to this logic function is among the created (output)
-  -- resources.
-  -- Then check if alice's intent is satisfied.
-  let
-    createdRsList : List Resource;
-    createdRsList := Set.toList createdRs;
-    createdHashes : List LogicHash;
-    createdHashes := map hash createdRsList;
-  in any ((Nat.==) h) createdHashes
-    || quantityOfDenom dolphinDenom createdRsList Int.== 1
-    && quantityOfDenom aDenom createdRsList Int.== 1
-    || quantityOfDenom dolphinDenom createdRsList Int.== 1
-    && quantityOfDenom bDenom createdRsList Int.== 2;
-
-aliceIntentLogicHash : Nat;
-aliceIntentLogicHash := 3;
-
-aliceIntentPartialTx : PartialTx;
-aliceIntentPartialTx :=
-  let
-    createdResources : List Resource;
-    createdResources :=
-      resource aliceIntentLogicHash nil nil 1 :: nil;
-    consumedResources : List Resource;
-    consumedResources :=
-      resource aHash aStaticData nil 1
-        :: resource bHash bStaticData nil 2
-        :: nil;
-  in partialTx
-    (Set.fromList resource-ordering consumedResources)
-    (Set.fromList resource-ordering createdResources);
-
-bobIntentPartialTx : PartialTx;
-bobIntentPartialTx :=
-  let
-    createdResources : List Resource;
-    createdResources := resource aHash aStaticData nil 1 :: nil;
-    consumedResources : List Resource;
-    consumedResources :=
-      resource dolphinHash dolphinStaticData nil 1 :: nil;
-  in partialTx
-    (Set.fromList resource-ordering consumedResources)
-    (Set.fromList resource-ordering createdResources);
-
-solverPartialTx : PartialTx;
-solverPartialTx :=
-  let
-    createdResources : List Resource;
-    createdResources :=
-      resource dolphinHash dolphinStaticData nil 1
-        :: resource bHash bStaticData nil 2
-        :: nil;
-    consumedResources : List Resource;
-    consumedResources :=
-      resource aliceIntentLogicHash nil nil 1 :: nil;
-  in partialTx
-    (Set.fromList resource-ordering consumedResources)
-    (Set.fromList resource-ordering createdResources);
-
-alwaysValid : LogicFunction;
-alwaysValid :=
-  λ {
-    | _ _ _ := true
-  };
 
 twoPartyExchange : Test;
 twoPartyExchange :=
   let
-    logicFunctions : Map LogicHash LogicFunction;
-    logicFunctions :=
-      Map.fromList
-        NatTraits.Ord
-        ((aHash, alwaysValid)
-          :: (bHash, alwaysValid)
-          :: (dolphinHash, alwaysValid)
-          :: (aliceIntentLogicHash, aliceIntentLogic)
-          :: nil);
+    alicePartialTx : PartialTx;
+    alicePartialTx :=
+      let
+        createdResources : List Resource;
+        createdResources :=
+          resource AliceIntent.hash nil nil 1 :: nil;
+        consumedResources : List Resource;
+        consumedResources :=
+          resource A.hash A.staticData nil 1
+            :: resource B.hash B.staticData nil 2
+            :: nil;
+      in partialTx
+        (Set.fromList resource-ordering consumedResources)
+        (Set.fromList resource-ordering createdResources);
+    bobPartialTx : PartialTx;
+    bobPartialTx :=
+      let
+        createdResources : List Resource;
+        createdResources :=
+          resource A.hash A.staticData nil 1 :: nil;
+        consumedResources : List Resource;
+        consumedResources :=
+          resource Dolphin.hash Dolphin.staticData nil 1 :: nil;
+      in partialTx
+        (Set.fromList resource-ordering consumedResources)
+        (Set.fromList resource-ordering createdResources);
+    solverPartialTx : PartialTx;
+    solverPartialTx :=
+      let
+        createdResources : List Resource;
+        createdResources :=
+          resource Dolphin.hash Dolphin.staticData nil 1
+            :: resource B.hash B.staticData nil 2
+            :: nil;
+        consumedResources : List Resource;
+        consumedResources :=
+          resource AliceIntent.hash nil nil 1 :: nil;
+      in partialTx
+        (Set.fromList resource-ordering consumedResources)
+        (Set.fromList resource-ordering createdResources);
     txs : Set PartialTx;
     txs :=
       Set.fromList
         partialtx-ordering
-        (aliceIntentPartialTx
-          :: bobIntentPartialTx
-          :: solverPartialTx
-          :: nil);
+        (alicePartialTx :: bobPartialTx :: solverPartialTx :: nil);
   in testCase
     "two party exchange"
     (assertTrue
       "expected two-party exchange transactions to validate"
-      (checkTransaction logicFunctions txs));
+      (checkTransaction TwoPartyExchange.logicFunctions txs));
 
-tests : List Test;
-tests :=
+emptyTest : Test;
+emptyTest :=
   let
     emptyFunctions : Map LogicHash LogicFunction;
     emptyFunctions := Map.empty;
     emptyTxs : Set PartialTx;
     emptyTxs := Set.empty;
   in testCase
-      "The empty set of partial transactions validates"
-      (assertTrue
-        "expected transactions to validate"
-        (checkTransaction emptyFunctions emptyTxs))
-    :: twoPartyExchange
-    :: nil;
+    "The empty set of partial transactions validates"
+    (assertTrue
+      "expected transactions to validate"
+      (checkTransaction emptyFunctions emptyTxs));
+
+tests : List Test;
+tests := emptyTest :: twoPartyExchange :: nil;
 
 main : IO;
 main := runTestSuite (testSuite "Taiga simulator" tests);

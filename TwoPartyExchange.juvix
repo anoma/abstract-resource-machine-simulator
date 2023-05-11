@@ -1,0 +1,133 @@
+-- Taiga two party exchange example
+-- https://github.com/anoma/taiga/blob/main/book/src/exec_examples.md#1-two-party-exchange-with-an-intent-uservp
+module TwoPartyExchange;
+
+open import Simulator;
+
+import Data.Set as Set;
+open Set using {Set};
+
+import Data.Map as Map;
+open Map using {Map};
+
+import Data.MapTmp as Map;
+
+open import Stdlib.Prelude;
+
+import Stdlib.Data.Nat.Ord as Nat;
+import Stdlib.Data.Int.Ord as Int;
+
+module Dolphin;
+
+  hash : LogicHash;
+  hash := 0;
+
+  staticData : ByteString;
+  staticData := nil;
+
+  denom : ByteString;
+  denom := hash :: staticData;
+
+end;
+
+module A;
+
+  hash : LogicHash;
+  hash := 1;
+
+  staticData : ByteString;
+  staticData := nil;
+
+  denom : ByteString;
+  denom := hash :: staticData;
+
+end;
+
+module B;
+
+  hash : LogicHash;
+  hash := 2;
+
+  staticData : ByteString;
+  staticData := nil;
+
+  denom : ByteString;
+  denom := hash :: staticData;
+
+end;
+
+module AliceIntent;
+
+  logicFunction : LogicFunction;
+  logicFunction h consumedRs createdRs :=
+    -- check if the resource associated to this logic function is among the created (output)
+    -- resources.
+    -- Then check if alice's intent is satisfied.
+    let
+      createdRsList : List Resource;
+      createdRsList := Set.toList createdRs;
+      createdHashes : List LogicHash;
+      createdHashes := map hash createdRsList;
+    in any ((Nat.==) h) createdHashes
+      || quantityOfDenom Dolphin.denom createdRsList Int.== 1
+      && quantityOfDenom A.denom createdRsList Int.== 1
+      || quantityOfDenom Dolphin.denom createdRsList Int.== 1
+      && quantityOfDenom B.denom createdRsList Int.== 2;
+
+  hash : LogicHash;
+  hash := 3;
+
+end;
+
+alicePartialTx : PartialTx;
+alicePartialTx :=
+  let
+    createdResources : List Resource;
+    createdResources :=
+      resource AliceIntent.hash nil nil 1 :: nil;
+    consumedResources : List Resource;
+    consumedResources :=
+      resource A.hash A.staticData nil 1
+        :: resource B.hash B.staticData nil 2
+        :: nil;
+  in partialTx
+    (Set.fromList resource-ordering consumedResources)
+    (Set.fromList resource-ordering createdResources);
+
+bobPartialTx : PartialTx;
+bobPartialTx :=
+  let
+    createdResources : List Resource;
+    createdResources :=
+      resource A.hash A.staticData nil 1 :: nil;
+    consumedResources : List Resource;
+    consumedResources :=
+      resource Dolphin.hash Dolphin.staticData nil 1 :: nil;
+  in partialTx
+    (Set.fromList resource-ordering consumedResources)
+    (Set.fromList resource-ordering createdResources);
+
+solverPartialTx : PartialTx;
+solverPartialTx :=
+  let
+    createdResources : List Resource;
+    createdResources :=
+      resource Dolphin.hash Dolphin.staticData nil 1
+        :: resource B.hash B.staticData nil 2
+        :: nil;
+    consumedResources : List Resource;
+    consumedResources :=
+      resource AliceIntent.hash nil nil 1 :: nil;
+  in partialTx
+    (Set.fromList resource-ordering consumedResources)
+    (Set.fromList resource-ordering createdResources);
+
+logicFunctions : Map LogicHash LogicFunction;
+logicFunctions :=
+  Map.fromList
+    NatTraits.Ord
+    ((A.hash, alwaysValid)
+      :: (B.hash, alwaysValid)
+      :: (Dolphin.hash, alwaysValid)
+      :: (AliceIntent.hash, AliceIntent.logicFunction)
+      :: nil);

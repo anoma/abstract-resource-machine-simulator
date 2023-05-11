@@ -14,9 +14,17 @@ open Set using {Set};
 import Data.Map as Map;
 open Map using {Map};
 
+import Stdlib.Data.Int as Int;
+
 --- Arguments: hash of itself, consumed (input/spend/send/destroyed), created (output/received)
 LogicFunction : Type;
 LogicFunction := LogicHash -> Set Resource -> Set Resource -> Bool;
+
+alwaysValid : LogicFunction;
+alwaysValid :=
+  λ {
+    | _ _ _ := true
+  };
 
 validPartialTx :
   Map LogicHash LogicFunction -> PartialTx -> Bool;
@@ -40,6 +48,24 @@ validPartialTx m (partialTx inr outr) :=
 denomination : Resource -> ByteString;
 denomination (resource logicHash staticData _ _) :=
   logicHash :: staticData;
+
+--- Aggregate the quantities associated with a denomination
+quantityOfDenom : ByteString -> List Resource -> Int;
+quantityOfDenom denom rs :=
+  let
+    resourcesForDenom : List Resource;
+    resourcesForDenom :=
+      filter
+        λ {
+          | r :=
+            case ListTraits.Eq NatTraits.Eq
+              | mkEq eqList := eqList (denomination r) denom
+        }
+        rs;
+  in foldl
+    (Int.+)
+    (Int.ofNat 0)
+    (map quantity resourcesForDenom);
 
 mkBalance : Resource -> Balance;
 mkBalance r@(resource _ _ _ quantity) :=
