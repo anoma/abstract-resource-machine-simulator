@@ -2,9 +2,6 @@ module Test;
 
 open import Simulator;
 
-import Data.Set as Set;
-open Set using {Set};
-
 import Data.Map as Map;
 open Map using {Map};
 
@@ -27,8 +24,8 @@ twoPartyExchange :=
         consumedResources :=
           A.mkResource 1 :: B.mkResource 2 :: nil;
       in partialTx
-        (Set.fromList resource-ordering consumedResources)
-        (Set.fromList resource-ordering createdResources);
+        consumedResources
+        createdResources;
     bobPartialTx : PartialTx;
     bobPartialTx :=
       let
@@ -37,8 +34,8 @@ twoPartyExchange :=
         consumedResources : List Resource;
         consumedResources := Dolphin.mkResource 1 :: nil;
       in partialTx
-        (Set.fromList resource-ordering consumedResources)
-        (Set.fromList resource-ordering createdResources);
+        consumedResources
+        createdResources;
     solverPartialTx : PartialTx;
     solverPartialTx :=
       let
@@ -48,13 +45,10 @@ twoPartyExchange :=
         consumedResources : List Resource;
         consumedResources := AliceIntent.mkResource 1 :: nil;
       in partialTx
-        (Set.fromList resource-ordering consumedResources)
-        (Set.fromList resource-ordering createdResources);
-    txs : Set PartialTx;
-    txs :=
-      Set.fromList
-        partialtx-ordering
-        (alicePartialTx :: bobPartialTx :: solverPartialTx :: nil);
+        consumedResources
+        createdResources;
+    txs : List PartialTx;
+    txs := alicePartialTx :: bobPartialTx :: solverPartialTx :: nil;
   in testCase
     "two party exchange"
     (assertTrue
@@ -66,13 +60,11 @@ emptyTest :=
   let
     emptyFunctions : Map LogicHash LogicFunction;
     emptyFunctions := Map.empty;
-    emptyTxs : Set PartialTx;
-    emptyTxs := Set.empty;
   in testCase
     "The empty set of partial transactions validates"
     (assertTrue
       "expected transactions to validate"
-      (checkTransaction emptyFunctions emptyTxs));
+      (checkTransaction emptyFunctions nil));
 
 tests : List Test;
 tests := emptyTest :: twoPartyExchange :: nil;

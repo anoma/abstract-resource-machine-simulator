@@ -4,9 +4,6 @@ module TwoPartyExchange;
 
 open import Simulator;
 
-import Data.Set as Set;
-open Set using {Set};
-
 import Data.Map as Map;
 open Map using {Map};
 
@@ -72,15 +69,13 @@ module AliceIntent;
     -- resources.
     -- Then check if alice's intent is satisfied.
     let
-      createdRsList : List Resource;
-      createdRsList := Set.toList createdRs;
       createdHashes : List LogicHash;
-      createdHashes := map hash createdRsList;
+      createdHashes := map hash createdRs;
     in any ((Nat.==) h) createdHashes
-      || quantityOfDenom Dolphin.denom createdRsList Int.== 1
-      && quantityOfDenom A.denom createdRsList Int.== 1
-      || quantityOfDenom Dolphin.denom createdRsList Int.== 1
-      && quantityOfDenom B.denom createdRsList Int.== 2;
+      || quantityOfDenom Dolphin.denom createdRs Int.== 1
+      && quantityOfDenom A.denom createdRs Int.== 1
+      || quantityOfDenom Dolphin.denom createdRs Int.== 1
+      && quantityOfDenom B.denom createdRs Int.== 2;
 
   hash : LogicHash;
   hash := 3;

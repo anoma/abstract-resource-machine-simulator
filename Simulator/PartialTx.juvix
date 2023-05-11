@@ -3,27 +3,23 @@ module Simulator.PartialTx;
 open import Stdlib.Prelude;
 open import Simulator.Resource;
 
-import Data.Set as Set;
-import Data.Set.AVL as AVL;
-open AVL using {AVLTraits};
-open Set using {Set;SetTraits};
-
+--- TODO: There should be exactly 2 created and 2 consumed resources.
 type PartialTx :=
   | --- A partial transaction consists of a set of consumed resources and a set
     --- of created resources
-    partialTx : Set Resource -> Set Resource -> PartialTx;
+    partialTx : List Resource -> List Resource -> PartialTx;
 
 partialtx-ordering : Ord PartialTx;
 partialtx-ordering :=
   let
-    prod : PartialTx -> Set Resource × Set Resource;
+    prod : PartialTx -> List Resource × List Resource;
     prod (partialTx inr outr) := inr, outr;
-    setResourceOrd : Ord (Set Resource);
-    setResourceOrd := AVLTraits.Ord resource-ordering;
-    prodOrd : Ord (Set Resource × Set Resource);
-    prodOrd := ProductTraits.Ord setResourceOrd setResourceOrd;
+    listResourceOrd : Ord (List Resource);
+    listResourceOrd := ListTraits.Ord resource-ordering;
+    prodOrd : Ord (List Resource × List Resource);
+    prodOrd := ProductTraits.Ord listResourceOrd listResourceOrd;
     go :
-        Ord (Set Resource × Set Resource)
+        Ord (List Resource × List Resource)
           -> PartialTx
           -> PartialTx
           -> Ordering;

@@ -8,9 +8,6 @@ open import Stdlib.Prelude;
 open import Stdlib.Debug.Fail;
 open import Data.ByteString public;
 
-import Data.Set as Set;
-open Set using {Set};
-
 import Data.Map as Map;
 open Map using {Map};
 
@@ -18,7 +15,7 @@ import Stdlib.Data.Int as Int;
 
 --- Arguments: hash of itself, consumed (input/spend/send/destroyed), created (output/received)
 LogicFunction : Type;
-LogicFunction := LogicHash -> Set Resource -> Set Resource -> Bool;
+LogicFunction := LogicHash -> List Resource -> List Resource -> Bool;
 
 alwaysValid : LogicFunction;
 alwaysValid :=
@@ -31,8 +28,8 @@ validPartialTx :
 validPartialTx m (partialTx inr outr) :=
   let
     resources : List Resource;
-    resources := Set.toList inr ++ Set.toList outr;
-    getLogicFn : Resource -> (Set Resource -> Set Resource -> Bool);
+    resources := inr ++ outr;
+    getLogicFn : Resource -> (List Resource -> List Resource -> Bool);
     getLogicFn (resource logicHash _ _ _) :=
       case Map.lookup NatTraits.Ord logicHash m
       | just f := f logicHash
@@ -74,16 +71,15 @@ mkBalance r@(resource _ _ _ quantity) :=
 balanceDelta : PartialTx -> Balance;
 balanceDelta (partialTx inr outr) :=
   subBalance
-    (sumBalances (map mkBalance (Set.toList inr)))
-    (sumBalances (map mkBalance (Set.toList outr)));
+    (sumBalances (map mkBalance inr))
+    (sumBalances (map mkBalance outr));
 
 checkTransaction :
-  Map LogicHash LogicFunction -> Set PartialTx -> Bool;
+  Map LogicHash LogicFunction -> List PartialTx -> Bool;
 checkTransaction m ptxs :=
   let
-    ptxsList : List PartialTx := Set.toList ptxs;
-    allValid : Bool := all (validPartialTx m) ptxsList;
+    allValid : Bool := all (validPartialTx m) ptxs;
     sumDeltasIsZero :
         Bool :=
-          balanceIsZero (sumBalances (map balanceDelta ptxsList));
+          balanceIsZero (sumBalances (map balanceDelta ptxs));
   in allValid && sumDeltasIsZero;
