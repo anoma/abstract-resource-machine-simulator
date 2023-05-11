@@ -28,6 +28,9 @@ module Dolphin;
   denom : ByteString;
   denom := hash :: staticData;
 
+  mkResource : Int -> Resource;
+  mkResource := resource hash staticData nil;
+
 end;
 
 module A;
@@ -40,6 +43,9 @@ module A;
 
   denom : ByteString;
   denom := hash :: staticData;
+
+  mkResource : Int -> Resource;
+  mkResource := resource hash staticData nil;
 
 end;
 
@@ -54,6 +60,8 @@ module B;
   denom : ByteString;
   denom := hash :: staticData;
 
+  mkResource : Int -> Resource;
+  mkResource := resource hash staticData nil;
 end;
 
 module AliceIntent;
@@ -77,50 +85,10 @@ module AliceIntent;
   hash : LogicHash;
   hash := 3;
 
+  mkResource : Int -> Resource;
+  mkResource := resource hash nil nil;
+
 end;
-
-alicePartialTx : PartialTx;
-alicePartialTx :=
-  let
-    createdResources : List Resource;
-    createdResources :=
-      resource AliceIntent.hash nil nil 1 :: nil;
-    consumedResources : List Resource;
-    consumedResources :=
-      resource A.hash A.staticData nil 1
-        :: resource B.hash B.staticData nil 2
-        :: nil;
-  in partialTx
-    (Set.fromList resource-ordering consumedResources)
-    (Set.fromList resource-ordering createdResources);
-
-bobPartialTx : PartialTx;
-bobPartialTx :=
-  let
-    createdResources : List Resource;
-    createdResources :=
-      resource A.hash A.staticData nil 1 :: nil;
-    consumedResources : List Resource;
-    consumedResources :=
-      resource Dolphin.hash Dolphin.staticData nil 1 :: nil;
-  in partialTx
-    (Set.fromList resource-ordering consumedResources)
-    (Set.fromList resource-ordering createdResources);
-
-solverPartialTx : PartialTx;
-solverPartialTx :=
-  let
-    createdResources : List Resource;
-    createdResources :=
-      resource Dolphin.hash Dolphin.staticData nil 1
-        :: resource B.hash B.staticData nil 2
-        :: nil;
-    consumedResources : List Resource;
-    consumedResources :=
-      resource AliceIntent.hash nil nil 1 :: nil;
-  in partialTx
-    (Set.fromList resource-ordering consumedResources)
-    (Set.fromList resource-ordering createdResources);
 
 logicFunctions : Map LogicHash LogicFunction;
 logicFunctions :=
