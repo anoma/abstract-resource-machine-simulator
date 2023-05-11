@@ -17,7 +17,8 @@ partialtx-ordering :=
     listResourceOrd : Ord (List Resource);
     listResourceOrd := ListTraits.Ord resource-ordering;
     prodOrd : Ord (List Resource × List Resource);
-    prodOrd := ProductTraits.Ord listResourceOrd listResourceOrd;
+    prodOrd :=
+      ProductTraits.Ord listResourceOrd listResourceOrd;
     go :
         Ord (List Resource × List Resource)
           -> PartialTx

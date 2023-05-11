@@ -23,9 +23,7 @@ twoPartyExchange :=
         consumedResources : List Resource;
         consumedResources :=
           A.mkResource 1 :: B.mkResource 2 :: nil;
-      in partialTx
-        consumedResources
-        createdResources;
+      in partialTx consumedResources createdResources;
     bobPartialTx : PartialTx;
     bobPartialTx :=
       let
@@ -33,9 +31,7 @@ twoPartyExchange :=
         createdResources := A.mkResource 1 :: nil;
         consumedResources : List Resource;
         consumedResources := Dolphin.mkResource 1 :: nil;
-      in partialTx
-        consumedResources
-        createdResources;
+      in partialTx consumedResources createdResources;
     solverPartialTx : PartialTx;
     solverPartialTx :=
       let
@@ -44,11 +40,10 @@ twoPartyExchange :=
           Dolphin.mkResource 1 :: B.mkResource 2 :: nil;
         consumedResources : List Resource;
         consumedResources := AliceIntent.mkResource 1 :: nil;
-      in partialTx
-        consumedResources
-        createdResources;
+      in partialTx consumedResources createdResources;
     txs : List PartialTx;
-    txs := alicePartialTx :: bobPartialTx :: solverPartialTx :: nil;
+    txs :=
+      alicePartialTx :: bobPartialTx :: solverPartialTx :: nil;
   in testCase
     "two party exchange"
     (assertTrue

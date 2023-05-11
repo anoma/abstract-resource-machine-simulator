@@ -15,7 +15,8 @@ import Stdlib.Data.Int as Int;
 
 --- Arguments: hash of itself, consumed (input/spend/send/destroyed), created (output/received)
 LogicFunction : Type;
-LogicFunction := LogicHash -> List Resource -> List Resource -> Bool;
+LogicFunction :=
+  LogicHash -> List Resource -> List Resource -> Bool;
 
 alwaysValid : LogicFunction;
 alwaysValid :=
@@ -29,13 +30,15 @@ validPartialTx m (partialTx inr outr) :=
   let
     resources : List Resource;
     resources := inr ++ outr;
-    getLogicFn : Resource -> (List Resource -> List Resource -> Bool);
+    getLogicFn :
+        Resource -> List Resource -> List Resource -> Bool;
     getLogicFn (resource logicHash _ _ _) :=
       case Map.lookup NatTraits.Ord logicHash m
-      | just f := f logicHash
-      | _ := (fail
-          ("Could not find function associated with hash: "
-            ++str natToString logicHash));
+        | just f := f logicHash
+        | _ :=
+          fail
+            ("Could not find function associated with hash: "
+              ++str natToString logicHash);
   in all
     λ {
       | r := getLogicFn r inr outr

@@ -6,4 +6,9 @@ open Map using {Map};
 open import Stdlib.Prelude;
 
 fromList : {A B : Type} -> Ord A -> List (A × B) -> Map A B;
-fromList o := Map.from-list-with o λ { | old new := new };
+fromList o :=
+  Map.from-list-with
+    o
+    λ {
+      | old new := new
+    };

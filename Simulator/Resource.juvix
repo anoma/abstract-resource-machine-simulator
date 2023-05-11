@@ -38,7 +38,7 @@ resource-ordering :=
     prodOrd :
         Ord (LogicHash × ByteString × ByteString × Quantity);
     prodOrd :=
-            ProductTraits.Ord
+      ProductTraits.Ord
         NatTraits.Ord
         (ProductTraits.Ord
           orderingByteString
