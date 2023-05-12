@@ -39,8 +39,8 @@ quantityOfDenom denom rs :=
     (Int.ofNat 0)
     (map quantity resourcesForDenom);
 
-resource-ordering : Ord Resource;
-resource-ordering :=
+resourceOrd : Ord Resource;
+resourceOrd :=
   let
     prod : Resource -> Denomination × ByteString × Int;
     prod (resource denom d q) := denom, d, q;
@@ -48,7 +48,7 @@ resource-ordering :=
     prodOrd :=
       ProductTraits.Ord
         denominationOrd
-        (ProductTraits.Ord orderingByteString IntTraits.Ord);
+        (ProductTraits.Ord byteStringOrd IntTraits.Ord);
     go :
         Ord (Denomination × ByteString × Int)
           -> Resource

@@ -37,8 +37,7 @@ denominationOrd :=
     prod : Denomination -> LogicHash × ByteString;
     prod (denomination h d) := h, d;
     prodOrd : Ord (LogicHash × ByteString);
-    prodOrd :=
-      ProductTraits.Ord NatTraits.Ord orderingByteString;
+    prodOrd := ProductTraits.Ord NatTraits.Ord byteStringOrd;
   in case prodOrd
     | mkOrd cmp :=
       mkOrd

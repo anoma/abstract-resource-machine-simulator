@@ -9,13 +9,13 @@ type PartialTx :=
     --- of created resources
     partialTx : List Resource -> List Resource -> PartialTx;
 
-partialtx-ordering : Ord PartialTx;
-partialtx-ordering :=
+partialTxOrd : Ord PartialTx;
+partialTxOrd :=
   let
     prod : PartialTx -> List Resource × List Resource;
     prod (partialTx inr outr) := inr, outr;
     listResourceOrd : Ord (List Resource);
-    listResourceOrd := ListTraits.Ord resource-ordering;
+    listResourceOrd := ListTraits.Ord resourceOrd;
     prodOrd : Ord (List Resource × List Resource);
     prodOrd :=
       ProductTraits.Ord listResourceOrd listResourceOrd;
