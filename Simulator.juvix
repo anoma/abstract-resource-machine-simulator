@@ -3,6 +3,7 @@ module Simulator;
 open import Simulator.Resource public;
 open import Simulator.Balance public;
 open import Simulator.PartialTx public;
+open import Simulator.Denomination public;
 
 open import Stdlib.Prelude;
 open import Stdlib.Debug.Fail;
@@ -10,8 +11,6 @@ open import Data.ByteString public;
 
 import Data.Map as Map;
 open Map using {Map};
-
-import Stdlib.Data.Int as Int;
 
 --- Arguments: hash of itself, consumed (input/spend/send/destroyed), created (output/received)
 LogicFunction : Type;
@@ -32,44 +31,24 @@ validPartialTx m (partialTx inr outr) :=
     resources := inr ++ outr;
     getLogicFn :
         Resource -> List Resource -> List Resource -> Bool;
-    getLogicFn (resource logicHash _ _ _) :=
-      case Map.lookup NatTraits.Ord logicHash m
-        | just f := f logicHash
+    getLogicFn (resource denom _ _) :=
+      let
+        hash : LogicHash := logicHash denom;
+      in case Map.lookup NatTraits.Ord hash m
+        | just f := f hash
         | _ :=
           fail
             ("Could not find function associated with hash: "
-              ++str natToString logicHash);
+              ++str natToString hash);
   in all
     λ {
       | r := getLogicFn r inr outr
     }
     resources;
 
-denomination : Resource -> ByteString;
-denomination (resource logicHash staticData _ _) :=
-  logicHash :: staticData;
-
---- Aggregate the quantities associated with a denomination
-quantityOfDenom : ByteString -> List Resource -> Int;
-quantityOfDenom denom rs :=
-  let
-    resourcesForDenom : List Resource;
-    resourcesForDenom :=
-      filter
-        λ {
-          | r :=
-            case ListTraits.Eq NatTraits.Eq
-              | mkEq eqList := eqList (denomination r) denom
-        }
-        rs;
-  in foldl
-    (Int.+)
-    (Int.ofNat 0)
-    (map quantity resourcesForDenom);
-
 mkBalance : Resource -> Balance;
-mkBalance r@(resource _ _ _ quantity) :=
-  balance ((denomination r, quantity) :: nil);
+mkBalance r :=
+  balance ((denomination' r, quantity r) :: nil);
 
 balanceDelta : PartialTx -> Balance;
 balanceDelta (partialTx inr outr) :=

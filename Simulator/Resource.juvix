@@ -2,44 +2,55 @@ module Simulator.Resource;
 
 open import Stdlib.Prelude;
 open import Data.ByteString;
+open import Simulator.Denomination;
 
-LogicHash : Type;
-LogicHash := Nat;
+import Stdlib.Data.Int as Int;
 
 type Resource :=
-  | resource : LogicHash
-      -> ByteString
+  | resource : Denomination
       -> ByteString
       -> Int
       -> Resource;
 
-hash : Resource -> LogicHash;
-hash (resource logicHash _ _ _) := logicHash;
-
 dynamicData : Resource -> ByteString;
-dynamicData (resource _ _ d _) := d;
-
-staticData : Resource -> ByteString;
-staticData (resource _ s _ _) := s;
+dynamicData (resource _ d _) := d;
 
 quantity : Resource -> Int;
-quantity (resource _ _ _ q) := q;
+quantity (resource _ _ q) := q;
+
+denomination' : Resource -> Denomination;
+denomination' (resource d _ _) := d;
+
+--- Aggregate the quantities associated with a denomination
+quantityOfDenom : Denomination -> List Resource -> Int;
+quantityOfDenom denom rs :=
+  let
+    resourcesForDenom : List Resource;
+    resourcesForDenom :=
+      filter
+        λ {
+          | r :=
+            case denominationEq
+              | mkEq eqList := eqList (denomination' r) denom
+        }
+        rs;
+  in foldl
+    (Int.+)
+    (Int.ofNat 0)
+    (map quantity resourcesForDenom);
 
 resource-ordering : Ord Resource;
 resource-ordering :=
   let
-    prod :
-        Resource -> LogicHash × ByteString × ByteString × Int;
-    prod (resource l s d q) := l, s, d, q;
-    prodOrd : Ord (LogicHash × ByteString × ByteString × Int);
+    prod : Resource -> Denomination × ByteString × Int;
+    prod (resource denom d q) := denom, d, q;
+    prodOrd : Ord (Denomination × ByteString × Int);
     prodOrd :=
       ProductTraits.Ord
-        NatTraits.Ord
-        (ProductTraits.Ord
-          orderingByteString
-          (ProductTraits.Ord orderingByteString IntTraits.Ord));
+        denominationOrd
+        (ProductTraits.Ord orderingByteString IntTraits.Ord);
     go :
-        Ord (LogicHash × ByteString × ByteString × Int)
+        Ord (Denomination × ByteString × Int)
           -> Resource
           -> Resource
           -> Ordering;

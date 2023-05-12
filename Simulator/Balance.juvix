@@ -3,13 +3,14 @@ module Simulator.Balance;
 open import Stdlib.Prelude;
 open import Data.ByteString;
 open import Simulator.Resource;
+open import Simulator.Denomination;
 
 import Data.Map as Map;
 import Stdlib.Data.Int as Int;
 import Stdlib.Data.Int.Ord as Int;
 
 type Balance :=
-  | balance : List (ByteString × Int) -> Balance;
+  | balance : List (Denomination × Int) -> Balance;
 
 emptyBalance : Balance;
 emptyBalance := balance nil;
@@ -18,7 +19,7 @@ addBalance : Balance -> Balance -> Balance;
 addBalance (balance xs) (balance ys) :=
   balance
     (Map.toList
-      (Map.from-list-with orderingByteString (Int.+) (xs ++ ys)));
+      (Map.from-list-with denominationOrd (Int.+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance;
 negateBalance (balance xs) :=

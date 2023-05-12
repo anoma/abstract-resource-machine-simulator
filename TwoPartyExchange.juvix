@@ -4,6 +4,8 @@ module TwoPartyExchange;
 
 open import Simulator;
 
+import Simulator.Denomination as D;
+
 import Data.Map as Map;
 open Map using {Map};
 
@@ -16,49 +18,31 @@ import Stdlib.Data.Int.Ord as Int;
 
 module Dolphin;
   
-  hash : LogicHash;
-  hash := 0;
-  
-  staticData : ByteString;
-  staticData := nil;
-  
-  denom : ByteString;
-  denom := hash :: staticData;
+  denomination : Denomination;
+  denomination := D.denomination 0 nil;
   
   mkResource : Int -> Resource;
-  mkResource := resource hash staticData nil;
+  mkResource := resource denomination nil;
 
 end;
 
 module A;
   
-  hash : LogicHash;
-  hash := 1;
-  
-  staticData : ByteString;
-  staticData := nil;
-  
-  denom : ByteString;
-  denom := hash :: staticData;
+  denomination : Denomination;
+  denomination := D.denomination 1 nil;
   
   mkResource : Int -> Resource;
-  mkResource := resource hash staticData nil;
+  mkResource := resource denomination nil;
 
 end;
 
 module B;
   
-  hash : LogicHash;
-  hash := 2;
-  
-  staticData : ByteString;
-  staticData := nil;
-  
-  denom : ByteString;
-  denom := hash :: staticData;
+  denomination : Denomination;
+  denomination := D.denomination 2 nil;
   
   mkResource : Int -> Resource;
-  mkResource := resource hash staticData nil;
+  mkResource := resource denomination nil;
 end;
 
 module AliceIntent;
@@ -70,18 +54,18 @@ module AliceIntent;
     -- Then check if alice's intent is satisfied.
     let
       createdHashes : List LogicHash;
-      createdHashes := map hash createdRs;
+      createdHashes := map (logicHash ∘ denomination') createdRs;
     in any ((Nat.==) h) createdHashes
-      || quantityOfDenom Dolphin.denom createdRs Int.== 1
-      && quantityOfDenom A.denom createdRs Int.== 1
-      || quantityOfDenom Dolphin.denom createdRs Int.== 1
-      && quantityOfDenom B.denom createdRs Int.== 2;
+      || quantityOfDenom Dolphin.denomination createdRs Int.== 1
+      && quantityOfDenom A.denomination createdRs Int.== 1
+      || quantityOfDenom Dolphin.denomination createdRs Int.== 1
+      && quantityOfDenom B.denomination createdRs Int.== 2;
   
-  hash : LogicHash;
-  hash := 3;
+  denomination : Denomination;
+  denomination := D.denomination 3 nil;
   
   mkResource : Int -> Resource;
-  mkResource := resource hash nil nil;
+  mkResource := resource denomination nil;
 
 end;
 
@@ -89,8 +73,9 @@ logicFunctions : Map LogicHash LogicFunction;
 logicFunctions :=
   Map.fromList
     NatTraits.Ord
-    ((A.hash, alwaysValid)
-      :: (B.hash, alwaysValid)
-      :: (Dolphin.hash, alwaysValid)
-      :: (AliceIntent.hash, AliceIntent.logicFunction)
+    ((logicHash A.denomination, alwaysValid)
+      :: (logicHash B.denomination, alwaysValid)
+      :: (logicHash Dolphin.denomination, alwaysValid)
+      :: (logicHash AliceIntent.denomination
+        , AliceIntent.logicFunction)
       :: nil);
