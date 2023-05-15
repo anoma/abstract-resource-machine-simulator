@@ -29,7 +29,9 @@ quantityOfDenom denom rs :=
     resourcesForDenom :=
       filter
         λ {
-          | r := eq DenominationTraits.Eq (denomination' r) denom
+          | r :=
+            case denominationEq
+              | mkEq eqList := eqList (denomination' r) denom
         }
         rs;
   in foldl
@@ -37,36 +39,30 @@ quantityOfDenom denom rs :=
     (Int.ofNat 0)
     (map quantity resourcesForDenom);
 
-module ResourceTraits;
-
-  import Stdlib.Trait.Ord as Stdlib;
-
-  Ord : Stdlib.Ord Resource;
-  Ord :=
-    let
-      prod : Resource -> Denomination × ByteString × Int;
-      prod (resource denom d q) := denom, d, q;
-      prodOrd : Stdlib.Ord (Denomination × ByteString × Int);
-      prodOrd :=
-        ProductTraits.Ord
-          DenominationTraits.Ord
-          (ProductTraits.Ord ByteStringTraits.Ord IntTraits.Ord);
-      go :
-          Stdlib.Ord (Denomination × ByteString × Int)
-            -> Resource
-            -> Resource
-            -> Ordering;
-      go (mkOrd prod-ord) r1 r2 := prod-ord (prod r1) (prod r2);
-    in mkOrd (go prodOrd);
-
-end;
+resourceOrd : Ord Resource;
+resourceOrd :=
+  let
+    prod : Resource -> Denomination × ByteString × Int;
+    prod (resource denom d q) := denom, d, q;
+    prodOrd : Ord (Denomination × ByteString × Int);
+    prodOrd :=
+      ProductTraits.Ord
+        denominationOrd
+        (ProductTraits.Ord byteStringOrd IntTraits.Ord);
+    go :
+        Ord (Denomination × ByteString × Int)
+          -> Resource
+          -> Resource
+          -> Ordering;
+    go (mkOrd prod-ord) r1 r2 := prod-ord (prod r1) (prod r2);
+  in mkOrd (go prodOrd);
 
 type ResourceKind :=
   | created : ResourceKind
   | consumed : ResourceKind;
 
 module ResourceKindTraits;
-
+  
   Eq : Eq ResourceKind;
   Eq :=
     mkEq

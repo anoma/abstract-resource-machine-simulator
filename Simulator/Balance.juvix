@@ -19,10 +19,7 @@ addBalance : Balance -> Balance -> Balance;
 addBalance (balance xs) (balance ys) :=
   balance
     (Map.toList
-      (Map.from-list-with
-        DenominationTraits.Ord
-        (Int.+)
-        (xs ++ ys)));
+      (Map.from-list-with denominationOrd (Int.+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance;
 negateBalance (balance xs) :=
