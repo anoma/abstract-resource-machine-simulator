@@ -48,14 +48,16 @@ end;
 module AliceIntent;
   
   logicFunction : LogicFunction;
-  logicFunction h consumedRs createdRs :=
+  logicFunction kind tx :=
     -- check if the resource associated to this logic function is among the created (output)
     -- resources.
     -- Then check if alice's intent is satisfied.
     let
+      createdRs : List Resource;
+      createdRs := createdResources tx;
       createdHashes : List LogicHash;
       createdHashes := map (logicHash ∘ denomination') createdRs;
-    in any ((Nat.==) h) createdHashes
+    in eq ResourceKindTraits.Eq kind created
       || quantityOfDenom Dolphin.denomination createdRs Int.== 1
       && quantityOfDenom A.denomination createdRs Int.== 1
       || quantityOfDenom Dolphin.denomination createdRs Int.== 1

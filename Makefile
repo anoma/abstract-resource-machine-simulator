@@ -9,7 +9,7 @@ deps/containers:
 deps/stdlib:
 	@mkdir -p deps/
 	@git clone https://github.com/anoma/juvix-stdlib.git deps/stdlib
-	@git -C deps/stdlib checkout caffc3b9bfde589e5ef3fca3f835200ce78ab312
+	@git -C deps/stdlib checkout c2a327139e9cd166e4e3241f4de192f375a94437
 
 deps/test:
 	@mkdir -p deps/

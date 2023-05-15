@@ -56,3 +56,20 @@ resourceOrd :=
           -> Ordering;
     go (mkOrd prod-ord) r1 r2 := prod-ord (prod r1) (prod r2);
   in mkOrd (go prodOrd);
+
+type ResourceKind :=
+  | created : ResourceKind
+  | consumed : ResourceKind;
+
+module ResourceKindTraits;
+  
+  Eq : Eq ResourceKind;
+  Eq :=
+    mkEq
+      λ {
+        | created created := true
+        | consumed consumed := true
+        | _ _ := false
+      };
+
+end;

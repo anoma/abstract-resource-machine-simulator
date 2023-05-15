@@ -12,39 +12,43 @@ open import Data.ByteString public;
 import Data.Map as Map;
 open Map using {Map};
 
---- Arguments: hash of itself, consumed (input/spend/send/destroyed), created (output/received)
+--- Arguments: kind (indicating whether the resource associated with the logic
+--- function was consumed or created in the partial transaction), consumed resources
+--- (input/spend/send/destroyed), created resources (output/received)
 LogicFunction : Type;
-LogicFunction :=
-  LogicHash -> List Resource -> List Resource -> Bool;
+LogicFunction := ResourceKind -> PartialTx -> Bool;
 
 alwaysValid : LogicFunction;
 alwaysValid :=
   λ {
-    | _ _ _ := true
+    | _ _ := true
   };
 
 validPartialTx :
   Map LogicHash LogicFunction -> PartialTx -> Bool;
-validPartialTx m (partialTx inr outr) :=
+validPartialTx m tx :=
   let
-    resources : List Resource;
-    resources := inr ++ outr;
     getLogicFn :
-        Resource -> List Resource -> List Resource -> Bool;
-    getLogicFn (resource denom _ _) :=
+        ResourceKind -> Resource -> PartialTx -> Bool;
+    getLogicFn kind (resource denom _ _) :=
       let
         hash : LogicHash := logicHash denom;
       in case Map.lookup NatTraits.Ord hash m
-        | just f := f hash
+        | just f := f kind
         | _ :=
           fail
             ("Could not find function associated with hash: "
               ++str natToString hash);
   in all
-    λ {
-      | r := getLogicFn r inr outr
-    }
-    resources;
+      λ {
+        | r := getLogicFn created r tx
+      }
+      (createdResources tx)
+    && all
+      λ {
+        | r := getLogicFn consumed r tx
+      }
+      (consumedResources tx);
 
 mkBalance : Resource -> Balance;
 mkBalance r :=
