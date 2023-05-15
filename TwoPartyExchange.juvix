@@ -13,40 +13,39 @@ import Data.MapTmp as Map;
 
 open import Stdlib.Prelude;
 
-import Stdlib.Data.Nat.Ord as Nat;
-import Stdlib.Data.Int.Ord as Int;
+open import Stdlib.Data.Int.Ord;
 
 module Dolphin;
-  
+
   denomination : Denomination;
   denomination := D.denomination 0 nil;
-  
+
   mkResource : Int -> Resource;
   mkResource := resource denomination nil;
 
 end;
 
 module A;
-  
+
   denomination : Denomination;
   denomination := D.denomination 1 nil;
-  
+
   mkResource : Int -> Resource;
   mkResource := resource denomination nil;
 
 end;
 
 module B;
-  
+
   denomination : Denomination;
   denomination := D.denomination 2 nil;
-  
+
   mkResource : Int -> Resource;
   mkResource := resource denomination nil;
 end;
 
 module AliceIntent;
-  
+
   logicFunction : LogicFunction;
   logicFunction kind tx :=
     -- check if the resource associated to this logic function is among the created (output)
@@ -57,15 +56,15 @@ module AliceIntent;
       createdRs := createdResources tx;
       createdHashes : List LogicHash;
       createdHashes := map (logicHash ∘ denomination') createdRs;
-    in eq ResourceKindTraits.Eq kind created
-      || quantityOfDenom Dolphin.denomination createdRs Int.== 1
-      && quantityOfDenom A.denomination createdRs Int.== 1
-      || quantityOfDenom Dolphin.denomination createdRs Int.== 1
-      && quantityOfDenom B.denomination createdRs Int.== 2;
-  
+    in isCreated kind
+      || quantityOfDenom Dolphin.denomination createdRs == 1
+      && quantityOfDenom A.denomination createdRs == 1
+      || quantityOfDenom Dolphin.denomination createdRs == 1
+      && quantityOfDenom B.denomination createdRs == 2;
+
   denomination : Denomination;
   denomination := D.denomination 3 nil;
-  
+
   mkResource : Int -> Resource;
   mkResource := resource denomination nil;
 
