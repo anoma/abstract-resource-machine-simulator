@@ -17,30 +17,34 @@ logicHash (denomination h _) := h;
 staticData : Denomination -> ByteString;
 staticData (denomination _ d) := d;
 
-denominationEq : Eq Denomination;
-denominationEq :=
-  let
-    prod : Denomination -> LogicHash × ByteString;
-    prod (denomination h d) := h, d;
-    prodEq : Eq (LogicHash × ByteString);
-    prodEq := ProductTraits.Eq NatTraits.Eq byteStringEq;
-  in case prodEq
-    | mkEq eq :=
-      mkEq
-        λ {
-          | d1 d2 := eq (prod d1) (prod d2)
-        };
+module DenominationTraits;
 
-denominationOrd : Ord Denomination;
-denominationOrd :=
-  let
-    prod : Denomination -> LogicHash × ByteString;
-    prod (denomination h d) := h, d;
-    prodOrd : Ord (LogicHash × ByteString);
-    prodOrd := ProductTraits.Ord NatTraits.Ord byteStringOrd;
-  in case prodOrd
-    | mkOrd cmp :=
-      mkOrd
-        λ {
-          | d1 d2 := cmp (prod d1) (prod d2)
-        };
+  import Stdlib.Trait.Eq as Stdlib;
+  import Stdlib.Trait.Ord as Stdlib;
+
+  Eq : Stdlib.Eq Denomination;
+  Eq :=
+    let
+      prod : Denomination -> LogicHash × ByteString;
+      prod (denomination h d) := h, d;
+      prodEq : Stdlib.Eq (LogicHash × ByteString);
+      prodEq := ProductTraits.Eq NatTraits.Eq ByteStringTraits.Eq;
+    in mkEq
+      λ {
+        | d1 d2 := eq prodEq (prod d1) (prod d2)
+      };
+
+  Ord : Stdlib.Ord Denomination;
+  Ord :=
+    let
+      prod : Denomination -> LogicHash × ByteString;
+      prod (denomination h d) := h, d;
+      prodOrd : Stdlib.Ord (LogicHash × ByteString);
+      prodOrd :=
+        ProductTraits.Ord NatTraits.Ord ByteStringTraits.Ord;
+    in mkOrd
+      λ {
+        | d1 d2 := cmp prodOrd (prod d1) (prod d2)
+      };
+
+end;
