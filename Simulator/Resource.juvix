@@ -46,6 +46,10 @@ zeroOrOneCheck _ nil := true;
 zeroOrOneCheck p (x :: nil) := p x;
 zeroOrOneCheck _ _ := false;
 
+exactlyOneCheck : (Resource -> Bool) -> List Resource -> Bool;
+exactlyOneCheck p (x :: nil) := p x;
+exactlyOneCheck _ _ := false;
+
 resourceOrd : Ord Resource;
 resourceOrd :=
   let

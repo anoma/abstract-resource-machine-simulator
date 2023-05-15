@@ -36,6 +36,71 @@ module Puzzle;
   mkResource : Denomination -> ByteString -> Int -> Resource;
   mkResource := resource;
 
+  solvedSquares : ByteString -> Nat;
+  solvedSquares proposal :=
+    length
+      (filter
+        λ {
+          | x := x Nat.> 0
+        }
+        proposal);
+
+  --- Checks the solution state transition.
+  --- * If there is a consumed puzzle resource then there is exacly
+  --- one created puzzle resource and exacly one created reward resource.
+  --- * The size of the solution doesn't change.
+  --- * The number of filled in squares does not decrease.
+  --- * The claimed reward is equal to the number of newly filled in squares.
+  --- * The only squares that change between the consumed and created solutinos
+  --- are changes from zero (i.e unfilled) to non-zero (i.e filled).
+  logicFunction : Denomination -> LogicFunction;
+  logicFunction puzzleDenom kind tx :=
+    let
+      createdRs : List Resource;
+      createdRs := createdResources tx;
+      consumedRs : List Resource;
+      consumedRs := consumedResources tx;
+      checkTransition : Resource -> Bool;
+      checkTransition consumedR :=
+        let
+          checkCreated : Resource -> Bool;
+          checkCreated createdR :=
+            let
+              checkReward : Resource -> Bool;
+              checkReward rewardR :=
+                let
+                  createdSol : ByteString;
+                  createdSol := dynamicData createdR;
+                  consumedSol : ByteString;
+                  consumedSol := dynamicData consumedR;
+                  diff : List (Nat × Nat);
+                  diff :=
+                    filter
+                      λ {
+                        | (x, y) := x Nat./= y
+                      }
+                      (zip consumedSol createdSol);
+                  rewardQ : Int;
+                  rewardQ := quantity rewardR;
+                in length createdSol Nat.== length consumedSol
+                  && solvedSquares createdSol Nat.>= solvedSquares consumedSol
+                  && all
+                    λ {
+                      | x := x Nat.== 0
+                    }
+                    (map fst diff)
+                  && ofNat (length diff) == rewardQ;
+            in exactlyOneCheck
+              checkReward
+              (resourcesForDenom Reward.denomination createdRs);
+        in exactlyOneCheck
+          checkCreated
+          (resourcesForDenom puzzleDenom createdRs);
+    in isCreated kind
+      || zeroOrOneCheck
+        checkTransition
+        (resourcesForDenom puzzleDenom consumedRs);
+
 end;
 
 module DealerIntent;
@@ -89,7 +154,7 @@ logicFunctions puzzleDenom :=
   Map.fromList
     NatTraits.Ord
     ((logicHash Reward.denomination, alwaysValid)
-      :: (logicHash puzzleDenom, alwaysValid)
+      :: (logicHash puzzleDenom, Puzzle.logicFunction puzzleDenom)
       :: (logicHash (DealerIntent.mkDenomination puzzleDenom)
         , DealerIntent.logicFunction puzzleDenom)
       :: nil);
