@@ -10,7 +10,55 @@ open import Stdlib.Prelude;
 import TwoPartyExchange;
 open TwoPartyExchange hiding {logicFunctions};
 
+import Sudoku;
+open Sudoku hiding {logicFunctions};
+
 open import Test.JuvixUnit;
+
+sudoku : Test;
+sudoku :=
+  let
+    puzzleDenom : Denomination;
+    puzzleDenom :=
+      Puzzle.mkDenomination (1 :: 2 :: 3 :: 4 :: nil);
+    dealerPartialTx : PartialTx;
+    dealerPartialTx :=
+      dealer puzzleDenom (1 :: 0 :: 0 :: 0 :: nil);
+    alicePartialTx : PartialTx;
+    alicePartialTx :=
+      let
+        createdResources : List Resource;
+        createdResources :=
+          Puzzle.mkResource puzzleDenom (1 :: 2 :: 0 :: 0 :: nil) 1
+            :: Reward.mkResource 1
+            :: nil;
+        consumedResources : List Resource;
+        consumedResources :=
+          Puzzle.mkResource puzzleDenom (1 :: 0 :: 0 :: 0 :: nil) 1
+            :: nil;
+      in partialTx consumedResources createdResources;
+    bobPartialTx : PartialTx;
+    bobPartialTx :=
+      let
+        createdResources : List Resource;
+        createdResources :=
+          Puzzle.mkResource puzzleDenom (1 :: 2 :: 3 :: 4 :: nil) 0
+            :: Reward.mkResource 2
+            :: nil;
+        consumedResources : List Resource;
+        consumedResources :=
+          Puzzle.mkResource puzzleDenom (1 :: 2 :: 0 :: 0 :: nil) 1
+            :: DealerIntent.mkResource puzzleDenom 1
+            :: nil;
+      in partialTx consumedResources createdResources;
+    txs : List PartialTx;
+    txs :=
+      dealerPartialTx :: alicePartialTx :: bobPartialTx :: nil;
+  in testCase
+    "Sudoku"
+    (assertTrue
+      "expected Sudoku solutions to validate"
+      (checkTransaction (Sudoku.logicFunctions puzzleDenom) txs));
 
 twoPartyExchange : Test;
 twoPartyExchange :=
@@ -62,7 +110,7 @@ emptyTest :=
       (checkTransaction emptyFunctions nil));
 
 tests : List Test;
-tests := emptyTest :: twoPartyExchange :: nil;
+tests := emptyTest :: twoPartyExchange :: sudoku :: nil;
 
 main : IO;
 main := runTestSuite (testSuite "Taiga simulator" tests);

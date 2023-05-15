@@ -21,23 +21,30 @@ quantity (resource _ _ q) := q;
 denomination' : Resource -> Denomination;
 denomination' (resource d _ _) := d;
 
+--- Find all the resources associated with a denomination
+resourcesForDenom :
+  Denomination -> List Resource -> List Resource;
+resourcesForDenom denom rs :=
+  filter
+    λ {
+      | r := eq denominationEq (denomination' r) denom
+    }
+    rs;
+
 --- Aggregate the quantities associated with a denomination
 quantityOfDenom : Denomination -> List Resource -> Int;
 quantityOfDenom denom rs :=
-  let
-    resourcesForDenom : List Resource;
-    resourcesForDenom :=
-      filter
-        λ {
-          | r :=
-            case denominationEq
-              | mkEq eqList := eqList (denomination' r) denom
-        }
-        rs;
-  in foldl
+  foldl
     (Int.+)
     (Int.ofNat 0)
-    (map quantity resourcesForDenom);
+    (map quantity (resourcesForDenom denom rs));
+
+--- Return true if the list is empty or the list has exactly 1 element and the predicate is satisfied
+zeroOrOneCheck :
+  (Resource -> Bool) -> List Resource -> Bool;
+zeroOrOneCheck _ nil := true;
+zeroOrOneCheck p (x :: nil) := p x;
+zeroOrOneCheck _ _ := false;
 
 resourceOrd : Ord Resource;
 resourceOrd :=
@@ -62,7 +69,7 @@ type ResourceKind :=
   | consumed : ResourceKind;
 
 module ResourceKindTraits;
-  
+
   Eq : Eq ResourceKind;
   Eq :=
     mkEq
@@ -73,3 +80,9 @@ module ResourceKindTraits;
       };
 
 end;
+
+isCreated : ResourceKind -> Bool;
+isCreated := eq ResourceKindTraits.Eq created;
+
+isConsumed : ResourceKind -> Bool;
+isConsumed := eq ResourceKindTraits.Eq consumed;

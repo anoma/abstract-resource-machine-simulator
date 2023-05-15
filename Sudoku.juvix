@@ -1,0 +1,95 @@
+-- Taiga Sudoku example
+-- https://hackmd.io/DlCNpl4KRJq2j5dRTiUrFA
+module Sudoku;
+
+open import Simulator;
+
+import Simulator.Denomination as D;
+
+import Data.Map as Map;
+open Map using {Map};
+
+import Data.MapTmp as Map;
+
+open import Data.ListTmp;
+
+open import Stdlib.Prelude;
+
+open import Stdlib.Data.Int.Ord;
+
+import Stdlib.Data.Nat.Ord as Nat;
+
+module Reward;
+  denomination : Denomination;
+  denomination := D.denomination 0 nil;
+
+  mkResource : Int -> Resource;
+  mkResource := resource denomination nil;
+
+end;
+
+module Puzzle;
+
+  mkDenomination : ByteString -> Denomination;
+  mkDenomination := D.denomination 1;
+
+  mkResource : Denomination -> ByteString -> Int -> Resource;
+  mkResource := resource;
+
+end;
+
+module DealerIntent;
+
+  logicFunction : Denomination -> LogicFunction;
+  logicFunction puzzleDenom kind tx :=
+    let
+      createdRs : List Resource;
+      createdRs := createdResources tx;
+      solution : ByteString;
+      solution := staticData puzzleDenom;
+      checkPuzzle : Resource -> Bool;
+      checkPuzzle r := eq byteStringEq solution (dynamicData r);
+    in isCreated kind
+      || zeroOrOneCheck
+        checkPuzzle
+        (resourcesForDenom puzzleDenom createdRs);
+
+  mkDenomination : Denomination -> Denomination;
+  mkDenomination puzzleDenom := D.denomination 2 nil;
+
+  mkResource : Denomination -> Int -> Resource;
+  mkResource puzzleDenom :=
+    resource (mkDenomination puzzleDenom) nil;
+end;
+
+dealer : Denomination -> ByteString -> PartialTx;
+dealer puzzleDenom initialBoard :=
+  let
+    emptySquares : Int;
+    emptySquares :=
+      ofNat
+        (length
+          (filter
+            λ {
+              | s := s Nat.== 0
+            }
+            initialBoard));
+    consumedResources : List Resource;
+    consumedResources := Reward.mkResource emptySquares :: nil;
+    createdResources : List Resource;
+    createdResources :=
+      DealerIntent.mkResource puzzleDenom 1
+        :: Puzzle.mkResource puzzleDenom initialBoard 1
+        :: nil;
+  in partialTx consumedResources createdResources;
+
+logicFunctions :
+  Denomination -> Map LogicHash LogicFunction;
+logicFunctions puzzleDenom :=
+  Map.fromList
+    NatTraits.Ord
+    ((logicHash Reward.denomination, alwaysValid)
+      :: (logicHash puzzleDenom, alwaysValid)
+      :: (logicHash (DealerIntent.mkDenomination puzzleDenom)
+        , DealerIntent.logicFunction puzzleDenom)
+      :: nil);
