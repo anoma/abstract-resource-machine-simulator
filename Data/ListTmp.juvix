@@ -42,3 +42,9 @@ transpose : {A : Type} -> List (List A) -> List (List A);
 transpose nil := nil;
 transpose (xs :: nil) := map (λ { x := x :: nil }) xs;
 transpose (xs :: xss) := zipWith (::) xs (transpose xss);
+
+terminating
+chunksOf : {A : Type} -> Nat -> List A -> List (List A);
+chunksOf _ nil := nil;
+chunksOf n xs := case (splitAt n xs)
+  | (ys , zs) := ys :: chunksOf n zs;

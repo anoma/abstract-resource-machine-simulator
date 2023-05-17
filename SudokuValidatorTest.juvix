@@ -1,6 +1,7 @@
 module SudokuValidatorTest;
 
 open import Sudoku.Validator;
+open import Sudoku.Serializer;
 open import Stdlib.Prelude;
 
 open import Test.JuvixUnit;
@@ -68,6 +69,13 @@ sudokuTests :=
       (assertFalse
         "Expected grid to be incomplete"
         (completeGrid? sudoku2Partial))
+    :: testCase
+      "4x4 partially completed Sudoku serialization roundtrip"
+      (assertEqual
+        gridEq
+        "Expected encode . decode to be identity"
+        sudoku2Full
+        (decode (encode sudoku2Full)))
     :: nil;
 
 main : IO;

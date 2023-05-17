@@ -3,6 +3,7 @@
 module Sudoku;
 
 open import Simulator;
+import Sudoku.Validator as Sudoku;
 
 import Simulator.Denomination as D;
 
