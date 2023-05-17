@@ -18,23 +18,25 @@ open import Test.JuvixUnit;
 sudoku : Test;
 sudoku :=
   let
+    solution : ByteString;
+    solution := (1 :: 2 :: 3 :: 4 :: 3 :: 4 :: 1 :: 2 :: 2 :: 3 :: 4 :: 1 :: 4 :: 1 :: 2 :: 3 :: nil);
     puzzleDenom : Denomination;
     puzzleDenom :=
-      Puzzle.mkDenomination (1 :: 2 :: 3 :: 4 :: nil);
+      Puzzle.mkDenomination solution;
     dealerPartialTx : PartialTx;
     dealerPartialTx :=
-      dealer puzzleDenom (1 :: 0 :: 0 :: 0 :: nil);
+      dealer puzzleDenom (1 :: replicate 15 0);
     alicePartialTx : PartialTx;
     alicePartialTx :=
       let
         createdResources : List Resource;
         createdResources :=
-          Puzzle.mkResource puzzleDenom (1 :: 2 :: 0 :: 0 :: nil) 1
+          Puzzle.mkResource puzzleDenom (1 :: 2 :: replicate 14 0) 1
             :: Reward.mkResource 1
             :: nil;
         consumedResources : List Resource;
         consumedResources :=
-          Puzzle.mkResource puzzleDenom (1 :: 0 :: 0 :: 0 :: nil) 1
+          Puzzle.mkResource puzzleDenom (1 :: replicate 15 0) 1
             :: nil;
       in partialTx consumedResources createdResources;
     bobPartialTx : PartialTx;
@@ -42,12 +44,12 @@ sudoku :=
       let
         createdResources : List Resource;
         createdResources :=
-          Puzzle.mkResource puzzleDenom (1 :: 2 :: 3 :: 4 :: nil) 0
-            :: Reward.mkResource 2
+          Puzzle.mkResource puzzleDenom solution 0
+            :: Reward.mkResource 14
             :: nil;
         consumedResources : List Resource;
         consumedResources :=
-          Puzzle.mkResource puzzleDenom (1 :: 2 :: 0 :: 0 :: nil) 1
+          Puzzle.mkResource puzzleDenom (1 :: 2 :: replicate 14 0) 1
             :: DealerIntent.mkResource puzzleDenom 1
             :: nil;
       in partialTx consumedResources createdResources;

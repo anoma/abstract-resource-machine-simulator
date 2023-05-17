@@ -4,6 +4,7 @@ module Sudoku;
 
 open import Simulator;
 import Sudoku.Validator as Sudoku;
+import Sudoku.Serializer as Sudoku;
 
 import Simulator.Denomination as D;
 
@@ -82,6 +83,7 @@ module Puzzle;
                   rewardQ := quantity rewardR;
                 in length createdSol Nat.== length consumedSol
                   && solvedSquares createdSol Nat.>= solvedSquares consumedSol
+                  && Sudoku.validGrid? (Sudoku.decode createdSol)
                   && all
                     λ {
                       | x := x Nat.== 0

@@ -35,7 +35,7 @@ gridRows (grid rows) :=
   in concatMap combineRows rows;
 
 gridEq : Eq Grid;
-gridEq := mkEq λ { g1 g2 := eq (ListTraits.Eq NatTraits.Eq) (gridEntries g1) (gridEntries g2)  };
+gridEq := mkEq λ { g1 g2 := eq (ListTraits.Eq (ListTraits.Eq NatTraits.Eq)) (gridRows g1) (gridRows g2)  };
 
 prettyGrid : Grid -> String;
 prettyGrid g :=
