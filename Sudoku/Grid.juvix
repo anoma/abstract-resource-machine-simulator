@@ -34,7 +34,6 @@ gridRows (grid rows) :=
       foldl combineSubGridRows rs sgs;
   in concatMap combineRows rows;
 
-
 gridEq : Eq Grid;
 gridEq := mkEq λ { g1 g2 := eq (ListTraits.Eq NatTraits.Eq) (gridEntries g1) (gridEntries g2)  };
 
