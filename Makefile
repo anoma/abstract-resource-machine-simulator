@@ -31,7 +31,7 @@ sudoku-test: build/SudokuTest
 	./build/SudokuTest
 
 .PHONY: test
-test: build/Test sudoku-test
+test: build/Test
 	./build/Test
 
 .PHONY: clean-deps
