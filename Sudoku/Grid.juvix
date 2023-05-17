@@ -1,0 +1,50 @@
+module Sudoku.Grid;
+
+open import Stdlib.Prelude hiding {transpose};
+open import Data.ByteString;
+open import Data.ListTmp;
+
+open import Stdlib.Data.Nat.Ord;
+
+--- A Sudoku subgrid
+type SubGrid :=
+  | subGrid : List (List Nat) -> SubGrid;
+
+subGridEntries : SubGrid -> List Nat;
+subGridEntries (subGrid rows) := flatten rows;
+
+--- The rows of ;SubGrid;s that comprise a Sudoku grid.
+type Grid :=
+  | grid : List (List SubGrid) -> Grid;
+
+gridEntries : Grid -> List Nat;
+gridEntries (grid sgs) :=
+  flatten (concatMap (map subGridEntries) sgs);
+
+gridRows : Grid -> List (List Nat);
+gridRows (grid rows) :=
+  let
+    combineSubGridRows :
+        List (List Nat) -> SubGrid -> List (List Nat);
+    combineSubGridRows rs1 (subGrid rs2) :=
+      zipWith (++) rs1 rs2;
+    combineRows : List SubGrid -> List (List Nat);
+    combineRows nil := nil;
+    combineRows (subGrid rs :: sgs) :=
+      foldl combineSubGridRows rs sgs;
+  in concatMap combineRows rows;
+
+prettyGrid : Grid -> String;
+prettyGrid g :=
+  let
+    showGridRow : Show (List Nat);
+    showGridRow := ListTraits.Show NatTraits.Show;
+  in concatStr
+    (intersperse "\n" (map (show showGridRow) (gridRows g)));
+
+prettyGridEntries : Grid -> String;
+prettyGridEntries g :=
+  let
+    showGridRow : Show (List Nat);
+    showGridRow := ListTraits.Show NatTraits.Show;
+  in show showGridRow (gridEntries g);

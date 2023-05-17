@@ -2,7 +2,7 @@ module Data.ListTmp;
 
 open import Stdlib.Prelude hiding {transpose};
 
-import Stdlib.Data.Nat.Ord open;
+open import Stdlib.Data.Nat.Ord;
 import Data.Set as Set;
 open Set using {Set};
 

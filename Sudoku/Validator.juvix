@@ -1,90 +1,64 @@
 module Sudoku.Validator;
 
-import Stdlib.Prelude open hiding {transpose};
-import Data.ByteString open;
-import Data.ListTmp open;
+open import Stdlib.Prelude hiding {transpose};
+open import Data.ByteString;
+open import Data.ListTmp;
 
-import Stdlib.Data.Nat.Ord open;
+open import Stdlib.Data.Nat.Ord;
 
---- The rows of a Sudoku subgrid
-type SubGrid :=
-  | subGrid : List (List Nat) -> SubGrid;
+open import Sudoku.Grid public;
 
-isSquare : {A : Type} -> List (List A) -> Bool;
-isSquare nil := true;
-isSquare rows@(r :: rs) :=
+--- Check that the number of rows equals the number of columns
+square? : {A : Type} -> List (List A) -> Bool;
+square? nil := true;
+square? rows@(r :: rs) :=
   allEq NatTraits.Eq (map length rows)
     && length r == length rows;
 
-subGridEntries : SubGrid -> List Nat;
-subGridEntries (subGrid rows) := flatten rows;
+entryFilled? : Nat -> Bool;
+entryFilled? x := x > 0;
 
-isEntryFilled : Nat -> Bool;
-isEntryFilled x := x > 0;
+allFilled? : List Nat -> Bool;
+allFilled? := null ∘ filter (not ∘ entryFilled?);
 
-validateSubGrid : SubGrid -> Bool;
-validateSubGrid s@(subGrid rows) :=
+--- Check that there are no duplicate filled entries
+noDuplicates? : List Nat -> Bool;
+noDuplicates? :=
+  not ∘ hasDuplicates NatTraits.Ord ∘ filter entryFilled?;
+
+--- Check that a subgrid satisfies the Sudoku constraints
+validSubGrid? : SubGrid -> Bool;
+validSubGrid? s@(subGrid rows) :=
   let
     entries : List Nat := subGridEntries s;
-    entriesLen : Nat := length entries;
-    filledEntries : List Nat := filter isEntryFilled entries;
-  in isSquare rows
-    && not (hasDuplicates NatTraits.Ord filledEntries)
+  in square? rows
+    && noDuplicates? (subGridEntries s)
     && all
       λ {
-        | x := x < entriesLen + 1
+        | x := x < length entries + 1
       }
       entries;
 
-isSubGridComplete : SubGrid -> Bool;
-isSubGridComplete sg :=
-  validateSubGrid sg
-    && null (filter (not ∘ isEntryFilled) (subGridEntries sg));
+--- Check that a subgrid is complete. i.e it satisfies the Sudoku constraints
+--- and all of its entries are filled
+completeSubGrid? : SubGrid -> Bool;
+completeSubGrid? sg :=
+  validSubGrid? sg && allFilled? (subGridEntries sg);
 
---- The rows of ;SubGrid;s that comprise a Sudoku grid.
-type Grid :=
-  | grid : List (List SubGrid) -> Grid;
-
-gridEntries : Grid -> List Nat;
-gridEntries (grid sgs) :=
-  flatten (concatMap (map subGridEntries) sgs);
-
-gridRows : Grid -> List (List Nat);
-gridRows (grid rows) :=
-  let
-    combineSubGridRows :
-        List (List Nat) -> SubGrid -> List (List Nat);
-    combineSubGridRows rs1 (subGrid rs2) :=
-      zipWith (++) rs1 rs2;
-    combineRows : List SubGrid -> List (List Nat);
-    combineRows nil := nil;
-    combineRows (subGrid rs :: sgs) :=
-      foldl combineSubGridRows rs sgs;
-  in concatMap combineRows rows;
-
-validateGrid : Grid -> Bool;
-validateGrid g@(grid subGridRows) :=
+--- Check that a grid satisfies the Sudoku constraints
+validGrid? : Grid -> Bool;
+validGrid? g@(grid subGridRows) :=
   let
     subGrids : List SubGrid := flatten subGridRows;
     rows : List (List Nat) := gridRows g;
     columns : List (List Nat) := transpose rows;
-    checkRowColumn : List Nat -> Bool;
-    checkRowColumn xs :=
-      let
-        filledEntries : List Nat := filter isEntryFilled xs;
-      in not (hasDuplicates NatTraits.Ord filledEntries);
-  in all validateSubGrid subGrids
-    && isSquare subGridRows
-    && all checkRowColumn rows
-    && all checkRowColumn columns;
+  in all validSubGrid? subGrids
+    && square? subGridRows
+    && all noDuplicates? rows
+    && all noDuplicates? columns;
 
-isGridComplete : Grid -> Bool;
-isGridComplete g :=
-  validateGrid g
-    && null (filter (not ∘ isEntryFilled) (gridEntries g));
-
-type GameState :=
-  | gameState : Grid -> GameState;
-
-type Game :=
-  | game : GameState -> Game;
+--- Check that a grid is complete. i.e it satisfies the Sudoku constraints
+--- and all of its entries are filled
+completeGrid? : Grid -> Bool;
+completeGrid? g :=
+  validGrid? g && allFilled? (gridEntries g);

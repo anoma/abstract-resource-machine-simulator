@@ -37,37 +37,37 @@ sudokuTests :=
       "Basic 4x4 Sudoku is complete"
       (assertTrue
         "Expected grid to be complete"
-        (isGridComplete sudoku2Full))
+        (completeGrid? sudoku2Full))
     :: testCase
       "Basic 2x4 Sudoku is incomplete"
       (assertFalse
         "Expected grid to be incomplete"
-        (isGridComplete sudoku2InvalidShapeFull))
+        (completeGrid? sudoku2InvalidShapeFull))
     :: testCase
       "4x4 Sudoku with duplicate rows is incomplete"
       (assertFalse
         "Expected grid to be incomplete"
-        (isGridComplete sudoku2DuplicatesFull))
+        (completeGrid? sudoku2DuplicatesFull))
     :: testCase
       "4x4 empty Sudoku is valid"
       (assertTrue
         "Expected grid to be valid"
-        (validateGrid sudoku2Empty))
+        (validGrid? sudoku2Empty))
     :: testCase
       "4x4 empty Sudoku is incomplete"
       (assertFalse
         "Expected grid to be incomplete"
-        (isGridComplete sudoku2Empty))
+        (completeGrid? sudoku2Empty))
     :: testCase
       "4x4 paritally completed Sudoku is valid"
       (assertTrue
         "Expected grid to be valid"
-        (validateGrid sudoku2Partial))
+        (validGrid? sudoku2Partial))
     :: testCase
       "4x4 partially completed Sudoku is incomplete"
       (assertFalse
         "Expected grid to be incomplete"
-        (isGridComplete sudoku2Partial))
+        (completeGrid? sudoku2Partial))
     :: nil;
 
 main : IO;
