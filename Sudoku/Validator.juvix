@@ -1,0 +1,90 @@
+module Sudoku.Validator;
+
+import Stdlib.Prelude open hiding {transpose};
+import Data.ByteString open;
+import Data.ListTmp open;
+
+import Stdlib.Data.Nat.Ord open;
+
+--- The rows of a Sudoku subgrid
+type SubGrid :=
+  | subGrid : List (List Nat) -> SubGrid;
+
+isSquare : {A : Type} -> List (List A) -> Bool;
+isSquare nil := true;
+isSquare rows@(r :: rs) :=
+  allEq NatTraits.Eq (map length rows)
+    && length r == length rows;
+
+subGridEntries : SubGrid -> List Nat;
+subGridEntries (subGrid rows) := flatten rows;
+
+isEntryFilled : Nat -> Bool;
+isEntryFilled x := x > 0;
+
+validateSubGrid : SubGrid -> Bool;
+validateSubGrid s@(subGrid rows) :=
+  let
+    entries : List Nat := subGridEntries s;
+    entriesLen : Nat := length entries;
+    filledEntries : List Nat := filter isEntryFilled entries;
+  in isSquare rows
+    && not (hasDuplicates NatTraits.Ord filledEntries)
+    && all
+      λ {
+        | x := x < entriesLen + 1
+      }
+      entries;
+
+isSubGridComplete : SubGrid -> Bool;
+isSubGridComplete sg :=
+  validateSubGrid sg
+    && null (filter (not ∘ isEntryFilled) (subGridEntries sg));
+
+--- The rows of ;SubGrid;s that comprise a Sudoku grid.
+type Grid :=
+  | grid : List (List SubGrid) -> Grid;
+
+gridEntries : Grid -> List Nat;
+gridEntries (grid sgs) :=
+  flatten (concatMap (map subGridEntries) sgs);
+
+gridRows : Grid -> List (List Nat);
+gridRows (grid rows) :=
+  let
+    combineSubGridRows :
+        List (List Nat) -> SubGrid -> List (List Nat);
+    combineSubGridRows rs1 (subGrid rs2) :=
+      zipWith (++) rs1 rs2;
+    combineRows : List SubGrid -> List (List Nat);
+    combineRows nil := nil;
+    combineRows (subGrid rs :: sgs) :=
+      foldl combineSubGridRows rs sgs;
+  in concatMap combineRows rows;
+
+validateGrid : Grid -> Bool;
+validateGrid g@(grid subGridRows) :=
+  let
+    subGrids : List SubGrid := flatten subGridRows;
+    rows : List (List Nat) := gridRows g;
+    columns : List (List Nat) := transpose rows;
+    checkRowColumn : List Nat -> Bool;
+    checkRowColumn xs :=
+      let
+        filledEntries : List Nat := filter isEntryFilled xs;
+      in not (hasDuplicates NatTraits.Ord filledEntries);
+  in all validateSubGrid subGrids
+    && isSquare subGridRows
+    && all checkRowColumn rows
+    && all checkRowColumn columns;
+
+isGridComplete : Grid -> Bool;
+isGridComplete g :=
+  validateGrid g
+    && null (filter (not ∘ isEntryFilled) (gridEntries g));
+
+type GameState :=
+  | gameState : Grid -> GameState;
+
+type Game :=
+  | game : GameState -> Game;

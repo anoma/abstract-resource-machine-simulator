@@ -1,0 +1,44 @@
+module Data.ListTmp;
+
+open import Stdlib.Prelude hiding {transpose};
+
+import Stdlib.Data.Nat.Ord open;
+import Data.Set as Set;
+open Set using {Set};
+
+find : {A : Type} -> (A -> Bool) -> List A -> Maybe A;
+find _ nil := nothing;
+find p (x :: xs) := if (p x) (just x) (find p xs);
+
+headMay : {A : Type} -> List A -> Maybe A;
+headMay nil := nothing;
+headMay (x :: _) := just x;
+
+ordNub : {A : Type} -> Ord A -> List A -> List A;
+ordNub {A} o :=
+  let
+    go : Set A -> List A -> List A;
+    go _ nil := nil;
+    go s (x :: xs) :=
+      if
+        (Set.member? o x s)
+        (go s xs)
+        (x :: go (Set.insert o x s) xs);
+  in go Set.empty;
+
+hasDuplicates : {A : Type} -> Ord A -> List A -> Bool;
+hasDuplicates o xs := length (ordNub o xs) /= length xs;
+
+allEq : {A : Type} -> Eq A -> List A -> Bool;
+allEq {A} _ nil := true;
+allEq {A} eqA (x :: xs) :=
+  let
+    go : List A -> Bool;
+    go nil := true;
+    go (y :: ys) := if (eq eqA x y) (go ys) false;
+  in go xs;
+
+transpose : {A : Type} -> List (List A) -> List (List A);
+transpose nil := nil;
+transpose (xs :: nil) := map (λ { x := x :: nil }) xs;
+transpose (xs :: xss) := zipWith (::) xs (transpose xss);

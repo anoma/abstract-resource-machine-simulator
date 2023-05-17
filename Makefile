@@ -22,8 +22,16 @@ build/Test: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps
 	@mkdir -p build
 	juvix compile -o build/Test Test.juvix
 
+build/SudokuValidatorTest: $(wildcard ./Sudoku/**/*.juvix) $(wildcard ./deps/**/*.juvix) deps
+	@mkdir -p build
+	juvix compile -o build/SudokuValidatorTest SudokuValidatorTest.juvix
+
+.PHONY: sudoku-test
+sudoku-test: build/SudokuTest
+	./build/SudokuTest
+
 .PHONY: test
-test: build/Test
+test: build/Test sudoku-test
 	./build/Test
 
 .PHONY: clean-deps

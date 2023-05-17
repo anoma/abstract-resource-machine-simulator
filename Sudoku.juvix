@@ -23,7 +23,6 @@ module Reward;
 
   mkResource : Int -> Resource;
   mkResource := resource denomination nil;
-
 end;
 
 module Puzzle;
@@ -102,7 +101,6 @@ module Puzzle;
 end;
 
 module DealerIntent;
-
   logicFunction : Denomination -> LogicFunction;
   logicFunction puzzleDenom kind tx :=
     let
