@@ -3,6 +3,7 @@
 module Sudoku;
 
 open import Simulator;
+
 import Sudoku.Validator as Sudoku;
 import Sudoku.Serializer as Sudoku;
 
@@ -45,11 +46,18 @@ module Puzzle;
         proposal);
 
   --- Checks the solution state transition.
+  ---
+  --- * The consumed puzzle represents a valid Sudoku grid
+  ---
   --- * If there is a consumed puzzle resource then there is exacly
   --- one created puzzle resource and exacly one created reward resource.
+  ---
   --- * The size of the solution doesn't change.
+  ---
   --- * The number of filled in squares does not decrease.
+  ---
   --- * The claimed reward is equal to the number of newly filled in squares.
+  ---
   --- * The only squares that change between the consumed and created solutinos
   --- are changes from zero (i.e unfilled) to non-zero (i.e filled).
   logicFunction : Denomination -> LogicFunction;
