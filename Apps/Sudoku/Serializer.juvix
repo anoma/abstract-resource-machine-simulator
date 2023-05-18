@@ -1,10 +1,10 @@
 module Apps.Sudoku.Serializer;
 
 open import Apps.Sudoku.Grid;
+open import Apps.Sudoku.Extra;
 open import Data.ByteString;
 
 open import Stdlib.Prelude;
-open import Data.ListTmp;
 
 open import Stdlib.Data.Nat.Ord;
 open import Stdlib.Debug.Fail;

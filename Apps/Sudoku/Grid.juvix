@@ -2,7 +2,7 @@ module Apps.Sudoku.Grid;
 
 open import Stdlib.Prelude;
 open import Data.ByteString;
-open import Data.ListTmp;
+open import Apps.Sudoku.Extra;
 
 open import Stdlib.Data.Nat.Ord;
 

@@ -2,11 +2,11 @@ module Apps.Sudoku.Validator;
 
 open import Stdlib.Prelude;
 open import Data.ByteString;
-open import Data.ListTmp;
 
 open import Stdlib.Data.Nat.Ord;
 
 open import Apps.Sudoku.Grid public;
+open import Apps.Sudoku.Extra;
 
 --- Check that the number of rows equals the number of columns
 square? : {A : Type} -> List (List A) -> Bool;

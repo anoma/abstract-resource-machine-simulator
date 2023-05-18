@@ -1,18 +1,10 @@
-module Data.ListTmp;
+module Apps.Sudoku.Extra;
 
 open import Stdlib.Prelude;
 
 open import Stdlib.Data.Nat.Ord;
 import Data.Set as Set;
 open Set using {Set};
-
-find : {A : Type} -> (A -> Bool) -> List A -> Maybe A;
-find _ nil := nothing;
-find p (x :: xs) := if (p x) (just x) (find p xs);
-
-headMay : {A : Type} -> List A -> Maybe A;
-headMay nil := nothing;
-headMay (x :: _) := just x;
 
 ordNub : {A : Type} -> Ord A -> List A -> List A;
 ordNub {A} o :=
