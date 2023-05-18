@@ -9,7 +9,7 @@ deps/containers:
 deps/stdlib:
 	@mkdir -p deps/
 	@git clone https://github.com/anoma/juvix-stdlib.git deps/stdlib
-	@git -C deps/stdlib checkout c2a327139e9cd166e4e3241f4de192f375a94437
+	@git -C deps/stdlib checkout e6b7c6fff1cd84c86f10ace080c2147cdbd0aaec
 
 deps/test:
 	@mkdir -p deps/
@@ -27,11 +27,11 @@ build/SudokuValidatorTest: $(wildcard ./Sudoku/**/*.juvix) $(wildcard ./deps/**/
 	juvix compile -o build/SudokuValidatorTest SudokuValidatorTest.juvix
 
 .PHONY: sudoku-test
-sudoku-test: build/SudokuTest
-	./build/SudokuTest
+sudoku-test: build/SudokuValidatorTest
+	./build/SudokuValidatorTest
 
 .PHONY: test
-test: build/Test
+test: build/Test sudoku-test
 	./build/Test
 
 .PHONY: clean-deps
