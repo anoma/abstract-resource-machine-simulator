@@ -1,6 +1,6 @@
 module Apps.Sudoku.Validator;
 
-open import Stdlib.Prelude hiding {transpose};
+open import Stdlib.Prelude;
 open import Data.ByteString;
 open import Data.ListTmp;
 

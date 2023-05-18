@@ -1,6 +1,6 @@
 module Data.ListTmp;
 
-open import Stdlib.Prelude hiding {transpose};
+open import Stdlib.Prelude;
 
 open import Stdlib.Data.Nat.Ord;
 import Data.Set as Set;
@@ -37,11 +37,6 @@ allEq {A} eqA (x :: xs) :=
     go nil := true;
     go (y :: ys) := if (eq eqA x y) (go ys) false;
   in go xs;
-
-transpose : {A : Type} -> List (List A) -> List (List A);
-transpose nil := nil;
-transpose (xs :: nil) := map (λ { x := x :: nil }) xs;
-transpose (xs :: xss) := zipWith (::) xs (transpose xss);
 
 terminating
 chunksOf : {A : Type} -> Nat -> List A -> List (List A);

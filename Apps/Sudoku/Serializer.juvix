@@ -3,7 +3,7 @@ module Apps.Sudoku.Serializer;
 open import Apps.Sudoku.Grid;
 open import Data.ByteString;
 
-open import Stdlib.Prelude hiding {transpose};
+open import Stdlib.Prelude;
 open import Data.ListTmp;
 
 open import Stdlib.Data.Nat.Ord;
