@@ -3,7 +3,7 @@ all: test
 
 deps/containers:
 	@mkdir -p deps/
-	@git clone --branch v0.4.1 --depth 1 https://github.com/anoma/juvix-containers.git deps/containers
+	@git clone --branch v0.5.0 --depth 1 https://github.com/anoma/juvix-containers.git deps/containers
 	$(MAKE) -C deps/containers deps
 
 deps/stdlib:

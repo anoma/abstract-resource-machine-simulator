@@ -12,8 +12,6 @@ import Simulator.Denomination as D;
 import Data.Map as Map;
 open Map using {Map};
 
-import Data.MapTmp as Map;
-
 open import Stdlib.Prelude;
 
 open import Stdlib.Data.Int.Ord;
