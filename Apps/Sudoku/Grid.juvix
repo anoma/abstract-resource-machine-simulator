@@ -35,19 +35,30 @@ gridRows (grid rows) :=
   in concatMap combineRows rows;
 
 gridEq : Eq Grid;
-gridEq := mkEq λ { g1 g2 := eq (ListTraits.Eq (ListTraits.Eq NatTraits.Eq)) (gridRows g1) (gridRows g2)  };
+gridEq :=
+  mkEq
+    λ {
+      | g1 g2 :=
+        eq
+          (ListTraits.Eq (ListTraits.Eq NatTraits.Eq))
+          (gridRows g1)
+          (gridRows g2)
+    };
+
+showSquare : Nat -> String;
+showSquare zero := "   ";
+showSquare n := " " ++str natToString n ++str " ";
+
+showRow : List Nat -> String;
+showRow xs := concatStr (surround "|" (map showSquare xs));
 
 prettyGrid : Grid -> String;
 prettyGrid g :=
-  let
-    showGridRow : Show (List Nat);
-    showGridRow := ListTraits.Show NatTraits.Show;
-  in concatStr
-    (intersperse "\n" (map (show showGridRow) (gridRows g)));
-
-prettyGridEntries : Grid -> String;
-prettyGridEntries g :=
-  let
-    showGridRow : Show (List Nat);
-    showGridRow := ListTraits.Show NatTraits.Show;
-  in show showGridRow (gridEntries g);
+  case gridRows g
+    | nil := ""
+    | xs@(x :: _) :=
+      let
+        border :
+            String :=
+              "+" ++str concatStr (replicate (length x) "---+");
+      in unlines (surround border (map showRow xs));

@@ -35,3 +35,13 @@ chunksOf : {A : Type} -> Nat -> List A -> List (List A);
 chunksOf _ nil := nil;
 chunksOf n xs := case (splitAt n xs)
   | (ys , zs) := ys :: chunksOf n zs;
+
+--- Insert the first ;String; at the beginning, in between, and at the end of
+--- the second list
+surround : String → List String → List String;
+surround x xs := (x :: intersperse x xs) ++ x :: nil;
+
+--- Insert the first ;String; in between the ;String;s in the second list and
+--- concatenates the result
+intercalate : String → List String → String;
+intercalate sep xs := concatStr (intersperse sep xs);
