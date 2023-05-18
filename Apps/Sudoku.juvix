@@ -1,11 +1,11 @@
 -- Taiga Sudoku example
 -- https://hackmd.io/DlCNpl4KRJq2j5dRTiUrFA
-module Sudoku;
+module Apps.Sudoku;
 
 open import Simulator;
 
-import Sudoku.Validator as Sudoku;
-import Sudoku.Serializer as Sudoku;
+import Apps.Sudoku.Validator as Sudoku;
+import Apps.Sudoku.Serializer as Sudoku;
 
 import Simulator.Denomination as D;
 

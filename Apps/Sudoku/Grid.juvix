@@ -1,4 +1,4 @@
-module Sudoku.Grid;
+module Apps.Sudoku.Grid;
 
 open import Stdlib.Prelude hiding {transpose};
 open import Data.ByteString;

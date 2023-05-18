@@ -1,7 +1,7 @@
 module SudokuValidatorTest;
 
-open import Sudoku.Validator;
-open import Sudoku.Serializer;
+open import Apps.Sudoku.Validator;
+open import Apps.Sudoku.Serializer;
 open import Stdlib.Prelude;
 
 open import Test.JuvixUnit;

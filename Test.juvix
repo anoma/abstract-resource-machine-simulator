@@ -10,7 +10,7 @@ open import Stdlib.Prelude;
 import Apps.TwoPartyExchange as TwoPartyExchange;
 open TwoPartyExchange hiding {logicFunctions};
 
-import Sudoku;
+import Apps.Sudoku as Sudoku;
 open Sudoku hiding {logicFunctions};
 
 open import Test.JuvixUnit;

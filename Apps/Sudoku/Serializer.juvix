@@ -1,6 +1,6 @@
-module Sudoku.Serializer;
+module Apps.Sudoku.Serializer;
 
-open import Sudoku.Grid;
+open import Apps.Sudoku.Grid;
 open import Data.ByteString;
 
 open import Stdlib.Prelude hiding {transpose};
