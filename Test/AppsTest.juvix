@@ -1,4 +1,4 @@
-module Test;
+module Test.AppsTest;
 
 open import Simulator;
 

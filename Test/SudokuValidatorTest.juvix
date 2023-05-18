@@ -1,4 +1,4 @@
-module SudokuValidatorTest;
+module Test.SudokuValidatorTest;
 
 open import Apps.Sudoku.Validator;
 open import Apps.Sudoku.Serializer;

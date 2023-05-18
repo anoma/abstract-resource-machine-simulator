@@ -18,21 +18,21 @@ deps/test:
 
 deps: deps/containers deps/stdlib deps/test
 
-build/Test: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps
+build/AppsTest: $(wildcard *.juvix) $(wildcard ./**/*.juvix) deps
 	@mkdir -p build
-	juvix compile -o build/Test Test.juvix
+	juvix compile -o build/AppsTest Test/AppsTest.juvix
 
 build/SudokuValidatorTest: $(wildcard ./Sudoku/**/*.juvix) $(wildcard ./deps/**/*.juvix) deps
 	@mkdir -p build
-	juvix compile -o build/SudokuValidatorTest SudokuValidatorTest.juvix
+	juvix compile -o build/SudokuValidatorTest Test/SudokuValidatorTest.juvix
 
 .PHONY: sudoku-test
 sudoku-test: build/SudokuValidatorTest
 	./build/SudokuValidatorTest
 
 .PHONY: test
-test: build/Test sudoku-test
-	./build/Test
+test: build/AppsTest sudoku-test
+	./build/AppsTest
 
 .PHONY: clean-deps
 clean-deps:
