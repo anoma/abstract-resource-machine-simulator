@@ -7,7 +7,7 @@ open Map using {Map};
 
 open import Stdlib.Prelude;
 
-import TwoPartyExchange;
+import Apps.TwoPartyExchange as TwoPartyExchange;
 open TwoPartyExchange hiding {logicFunctions};
 
 import Sudoku;

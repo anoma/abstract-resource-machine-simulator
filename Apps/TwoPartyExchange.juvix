@@ -1,6 +1,6 @@
 -- Taiga two party exchange example
 -- https://github.com/anoma/taiga/blob/main/book/src/exec_examples.md#1-two-party-exchange-with-an-intent-uservp
-module TwoPartyExchange;
+module Apps.TwoPartyExchange;
 
 open import Simulator;
 
