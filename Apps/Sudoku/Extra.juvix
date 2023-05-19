@@ -3,6 +3,7 @@ module Apps.Sudoku.Extra;
 open import Stdlib.Prelude;
 
 open import Stdlib.Data.Nat.Ord;
+
 import Data.Set as Set;
 open Set using {Set};
 
@@ -33,8 +34,9 @@ allEq {A} eqA (x :: xs) :=
 terminating
 chunksOf : {A : Type} -> Nat -> List A -> List (List A);
 chunksOf _ nil := nil;
-chunksOf n xs := case (splitAt n xs)
-  | (ys , zs) := ys :: chunksOf n zs;
+chunksOf n xs :=
+  case splitAt n xs
+    | ys, zs := ys :: chunksOf n zs;
 
 --- Insert the first ;String; at the beginning, in between, and at the end of
 --- the second list
