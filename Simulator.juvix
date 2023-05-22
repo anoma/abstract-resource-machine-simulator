@@ -18,21 +18,15 @@ open Map using {Map};
 LogicFunction : Type;
 LogicFunction := ResourceKind -> PartialTx -> Bool;
 
-alwaysValid : LogicFunction;
-alwaysValid :=
-  λ {
-    | _ _ := true
-  };
-
 validPartialTx :
   Map LogicHash LogicFunction -> PartialTx -> Bool;
 validPartialTx m tx :=
   let
     getLogicFn :
         ResourceKind -> Resource -> PartialTx -> Bool;
-    getLogicFn kind (resource denom _ _) :=
+    getLogicFn kind res :=
       let
-        hash : LogicHash := logicHash denom;
+        hash : LogicHash := logicHash res;
       in case Map.lookup NatTraits.Ord hash m
         | just f := f kind
         | _ :=
@@ -52,7 +46,7 @@ validPartialTx m tx :=
 
 mkBalance : Resource -> Balance;
 mkBalance r :=
-  balance ((denomination' r, quantity r) :: nil);
+  balance ((denomination r, quantity r) :: nil);
 
 balanceDelta : PartialTx -> Balance;
 balanceDelta (partialTx inr outr) :=

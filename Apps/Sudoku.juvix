@@ -18,30 +18,43 @@ open import Stdlib.Data.Int.Ord;
 
 import Stdlib.Data.Nat.Ord as Nat;
 
-module Reward;
-  denomination : Denomination;
-  denomination := D.denomination 0 nil;
+module AlwaysValid;
+  logicFunction : LogicFunction;
+  logicFunction := λ {_ _ := true};
 
-  mkResource : Int -> Resource;
-  mkResource := resource denomination nil;
+  --- This will be computed from the logic function
+  logicHash : LogicHash;
+  logicHash := 0;
 end;
 
-module Puzzle;
+module Reward;
+  staticData : ByteString;
+  staticData := 0 :: nil;
 
-  mkDenomination : ByteString -> Denomination;
-  mkDenomination := D.denomination 1;
+  mkResource : Int -> Resource;
+  mkResource := resource AlwaysValid.logicHash staticData nil;
 
-  mkResource : Denomination -> ByteString -> Int -> Resource;
-  mkResource := resource;
+  denomination : Denomination;
+  denomination := AlwaysValid.logicHash :: staticData;
+end;
+
+module Sudoku;
+  type Data :=
+    | puzzleData : LogicHash -> ByteString -> Data;
+
+  logicHash : Data -> LogicHash;
+  logicHash (puzzleData l _) := l;
+
+  mkResource : Data -> ByteString -> Int -> Resource;
+  mkResource (puzzleData logicHash solution) :=
+    resource logicHash solution;
+
+  denomination : Data -> Denomination;
+  denomination (puzzleData l s) := l :: s;
 
   solvedSquares : ByteString -> Nat;
   solvedSquares proposal :=
-    length
-      (filter
-        λ {
-          | x := x Nat.> 0
-        }
-        proposal);
+    length (filter λ {x := x Nat.> 0} proposal);
 
   --- Checks the solution state transition.
   ---
@@ -58,8 +71,8 @@ module Puzzle;
   ---
   --- * The only squares that change between the consumed and created solutinos
   --- are changes from zero (i.e unfilled) to non-zero (i.e filled).
-  logicFunction : Denomination -> LogicFunction;
-  logicFunction puzzleDenom kind tx :=
+  logicFunction : Data -> LogicFunction;
+  logicFunction data kind tx :=
     let
       createdRs : List Resource;
       createdRs := createdResources tx;
@@ -81,85 +94,75 @@ module Puzzle;
                   diff : List (Nat × Nat);
                   diff :=
                     filter
-                      λ {
-                        | (x, y) := x Nat./= y
-                      }
+                      λ {(x, y) := x Nat./= y}
                       (zip consumedSol createdSol);
                   rewardQ : Int;
                   rewardQ := quantity rewardR;
                 in length createdSol Nat.== length consumedSol
                   && solvedSquares createdSol Nat.>= solvedSquares consumedSol
                   && Sudoku.validGrid? (Sudoku.decode createdSol)
-                  && all
-                    λ {
-                      | x := x Nat.== 0
-                    }
-                    (map fst diff)
+                  && all λ {x := x Nat.== 0} (map fst diff)
                   && ofNat (length diff) == rewardQ;
             in exactlyOneCheck
               checkReward
               (resourcesForDenom Reward.denomination createdRs);
         in exactlyOneCheck
           checkCreated
-          (resourcesForDenom puzzleDenom createdRs);
+          (resourcesForDenom (denomination data) createdRs);
     in isCreated kind
       || zeroOrOneCheck
         checkTransition
-        (resourcesForDenom puzzleDenom consumedRs);
-
+        (resourcesForDenom (denomination data) consumedRs);
 end;
 
 module DealerIntent;
-  logicFunction : Denomination -> LogicFunction;
-  logicFunction puzzleDenom kind tx :=
+  logicFunction : Sudoku.Data -> LogicFunction;
+  logicFunction p@(Sudoku.puzzleData _ solution) kind tx :=
     let
       createdRs : List Resource;
       createdRs := createdResources tx;
-      solution : ByteString;
-      solution := staticData puzzleDenom;
       checkPuzzle : Resource -> Bool;
       checkPuzzle r := eq byteStringEq solution (dynamicData r);
     in isCreated kind
       || zeroOrOneCheck
         checkPuzzle
-        (resourcesForDenom puzzleDenom createdRs);
+        (resourcesForDenom (Sudoku.denomination p) createdRs);
 
-  mkDenomination : Denomination -> Denomination;
-  mkDenomination puzzleDenom := D.denomination 2 nil;
+  logicHash : Sudoku.Data -> LogicHash;
+  logicHash _ := 2;
 
-  mkResource : Denomination -> Int -> Resource;
-  mkResource puzzleDenom :=
-    resource (mkDenomination puzzleDenom) nil;
+  staticData : Sudoku.Data -> ByteString;
+  staticData _ := 2 :: nil;
+
+  denomination : Sudoku.Data -> Denomination;
+  denomination d := logicHash d :: staticData d;
+
+  mkResource : Sudoku.Data -> Int -> Resource;
+  mkResource d := resource (logicHash d) (staticData d) nil;
 end;
 
-dealer : Denomination -> ByteString -> PartialTx;
-dealer puzzleDenom initialBoard :=
+dealer : Sudoku.Data -> ByteString -> PartialTx;
+dealer puzzleData initialBoard :=
   let
     emptySquares : Int;
     emptySquares :=
-      ofNat
-        (length
-          (filter
-            λ {
-              | s := s Nat.== 0
-            }
-            initialBoard));
+      ofNat (length (filter λ {s := s Nat.== 0} initialBoard));
     consumedResources : List Resource;
     consumedResources := Reward.mkResource emptySquares :: nil;
     createdResources : List Resource;
     createdResources :=
-      DealerIntent.mkResource puzzleDenom 1
-        :: Puzzle.mkResource puzzleDenom initialBoard 1
+      DealerIntent.mkResource puzzleData 1
+        :: Sudoku.mkResource puzzleData initialBoard 1
         :: nil;
   in partialTx consumedResources createdResources;
 
-logicFunctions :
-  Denomination -> Map LogicHash LogicFunction;
-logicFunctions puzzleDenom :=
+logicFunctions : Sudoku.Data -> Map LogicHash LogicFunction;
+logicFunctions puzzleData :=
   Map.fromList
     NatTraits.Ord
-    ((logicHash Reward.denomination, alwaysValid)
-      :: (logicHash puzzleDenom, Puzzle.logicFunction puzzleDenom)
-      :: (logicHash (DealerIntent.mkDenomination puzzleDenom)
-        , DealerIntent.logicFunction puzzleDenom)
+    ((AlwaysValid.logicHash, AlwaysValid.logicFunction)
+      :: (Sudoku.logicHash puzzleData
+        , Sudoku.logicFunction puzzleData)
+      :: (DealerIntent.logicHash puzzleData
+        , DealerIntent.logicFunction puzzleData)
       :: nil);

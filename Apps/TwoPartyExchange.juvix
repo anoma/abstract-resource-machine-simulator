@@ -4,8 +4,6 @@ module Apps.TwoPartyExchange;
 
 open import Simulator;
 
-import Simulator.Denomination as D;
-
 import Data.Map as Map;
 open Map using {Map};
 
@@ -13,37 +11,49 @@ open import Stdlib.Prelude;
 
 open import Stdlib.Data.Int.Ord;
 
-module Dolphin;
+module AlwaysValid;
+  logicFunction : LogicFunction;
+  logicFunction := λ {_ _ := true};
 
-  denomination : Denomination;
-  denomination := D.denomination 0 nil;
+  --- This will be computed from the logic function
+  logicHash : LogicHash;
+  logicHash := 0;
+end;
+
+module Dolphin;
+  staticData : ByteString;
+  staticData := 0 :: nil;
 
   mkResource : Int -> Resource;
-  mkResource := resource denomination nil;
+  mkResource := resource AlwaysValid.logicHash staticData nil;
 
+  denomination : Denomination;
+  denomination := AlwaysValid.logicHash :: staticData;
 end;
 
 module A;
-
-  denomination : Denomination;
-  denomination := D.denomination 1 nil;
+  staticData : ByteString;
+  staticData := 1 :: nil;
 
   mkResource : Int -> Resource;
-  mkResource := resource denomination nil;
+  mkResource := resource AlwaysValid.logicHash staticData nil;
 
+  denomination : Denomination;
+  denomination := AlwaysValid.logicHash :: staticData;
 end;
 
 module B;
-
-  denomination : Denomination;
-  denomination := D.denomination 2 nil;
+  staticData : ByteString;
+  staticData := 2 :: nil;
 
   mkResource : Int -> Resource;
-  mkResource := resource denomination nil;
+  mkResource := resource AlwaysValid.logicHash staticData nil;
+
+  denomination : Denomination;
+  denomination := AlwaysValid.logicHash :: staticData;
 end;
 
 module AliceIntent;
-
   logicFunction : LogicFunction;
   logicFunction kind tx :=
     -- check if the resource associated to this logic function is among the created (output)
@@ -53,28 +63,31 @@ module AliceIntent;
       createdRs : List Resource;
       createdRs := createdResources tx;
       createdHashes : List LogicHash;
-      createdHashes := map (logicHash ∘ denomination') createdRs;
+      createdHashes := map logicHash createdRs;
     in isCreated kind
       || quantityOfDenom Dolphin.denomination createdRs == 1
       && quantityOfDenom A.denomination createdRs == 1
       || quantityOfDenom Dolphin.denomination createdRs == 1
       && quantityOfDenom B.denomination createdRs == 2;
 
+  --- This will be computed from the logic function
+  logicHash : LogicHash;
+  logicHash := 1;
+
+  staticData : ByteString;
+  staticData := 3 :: nil;
+
   denomination : Denomination;
-  denomination := D.denomination 3 nil;
+  denomination := 1 :: staticData;
 
   mkResource : Int -> Resource;
-  mkResource := resource denomination nil;
-
+  mkResource := resource logicHash staticData nil;
 end;
 
 logicFunctions : Map LogicHash LogicFunction;
 logicFunctions :=
   Map.fromList
     NatTraits.Ord
-    ((logicHash A.denomination, alwaysValid)
-      :: (logicHash B.denomination, alwaysValid)
-      :: (logicHash Dolphin.denomination, alwaysValid)
-      :: (logicHash AliceIntent.denomination
-        , AliceIntent.logicFunction)
+    ((AlwaysValid.logicHash, AlwaysValid.logicFunction)
+      :: (AliceIntent.logicHash, AliceIntent.logicFunction)
       :: nil);

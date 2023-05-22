@@ -7,40 +7,6 @@ open import Data.ByteString;
 LogicHash : Type;
 LogicHash := Nat;
 
---- The type of a Resource
-type Denomination :=
-  | denomination : LogicHash -> ByteString -> Denomination;
-
-logicHash : Denomination -> LogicHash;
-logicHash (denomination h _) := h;
-
-staticData : Denomination -> ByteString;
-staticData (denomination _ d) := d;
-
-denominationEq : Eq Denomination;
-denominationEq :=
-  let
-    prod : Denomination -> LogicHash × ByteString;
-    prod (denomination h d) := h, d;
-    prodEq : Eq (LogicHash × ByteString);
-    prodEq := ProductTraits.Eq NatTraits.Eq byteStringEq;
-  in case prodEq
-    | mkEq eq :=
-      mkEq
-        λ {
-          | d1 d2 := eq (prod d1) (prod d2)
-        };
-
-denominationOrd : Ord Denomination;
-denominationOrd :=
-  let
-    prod : Denomination -> LogicHash × ByteString;
-    prod (denomination h d) := h, d;
-    prodOrd : Ord (LogicHash × ByteString);
-    prodOrd := ProductTraits.Ord NatTraits.Ord byteStringOrd;
-  in case prodOrd
-    | mkOrd cmp :=
-      mkOrd
-        λ {
-          | d1 d2 := cmp (prod d1) (prod d2)
-        };
+--- The type of a resource
+Denomination : Type;
+Denomination := ByteString;

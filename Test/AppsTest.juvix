@@ -20,23 +20,23 @@ sudoku :=
   let
     solution : ByteString;
     solution := (1 :: 2 :: 3 :: 4 :: 3 :: 4 :: 1 :: 2 :: 2 :: 3 :: 4 :: 1 :: 4 :: 1 :: 2 :: 3 :: nil);
-    puzzleDenom : Denomination;
-    puzzleDenom :=
-      Puzzle.mkDenomination solution;
+    puzzleData : Sudoku.Data;
+    puzzleData :=
+      Sudoku.Sudoku.puzzleData 3 solution;
     dealerPartialTx : PartialTx;
     dealerPartialTx :=
-      dealer puzzleDenom (1 :: replicate 15 0);
+      dealer puzzleData (1 :: replicate 15 0);
     alicePartialTx : PartialTx;
     alicePartialTx :=
       let
         createdResources : List Resource;
         createdResources :=
-          Puzzle.mkResource puzzleDenom (1 :: 2 :: replicate 14 0) 1
+          Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
             :: Reward.mkResource 1
             :: nil;
         consumedResources : List Resource;
         consumedResources :=
-          Puzzle.mkResource puzzleDenom (1 :: replicate 15 0) 1
+          Sudoku.mkResource puzzleData (1 :: replicate 15 0) 1
             :: nil;
       in partialTx consumedResources createdResources;
     bobPartialTx : PartialTx;
@@ -44,13 +44,13 @@ sudoku :=
       let
         createdResources : List Resource;
         createdResources :=
-          Puzzle.mkResource puzzleDenom solution 0
+          Sudoku.mkResource puzzleData solution 0
             :: Reward.mkResource 14
             :: nil;
         consumedResources : List Resource;
         consumedResources :=
-          Puzzle.mkResource puzzleDenom (1 :: 2 :: replicate 14 0) 1
-            :: DealerIntent.mkResource puzzleDenom 1
+          Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
+            :: DealerIntent.mkResource puzzleData 1
             :: nil;
       in partialTx consumedResources createdResources;
     txs : List PartialTx;
@@ -60,7 +60,7 @@ sudoku :=
     "Sudoku"
     (assertTrue
       "expected Sudoku solutions to validate"
-      (checkTransaction (Sudoku.logicFunctions puzzleDenom) txs));
+      (checkTransaction (Sudoku.logicFunctions puzzleData) txs));
 
 twoPartyExchange : Test;
 twoPartyExchange :=

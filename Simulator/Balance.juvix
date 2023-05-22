@@ -19,16 +19,11 @@ addBalance : Balance -> Balance -> Balance;
 addBalance (balance xs) (balance ys) :=
   balance
     (Map.toList
-      (Map.fromListWith denominationOrd (Int.+) (xs ++ ys)));
+      (Map.fromListWith byteStringOrd (Int.+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance;
 negateBalance (balance xs) :=
-  balance
-    (map
-      λ {
-        | (bs, q) := bs, neg q
-      }
-      xs);
+  balance (map λ {(bs, q) := bs, neg q} xs);
 
 subBalance : Balance -> Balance -> Balance;
 subBalance b1 b2 := addBalance b1 (negateBalance b2);

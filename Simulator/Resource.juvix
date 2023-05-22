@@ -7,29 +7,32 @@ open import Simulator.Denomination;
 import Stdlib.Data.Int as Int;
 
 type Resource :=
-  | resource : Denomination
+  | resource : LogicHash
+      -> ByteString
       -> ByteString
       -> Int
       -> Resource;
 
+logicHash : Resource -> LogicHash;
+logicHash (resource h _ _ _) := h;
+
+staticData : Resource -> ByteString;
+staticData (resource _ s _ _) := s;
+
 dynamicData : Resource -> ByteString;
-dynamicData (resource _ d _) := d;
+dynamicData (resource _ _ d _) := d;
 
 quantity : Resource -> Int;
-quantity (resource _ _ q) := q;
+quantity (resource _ _ _ q) := q;
 
-denomination' : Resource -> Denomination;
-denomination' (resource d _ _) := d;
+denomination : Resource -> Denomination;
+denomination (resource l s _ _) := l :: s;
 
 --- Find all the resources associated with a denomination
 resourcesForDenom :
   Denomination -> List Resource -> List Resource;
 resourcesForDenom denom rs :=
-  filter
-    λ {
-      | r := eq denominationEq (denomination' r) denom
-    }
-    rs;
+  filter λ {r := eq byteStringEq (denomination r) denom} rs;
 
 --- Aggregate the quantities associated with a denomination
 quantityOfDenom : Denomination -> List Resource -> Int;
@@ -46,7 +49,8 @@ zeroOrOneCheck _ nil := true;
 zeroOrOneCheck p (x :: nil) := p x;
 zeroOrOneCheck _ _ := false;
 
-exactlyOneCheck : (Resource -> Bool) -> List Resource -> Bool;
+exactlyOneCheck :
+  (Resource -> Bool) -> List Resource -> Bool;
 exactlyOneCheck p (x :: nil) := p x;
 exactlyOneCheck _ _ := false;
 
@@ -54,11 +58,11 @@ resourceOrd : Ord Resource;
 resourceOrd :=
   let
     prod : Resource -> Denomination × ByteString × Int;
-    prod (resource denom d q) := denom, d, q;
+    prod r := denomination r, dynamicData r, quantity r;
     prodOrd : Ord (Denomination × ByteString × Int);
     prodOrd :=
       ProductTraits.Ord
-        denominationOrd
+        byteStringOrd
         (ProductTraits.Ord byteStringOrd IntTraits.Ord);
     go :
         Ord (Denomination × ByteString × Int)
