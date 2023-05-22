@@ -1,9 +1,9 @@
 module Simulator.Balance;
 
-open import Stdlib.Prelude;
-open import Data.ByteString;
-open import Simulator.Resource;
-open import Simulator.Denomination;
+import Stdlib.Prelude open;
+import Data.ByteString open;
+import Simulator.Resource open;
+import Simulator.Denomination open;
 
 import Data.Map as Map;
 import Stdlib.Data.Int as Int;

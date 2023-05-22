@@ -1,13 +1,13 @@
 module Apps.Sudoku.Serializer;
 
-open import Apps.Sudoku.Grid;
-open import Apps.Sudoku.Extra;
-open import Data.ByteString;
+import Apps.Sudoku.Grid open;
+import Apps.Sudoku.Extra open;
+import Data.ByteString open;
 
-open import Stdlib.Prelude;
+import Stdlib.Prelude open;
 
-open import Stdlib.Data.Nat.Ord;
-open import Stdlib.Debug.Fail;
+import Stdlib.Data.Nat.Ord open;
+import Stdlib.Debug.Fail open;
 
 --- Encode a Sudoku ;Grid; to a ;ByteString;
 encode : Grid -> ByteString;

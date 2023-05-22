@@ -2,7 +2,7 @@
 -- https://hackmd.io/DlCNpl4KRJq2j5dRTiUrFA
 module Apps.Sudoku;
 
-open import Simulator;
+import Simulator open;
 
 import Apps.Sudoku.Validator as Sudoku;
 import Apps.Sudoku.Serializer as Sudoku;
@@ -12,9 +12,9 @@ import Simulator.Denomination as D;
 import Data.Map as Map;
 open Map using {Map};
 
-open import Stdlib.Prelude;
+import Stdlib.Prelude open;
 
-open import Stdlib.Data.Int.Ord;
+import Stdlib.Data.Int.Ord open;
 
 import Stdlib.Data.Nat.Ord as Nat;
 

@@ -1,8 +1,8 @@
 module Apps.Sudoku.Extra;
 
-open import Stdlib.Prelude;
+import Stdlib.Prelude open;
 
-open import Stdlib.Data.Nat.Ord;
+import Stdlib.Data.Nat.Ord open;
 
 import Data.Set as Set;
 open Set using {Set};

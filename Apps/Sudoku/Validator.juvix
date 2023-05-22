@@ -1,12 +1,12 @@
 module Apps.Sudoku.Validator;
 
-open import Stdlib.Prelude;
-open import Data.ByteString;
+import Stdlib.Prelude open;
+import Data.ByteString open;
 
-open import Stdlib.Data.Nat.Ord;
+import Stdlib.Data.Nat.Ord open;
 
-open import Apps.Sudoku.Grid public;
-open import Apps.Sudoku.Extra;
+import Apps.Sudoku.Grid open public;
+import Apps.Sudoku.Extra open;
 
 --- Check that the number of rows equals the number of columns
 square? : {A : Type} -> List (List A) -> Bool;
@@ -33,11 +33,7 @@ validSubGrid? s@(subGrid rows) :=
     entries : List Nat := subGridEntries s;
   in square? rows
     && noDuplicates? (subGridEntries s)
-    && all
-      λ {
-        | x := x < length entries + 1
-      }
-      entries;
+    && all λ {x := x < length entries + 1} entries;
 
 --- Check that a subgrid is complete. i.e it satisfies the Sudoku constraints
 --- and all of its entries are filled

@@ -1,13 +1,13 @@
 module Simulator;
 
-open import Simulator.Resource public;
-open import Simulator.Balance public;
-open import Simulator.PartialTx public;
-open import Simulator.Denomination public;
+import Simulator.Resource open public;
+import Simulator.Balance open public;
+import Simulator.PartialTx open public;
+import Simulator.Denomination open public;
 
-open import Stdlib.Prelude;
-open import Stdlib.Debug.Fail;
-open import Data.ByteString public;
+import Stdlib.Prelude open;
+import Stdlib.Debug.Fail open;
+import Data.ByteString open public;
 
 import Data.Map as Map;
 open Map using {Map};
@@ -39,14 +39,10 @@ validPartialTx m tx :=
             ("Could not find function associated with hash: "
               ++str natToString hash);
   in all
-      λ {
-        | r := getLogicFn created r tx
-      }
+      λ {r := getLogicFn created r tx}
       (createdResources tx)
     && all
-      λ {
-        | r := getLogicFn consumed r tx
-      }
+      λ {r := getLogicFn consumed r tx}
       (consumedResources tx);
 
 mkBalance : Resource -> Balance;

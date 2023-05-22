@@ -1,11 +1,11 @@
 module Test.AppsTest;
 
-open import Simulator;
+import Simulator open;
 
 import Data.Map as Map;
 open Map using {Map};
 
-open import Stdlib.Prelude;
+import Stdlib.Prelude open;
 
 import Apps.TwoPartyExchange as TwoPartyExchange;
 open TwoPartyExchange hiding {logicFunctions};
@@ -13,19 +13,34 @@ open TwoPartyExchange hiding {logicFunctions};
 import Apps.Sudoku as Sudoku;
 open Sudoku hiding {logicFunctions};
 
-open import Test.JuvixUnit;
+import Test.JuvixUnit open;
 
 sudoku : Test;
 sudoku :=
   let
     solution : ByteString;
-    solution := (1 :: 2 :: 3 :: 4 :: 3 :: 4 :: 1 :: 2 :: 2 :: 3 :: 4 :: 1 :: 4 :: 1 :: 2 :: 3 :: nil);
+    solution :=
+      1
+        :: 2
+        :: 3
+        :: 4
+        :: 3
+        :: 4
+        :: 1
+        :: 2
+        :: 2
+        :: 3
+        :: 4
+        :: 1
+        :: 4
+        :: 1
+        :: 2
+        :: 3
+        :: nil;
     puzzleData : Sudoku.Data;
-    puzzleData :=
-      Sudoku.Sudoku.puzzleData 3 solution;
+    puzzleData := Sudoku.Sudoku.puzzleData 3 solution;
     dealerPartialTx : PartialTx;
-    dealerPartialTx :=
-      dealer puzzleData (1 :: replicate 15 0);
+    dealerPartialTx := dealer puzzleData (1 :: replicate 15 0);
     alicePartialTx : PartialTx;
     alicePartialTx :=
       let

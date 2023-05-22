@@ -3,17 +3,17 @@ all: test
 
 deps/containers:
 	@mkdir -p deps/
-	@git clone --branch v0.5.0 --depth 1 https://github.com/anoma/juvix-containers.git deps/containers
+	@git clone --branch v0.6.0 --depth 1 https://github.com/anoma/juvix-containers.git deps/containers
 	$(MAKE) -C deps/containers deps
 
 deps/stdlib:
 	@mkdir -p deps/
 	@git clone https://github.com/anoma/juvix-stdlib.git deps/stdlib
-	@git -C deps/stdlib checkout 6e780cbbbc844d981be5e203637157e9b5e888d0
+	@git -C deps/stdlib checkout 4962ea4e688ffa4494fc024a171aae1b85a4de93
 
 deps/test:
 	@mkdir -p deps/
-	@git clone --branch v0.4.0 --depth 1 https://github.com/anoma/juvix-test.git deps/test
+	@git clone --branch v0.5.0 --depth 1 https://github.com/anoma/juvix-test.git deps/test
 	$(MAKE) -C deps/test deps
 
 deps: deps/containers deps/stdlib deps/test

@@ -1,10 +1,10 @@
 module Test.SudokuValidatorTest;
 
-open import Apps.Sudoku.Validator;
-open import Apps.Sudoku.Serializer;
-open import Stdlib.Prelude;
+import Apps.Sudoku.Validator open;
+import Apps.Sudoku.Serializer open;
+import Stdlib.Prelude open;
 
-open import Test.JuvixUnit;
+import Test.JuvixUnit open;
 
 sudokuTests : List Test;
 sudokuTests :=
@@ -34,7 +34,26 @@ sudokuTests :=
         :: nil;
     sudoku2Empty : Grid := grid (emptyRow :: emptyRow :: nil);
     sudoku2Partial : Grid := grid (row1 :: emptyRow :: nil);
-    decodedSol : Grid := decode (1 :: 2 :: 3 :: 4 :: 3 :: 4 :: 1 :: 2 :: 2 :: 3 :: 4 :: 1 :: 4 :: 1 :: 2 :: 3 :: nil);
+    decodedSol :
+        Grid :=
+          decode
+            (1
+              :: 2
+              :: 3
+              :: 4
+              :: 3
+              :: 4
+              :: 1
+              :: 2
+              :: 2
+              :: 3
+              :: 4
+              :: 1
+              :: 4
+              :: 1
+              :: 2
+              :: 3
+              :: nil);
   in testCase
       "Basic 4x4 Sudoku is complete"
       (assertTrue
@@ -80,7 +99,7 @@ sudokuTests :=
     :: testCase
       "4x4 paritally completed Sudoku is valid"
       (assertTrue
-        ("Expected grid to be valid\n" ++str (prettyGrid decodedSol))
+        ("Expected grid to be valid\n" ++str prettyGrid decodedSol)
         (validGrid? decodedSol))
     :: nil;
 

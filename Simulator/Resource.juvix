@@ -1,8 +1,8 @@
 module Simulator.Resource;
 
-open import Stdlib.Prelude;
-open import Data.ByteString;
-open import Simulator.Denomination;
+import Stdlib.Prelude open;
+import Data.ByteString open;
+import Simulator.Denomination open;
 
 import Stdlib.Data.Int as Int;
 
@@ -77,7 +77,6 @@ type ResourceKind :=
   | consumed : ResourceKind;
 
 module ResourceKindTraits;
-
   Eq : Eq ResourceKind;
   Eq :=
     mkEq
@@ -86,7 +85,6 @@ module ResourceKindTraits;
         | consumed consumed := true
         | _ _ := false
       };
-
 end;
 
 isCreated : ResourceKind -> Bool;

@@ -1,10 +1,10 @@
 module Apps.Sudoku.Grid;
 
-open import Stdlib.Prelude;
-open import Data.ByteString;
-open import Apps.Sudoku.Extra;
+import Stdlib.Prelude open;
+import Data.ByteString open;
+import Apps.Sudoku.Extra open;
 
-open import Stdlib.Data.Nat.Ord;
+import Stdlib.Data.Nat.Ord open;
 
 --- A Sudoku subgrid
 type SubGrid :=
@@ -37,13 +37,11 @@ gridRows (grid rows) :=
 gridEq : Eq Grid;
 gridEq :=
   mkEq
-    λ {
-      | g1 g2 :=
-        eq
-          (ListTraits.Eq (ListTraits.Eq NatTraits.Eq))
-          (gridRows g1)
-          (gridRows g2)
-    };
+    λ {g1 g2 :=
+      eq
+        (ListTraits.Eq (ListTraits.Eq NatTraits.Eq))
+        (gridRows g1)
+        (gridRows g2)};
 
 showSquare : Nat -> String;
 showSquare zero := "   ";

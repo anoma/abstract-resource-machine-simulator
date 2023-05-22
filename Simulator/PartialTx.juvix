@@ -1,7 +1,7 @@
 module Simulator.PartialTx;
 
-open import Stdlib.Prelude;
-open import Simulator.Resource;
+import Stdlib.Prelude open;
+import Simulator.Resource open;
 
 --- TODO: There should be exactly 2 created and 2 consumed resources.
 type PartialTx :=
