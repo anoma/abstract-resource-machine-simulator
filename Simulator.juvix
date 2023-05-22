@@ -12,9 +12,14 @@ open import Data.ByteString public;
 import Data.Map as Map;
 open Map using {Map};
 
---- Arguments: kind (indicating whether the resource associated with the logic
---- function was consumed or created in the partial transaction), consumed resources
---- (input/spend/send/destroyed), created resources (output/received)
+--- A function that determines whether a ;PartialTx; is valid
+---
+--- Arguments:
+---
+--- * kind: Indicating whether the resource associated with this logic function
+--- was consumed or created in the subject ;PartialTx;.
+---
+--- * partialTx: The ;PartialTx; being validated.
 LogicFunction : Type;
 LogicFunction := ResourceKind -> PartialTx -> Bool;
 
@@ -49,10 +54,10 @@ mkBalance r :=
   balance ((denomination r, quantity r) :: nil);
 
 balanceDelta : PartialTx -> Balance;
-balanceDelta (partialTx inr outr) :=
+balanceDelta tx :=
   subBalance
-    (sumBalances (map mkBalance inr))
-    (sumBalances (map mkBalance outr));
+    (sumBalances (map mkBalance (consumedResources tx)))
+    (sumBalances (map mkBalance (createdResources tx)));
 
 checkTransaction :
   Map LogicHash LogicFunction -> List PartialTx -> Bool;
