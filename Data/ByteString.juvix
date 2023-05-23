@@ -5,8 +5,10 @@ import Stdlib.Prelude open;
 ByteString : Type;
 ByteString := List Nat;
 
-byteStringOrd : Ord (List Nat);
-byteStringOrd := ListTraits.Ord NatTraits.Ord;
+module ByteStringTraits;
+  Ord : Ord (List Nat);
+  Ord := ListTraits.Ord NatTraits.Ord;
 
-byteStringEq : Eq (List Nat);
-byteStringEq := ListTraits.Eq NatTraits.Eq;
+  Eq : Eq (List Nat);
+  Eq := ListTraits.Eq NatTraits.Eq;
+end;

@@ -15,21 +15,21 @@ consumedResources (partialTx rs _) := rs;
 createdResources : PartialTx -> List Resource;
 createdResources (partialTx _ rs) := rs;
 
-partialTxOrd : Ord PartialTx;
-partialTxOrd :=
-  let
-    prod : PartialTx -> List Resource × List Resource;
-    prod (partialTx consumedRs createdRs) :=
-      consumedRs, createdRs;
-    listResourceOrd : Ord (List Resource);
-    listResourceOrd := ListTraits.Ord resourceOrd;
-    prodOrd : Ord (List Resource × List Resource);
-    prodOrd :=
-      ProductTraits.Ord listResourceOrd listResourceOrd;
-    go :
-        Ord (List Resource × List Resource)
-          -> PartialTx
-          -> PartialTx
-          -> Ordering;
-    go (mkOrd prod-ord) p1 p2 := prod-ord (prod p1) (prod p2);
-  in mkOrd (go prodOrd);
+module PartialTxTraits;
+  import Stdlib.Trait.Ord open using {Ord as OrdTrait};
+
+  Ord : Ord PartialTx;
+  Ord :=
+    let
+      prod : PartialTx -> List Resource × List Resource;
+      prod (partialTx consumedRs createdRs) :=
+        consumedRs, createdRs;
+      listResourceOrd : OrdTrait (List Resource);
+      listResourceOrd := ListTraits.Ord ResourceTraits.Ord;
+      prodOrd : OrdTrait (List Resource × List Resource);
+      prodOrd :=
+        ProductTraits.Ord listResourceOrd listResourceOrd;
+      go : PartialTx -> PartialTx -> Ordering;
+      go p1 p2 := cmp prodOrd (prod p1) (prod p2);
+    in mkOrd go;
+end;

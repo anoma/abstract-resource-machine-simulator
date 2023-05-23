@@ -122,7 +122,8 @@ module DealerIntent;
       createdRs : List Resource;
       createdRs := createdResources tx;
       checkPuzzle : Resource -> Bool;
-      checkPuzzle r := eq byteStringEq solution (dynamicData r);
+      checkPuzzle r :=
+        eq ByteStringTraits.Eq solution (dynamicData r);
     in isCreated kind
       || zeroOrOneCheck
         checkPuzzle

@@ -19,7 +19,7 @@ addBalance : Balance -> Balance -> Balance;
 addBalance (balance xs) (balance ys) :=
   balance
     (Map.toList
-      (Map.fromListWith byteStringOrd (Int.+) (xs ++ ys)));
+      (Map.fromListWith ByteStringTraits.Ord (Int.+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance;
 negateBalance (balance xs) :=
