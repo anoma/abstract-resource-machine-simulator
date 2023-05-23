@@ -7,12 +7,18 @@ jobs:
       - name: Checkout our repository
         uses: actions/checkout@v3
 
-      - name: Install the latest Juvix compiler
-        uses: jaxxstorm/action-install-gh-release@v1.10.0
+      # - name: Install the latest Juvix compiler
+      #   uses: jaxxstorm/action-install-gh-release@v1.10.0
+      #   with:
+      #     repo: anoma/juvix
+      #     tag: latest
+      #     chmod: 0755
+
+      - name: Download latest nightly Juvix binary
+        uses: jaxxstorm/action-install-gh-release@v1.9.0
         with:
-          repo: anoma/juvix
-          tag: latest
-          chmod: 0755
+          repo: anoma/juvix-nightly-builds
+          cache: enable
 
       - name: run test
         run: |
