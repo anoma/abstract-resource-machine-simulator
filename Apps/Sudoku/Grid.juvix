@@ -43,20 +43,41 @@ gridEq :=
         (gridRows g1)
         (gridRows g2)};
 
-showSquare : Nat -> String;
-showSquare zero := "   ";
-showSquare n := " " ++str natToString n ++str " ";
-
-showRow : List Nat -> String;
-showRow xs := concatStr (surround "|" (map showSquare xs));
-
 prettyGrid : Grid -> String;
-prettyGrid g :=
-  case gridRows g
+prettyGrid g@(grid (sg@(subGrid (r :: _) :: _) :: _)) :=
+  let
+    subGridWidth : Nat := length r;
+    numSubGrids : Nat := length sg;
+    showSquare : Nat -> String;
+    showSquare zero := "   ";
+    showSquare n := " " ++str natToString n ++str " ";
+    showSplitRow : List Nat -> String;
+    showSplitRow := concatStr ∘ map showSquare;
+    showRow : Nat -> List Nat -> String;
+    showRow subGridWidth xs :=
+      concatStr
+        (surround
+          "|"
+          (map showSplitRow (chunksOf subGridWidth xs)));
+    showRowChunk : Nat -> List (List Nat) -> String;
+    showRowChunk subGridWidth xs :=
+      unlines (map (showRow subGridWidth) xs);
+  in case gridRows g
     | nil := ""
     | xs@(x :: _) :=
       let
+        oneSquareWidth : Nat := 3;
+        borderOneSubgrid :
+            String :=
+              concatStr (replicate (oneSquareWidth * subGridWidth) "-") ++str "+";
         border :
             String :=
-              "+" ++str concatStr (replicate (length x) "---+");
-      in unlines (surround border (map showRow xs));
+              "+"
+                ++str concatStr (replicate numSubGrids borderOneSubgrid);
+      in unlines
+        (surround
+          border
+          (map
+            (showRowChunk subGridWidth)
+            (chunksOf subGridWidth xs)));
+prettyGrid _ := "";
