@@ -18,15 +18,6 @@ import Stdlib.Data.Int.Ord open;
 
 import Stdlib.Data.Nat.Ord as Nat;
 
-module AlwaysValid;
-  logicFunction : LogicFunction;
-  logicFunction := λ {_ _ := true};
-
-  --- This will be computed from the logic function
-  logicHash : LogicHash;
-  logicHash := 0;
-end;
-
 module Reward;
   staticData : ByteString;
   staticData := 0 :: nil;
@@ -159,10 +150,8 @@ dealer puzzleData initialBoard :=
 
 logicFunctions : Sudoku.Data -> Map LogicHash LogicFunction;
 logicFunctions puzzleData :=
-  Map.fromList
-    NatTraits.Ord
-    ((AlwaysValid.logicHash, AlwaysValid.logicFunction)
-      :: (Sudoku.logicHash puzzleData
+  mkLogicFunctionMap
+    ((Sudoku.logicHash puzzleData
         , Sudoku.logicFunction puzzleData)
       :: (DealerIntent.logicHash puzzleData
         , DealerIntent.logicFunction puzzleData)

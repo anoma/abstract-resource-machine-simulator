@@ -1,6 +1,7 @@
 module Simulator;
 
 import Simulator.Resource open public;
+import Simulator.BuiltinResources open public;
 import Simulator.Balance open public;
 import Simulator.PartialTx open public;
 import Simulator.Denomination open public;
@@ -11,17 +12,6 @@ import Data.ByteString open public;
 
 import Data.Map as Map;
 open Map using {Map};
-
---- A function that determines whether a ;PartialTx; is valid
----
---- Arguments:
----
---- * kind: Indicating whether the resource associated with this logic function
---- was consumed or created in the subject ;PartialTx;.
----
---- * partialTx: The ;PartialTx; being validated.
-LogicFunction : Type;
-LogicFunction := ResourceKind -> PartialTx -> Bool;
 
 validPartialTx :
   Map LogicHash LogicFunction -> PartialTx -> Bool;

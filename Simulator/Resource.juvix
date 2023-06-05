@@ -13,9 +13,6 @@ type Resource :=
       -> Int
       -> Resource;
 
-dummyResource : Resource;
-dummyResource := resource 0 nil nil 0;
-
 logicHash : Resource -> LogicHash;
 logicHash (resource h _ _ _) := h;
 

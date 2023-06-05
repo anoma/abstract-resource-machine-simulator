@@ -11,15 +11,6 @@ import Stdlib.Prelude open;
 
 import Stdlib.Data.Int.Ord open;
 
-module AlwaysValid;
-  logicFunction : LogicFunction;
-  logicFunction := λ {_ _ := true};
-
-  --- This will be computed from the logic function
-  logicHash : LogicHash;
-  logicHash := 0;
-end;
-
 module Dolphin;
   staticData : ByteString;
   staticData := 0 :: nil;
@@ -56,10 +47,10 @@ end;
 module AliceIntent;
   logicFunction : LogicFunction;
   logicFunction kind tx :=
-    -- check if the resource associated to this logic function is among the created (output)
-    -- resources.
-    -- Then check if alice's intent is satisfied.
     let
+      -- check if the resource associated to this logic function is among the created (output)
+      -- resources.
+      -- Then check if alice's intent is satisfied.
       createdRs : List Resource;
       createdRs := createdResources tx;
       createdHashes : List LogicHash;
@@ -86,8 +77,5 @@ end;
 
 logicFunctions : Map LogicHash LogicFunction;
 logicFunctions :=
-  Map.fromList
-    NatTraits.Ord
-    ((AlwaysValid.logicHash, AlwaysValid.logicFunction)
-      :: (AliceIntent.logicHash, AliceIntent.logicFunction)
-      :: nil);
+  mkLogicFunctionMap
+    ((AliceIntent.logicHash, AliceIntent.logicFunction) :: nil);

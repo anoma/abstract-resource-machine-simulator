@@ -16,6 +16,17 @@ consumedResources (partialTx (r1, r2) _) := r1 :: r2 :: nil;
 createdResources : PartialTx -> List Resource;
 createdResources (partialTx _ (r1, r2)) := r1 :: r2 :: nil;
 
+--- A function that determines whether a ;PartialTx; is valid
+---
+--- Arguments:
+---
+--- * kind: Indicating whether the resource associated with this logic function
+--- was consumed or created in the subject ;PartialTx;.
+---
+--- * partialTx: The ;PartialTx; being validated.
+LogicFunction : Type;
+LogicFunction := ResourceKind -> PartialTx -> Bool;
+
 module PartialTxTraits;
   import Stdlib.Trait.Ord open using {Ord as OrdTrait};
 

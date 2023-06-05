@@ -1,0 +1,30 @@
+module Simulator.BuiltinResources;
+
+import Simulator.Denomination open;
+import Simulator.Resource open hiding {logicHash};
+import Simulator.PartialTx open;
+import Stdlib.Prelude open;
+
+import Data.Map as Map;
+open Map using {Map};
+
+module AlwaysValid;
+  logicFunction : LogicFunction;
+  logicFunction := λ {_ _ := true};
+
+  --- This will be computed from the logic function
+  logicHash : LogicHash;
+  logicHash := 0;
+end;
+
+dummyResource : Resource;
+dummyResource := resource AlwaysValid.logicHash nil nil 0;
+
+--- Create a map from ;LogicHash; to ;LogicFunction; that includes the AlwaysValid logicFunction
+mkLogicFunctionMap :
+  List (LogicHash × LogicFunction)
+    -> Map LogicHash LogicFunction;
+mkLogicFunctionMap xs :=
+  Map.fromList
+    NatTraits.Ord
+    ((AlwaysValid.logicHash, AlwaysValid.logicFunction) :: xs);
