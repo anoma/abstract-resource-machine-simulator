@@ -33,4 +33,4 @@ sumBalances bs :=
   for (acc := emptyBalance) (b in bs) addBalance acc b;
 
 balanceIsZero : Balance -> Bool;
-balanceIsZero (balance bs) := all (b in bs) (snd b Int.== 0);
+balanceIsZero (balance bs) := all (b in bs) snd b Int.== 0;
