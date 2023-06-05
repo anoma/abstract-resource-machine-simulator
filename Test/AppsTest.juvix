@@ -44,29 +44,26 @@ sudoku :=
     alicePartialTx : PartialTx;
     alicePartialTx :=
       let
-        createdResources : List Resource;
+        createdResources : Resource × Resource;
         createdResources :=
           Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
-            :: Reward.mkResource 1
-            :: nil;
-        consumedResources : List Resource;
+            , Reward.mkResource 1;
+        consumedResources : Resource × Resource;
         consumedResources :=
           Sudoku.mkResource puzzleData (1 :: replicate 15 0) 1
-            :: nil;
+            , dummyResource;
       in partialTx consumedResources createdResources;
     bobPartialTx : PartialTx;
     bobPartialTx :=
       let
-        createdResources : List Resource;
+        createdResources : Resource × Resource;
         createdResources :=
           Sudoku.mkResource puzzleData solution 0
-            :: Reward.mkResource 14
-            :: nil;
-        consumedResources : List Resource;
+            , Reward.mkResource 14;
+        consumedResources : Resource × Resource;
         consumedResources :=
           Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
-            :: DealerIntent.mkResource puzzleData 1
-            :: nil;
+            , DealerIntent.mkResource puzzleData 1;
       in partialTx consumedResources createdResources;
     txs : List PartialTx;
     txs :=
@@ -83,28 +80,27 @@ twoPartyExchange :=
     alicePartialTx : PartialTx;
     alicePartialTx :=
       let
-        createdResources : List Resource;
-        createdResources := AliceIntent.mkResource 1 :: nil;
-        consumedResources : List Resource;
-        consumedResources :=
-          A.mkResource 1 :: B.mkResource 2 :: nil;
+        createdResources : Resource × Resource;
+        createdResources := AliceIntent.mkResource 1, dummyResource;
+        consumedResources : Resource × Resource;
+        consumedResources := A.mkResource 1, B.mkResource 2;
       in partialTx consumedResources createdResources;
     bobPartialTx : PartialTx;
     bobPartialTx :=
       let
-        createdResources : List Resource;
-        createdResources := A.mkResource 1 :: nil;
-        consumedResources : List Resource;
-        consumedResources := Dolphin.mkResource 1 :: nil;
+        createdResources : Resource × Resource;
+        createdResources := A.mkResource 1, dummyResource;
+        consumedResources : Resource × Resource;
+        consumedResources := Dolphin.mkResource 1, dummyResource;
       in partialTx consumedResources createdResources;
     solverPartialTx : PartialTx;
     solverPartialTx :=
       let
-        createdResources : List Resource;
-        createdResources :=
-          Dolphin.mkResource 1 :: B.mkResource 2 :: nil;
-        consumedResources : List Resource;
-        consumedResources := AliceIntent.mkResource 1 :: nil;
+        createdResources : Resource × Resource;
+        createdResources := Dolphin.mkResource 1, B.mkResource 2;
+        consumedResources : Resource × Resource;
+        consumedResources :=
+          AliceIntent.mkResource 1, dummyResource;
       in partialTx consumedResources createdResources;
     txs : List PartialTx;
     txs :=

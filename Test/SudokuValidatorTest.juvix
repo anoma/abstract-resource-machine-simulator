@@ -35,25 +35,25 @@ sudokuTests :=
     sudoku2Empty : Grid := grid (emptyRow :: emptyRow :: nil);
     sudoku2Partial : Grid := grid (row1 :: emptyRow :: nil);
     decodedSol :
-        Grid :=
-          decode
-            (1
-              :: 2
-              :: 3
-              :: 4
-              :: 3
-              :: 4
-              :: 1
-              :: 2
-              :: 2
-              :: 3
-              :: 4
-              :: 1
-              :: 4
-              :: 1
-              :: 2
-              :: 3
-              :: nil);
+      Grid :=
+        decode
+          (1
+            :: 2
+            :: 3
+            :: 4
+            :: 3
+            :: 4
+            :: 1
+            :: 2
+            :: 2
+            :: 3
+            :: 4
+            :: 1
+            :: 4
+            :: 1
+            :: 2
+            :: 3
+            :: nil);
   in testCase
       "Basic 4x4 Sudoku is complete"
       (assertTrue

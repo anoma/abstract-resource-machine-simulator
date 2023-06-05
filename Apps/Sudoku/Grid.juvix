@@ -25,7 +25,7 @@ gridRows : Grid -> List (List Nat);
 gridRows (grid rows) :=
   let
     combineSubGridRows :
-        List (List Nat) -> SubGrid -> List (List Nat);
+      List (List Nat) -> SubGrid -> List (List Nat);
     combineSubGridRows rs1 (subGrid rs2) :=
       zipWith (++) rs1 rs2;
     combineRows : List SubGrid -> List (List Nat);
@@ -68,12 +68,13 @@ prettyGrid g@(grid (sg@(subGrid (r :: _) :: _) :: _)) :=
       let
         oneSquareWidth : Nat := 3;
         borderOneSubgrid :
-            String :=
-              concatStr (replicate (oneSquareWidth * subGridWidth) "-") ++str "+";
+          String :=
+            concatStr (replicate (oneSquareWidth * subGridWidth) "-")
+              ++str "+";
         border :
-            String :=
-              "+"
-                ++str concatStr (replicate numSubGrids borderOneSubgrid);
+          String :=
+            "+"
+              ++str concatStr (replicate numSubGrids borderOneSubgrid);
       in unlines
         (surround
           border

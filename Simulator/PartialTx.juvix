@@ -3,17 +3,18 @@ module Simulator.PartialTx;
 import Stdlib.Prelude open;
 import Simulator.Resource open;
 
---- TODO: There should be exactly 2 created and 2 consumed resources.
 type PartialTx :=
-  | --- A partial transaction consists of a list of consumed resources and a list
+  | --- A partial transaction consists of two consumed resources and two
     --- of created resources
-    partialTx : List Resource -> List Resource -> PartialTx;
+    partialTx : Resource × Resource
+      -> Resource × Resource
+      -> PartialTx;
 
 consumedResources : PartialTx -> List Resource;
-consumedResources (partialTx rs _) := rs;
+consumedResources (partialTx (r1, r2) _) := r1 :: r2 :: nil;
 
 createdResources : PartialTx -> List Resource;
-createdResources (partialTx _ rs) := rs;
+createdResources (partialTx _ (r1, r2)) := r1 :: r2 :: nil;
 
 module PartialTxTraits;
   import Stdlib.Trait.Ord open using {Ord as OrdTrait};
@@ -22,8 +23,7 @@ module PartialTxTraits;
   Ord :=
     let
       prod : PartialTx -> List Resource × List Resource;
-      prod (partialTx consumedRs createdRs) :=
-        consumedRs, createdRs;
+      prod r := consumedResources r, createdResources r;
       listResourceOrd : OrdTrait (List Resource);
       listResourceOrd := ListTraits.Ord ResourceTraits.Ord;
       prodOrd : OrdTrait (List Resource × List Resource);

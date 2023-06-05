@@ -148,13 +148,13 @@ dealer puzzleData initialBoard :=
     emptySquares : Int;
     emptySquares :=
       ofNat (length (filter λ {s := s Nat.== 0} initialBoard));
-    consumedResources : List Resource;
-    consumedResources := Reward.mkResource emptySquares :: nil;
-    createdResources : List Resource;
+    consumedResources : Resource × Resource;
+    consumedResources :=
+      Reward.mkResource emptySquares, dummyResource;
+    createdResources : Resource × Resource;
     createdResources :=
       DealerIntent.mkResource puzzleData 1
-        :: Sudoku.mkResource puzzleData initialBoard 1
-        :: nil;
+        , Sudoku.mkResource puzzleData initialBoard 1;
   in partialTx consumedResources createdResources;
 
 logicFunctions : Sudoku.Data -> Map LogicHash LogicFunction;

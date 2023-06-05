@@ -28,7 +28,7 @@ validPartialTx :
 validPartialTx m tx :=
   let
     getLogicFn :
-        ResourceKind -> Resource -> PartialTx -> Bool;
+      ResourceKind -> Resource -> PartialTx -> Bool;
     getLogicFn kind res :=
       let
         hash : LogicHash := logicHash res;
@@ -61,6 +61,6 @@ checkTransaction m ptxs :=
   let
     allValid : Bool := all (validPartialTx m) ptxs;
     sumDeltasIsZero :
-        Bool :=
-          balanceIsZero (sumBalances (map balanceDelta ptxs));
+      Bool :=
+        balanceIsZero (sumBalances (map balanceDelta ptxs));
   in allValid && sumDeltasIsZero;
