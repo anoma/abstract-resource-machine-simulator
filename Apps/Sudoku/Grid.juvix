@@ -31,7 +31,7 @@ gridRows (grid rows) :=
     combineRows : List SubGrid -> List (List Nat);
     combineRows nil := nil;
     combineRows (subGrid rs :: sgs) :=
-      foldl combineSubGridRows rs sgs;
+      for (acc := rs) (sg in sgs) combineSubGridRows acc sg;
   in concatMap combineRows rows;
 
 gridEq : Eq Grid;

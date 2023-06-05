@@ -22,14 +22,15 @@ addBalance (balance xs) (balance ys) :=
       (Map.fromListWith ByteStringTraits.Ord (Int.+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance;
-negateBalance (balance xs) :=
-  balance (map λ {(bs, q) := bs, neg q} xs);
+negateBalance (balance bs) :=
+  balance (map (b in bs) second neg b);
 
 subBalance : Balance -> Balance -> Balance;
 subBalance b1 b2 := addBalance b1 (negateBalance b2);
 
 sumBalances : List Balance -> Balance;
-sumBalances := foldl addBalance emptyBalance;
+sumBalances bs :=
+  for (acc := emptyBalance) (b in bs) addBalance acc b;
 
 balanceIsZero : Balance -> Bool;
-balanceIsZero (balance bs) := all ((Int.==) 0 ∘ snd) bs;
+balanceIsZero (balance bs) := all (b in bs) (snd b Int.== 0);
