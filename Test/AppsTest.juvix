@@ -37,7 +37,7 @@ sudoku :=
         :: 2
         :: 3
         :: nil;
-    puzzleData : Sudoku.Data;
+    puzzleData : Sudoku.PuzzleData;
     puzzleData := Sudoku.Sudoku.puzzleData 3 solution;
     dealerPartialTx : PartialTx;
     dealerPartialTx := dealer puzzleData (1 :: replicate 15 0);

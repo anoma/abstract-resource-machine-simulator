@@ -6,25 +6,43 @@ import Simulator.Denomination open;
 
 import Stdlib.Data.Int as Int;
 
+--- A ;Resource; is an immutable object that represents part of an application's
+--- state.
 type Resource :=
-  | resource : LogicHash
+  | --- Create a ;Resource;
+    ---
+    --- Arguments:
+    ---
+    --- * logicHash: The address of the ;Resource;'s logic function
+    ---
+    --- * staticData: Data which is relevant to the fungibility of the ;Resource;
+    ---
+    --- * dynamicData: Extra data which is not relvabe to the fuungibility of the ;Resource;
+    ---
+    --- * quantity: An integer used to determine balance in transactions.
+    resource : LogicHash
       -> ByteString
       -> ByteString
       -> Int
       -> Resource;
 
+--- Extract the ;Resource;'s logicHash.
 logicHash : Resource -> LogicHash;
 logicHash (resource h _ _ _) := h;
 
+--- Extract the ;Resource;'s staticData.
 staticData : Resource -> ByteString;
 staticData (resource _ s _ _) := s;
 
+--- Extract the ;Resource;'s dynamicData.
 dynamicData : Resource -> ByteString;
 dynamicData (resource _ _ d _) := d;
 
+--- Extract the ;Resource;'s quantity.
 quantity : Resource -> Int;
 quantity (resource _ _ _ q) := q;
 
+--- Extract the data which determines the ;Resource;'s fungibility.
 denomination : Resource -> Denomination;
 denomination (resource l s _ _) := l :: s;
 

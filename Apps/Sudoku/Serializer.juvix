@@ -2,12 +2,15 @@ module Apps.Sudoku.Serializer;
 
 import Apps.Sudoku.Grid open;
 import Apps.Sudoku.Extra open;
+import Apps.Sudoku.Validator open;
 import Data.ByteString open;
 
 import Stdlib.Prelude open;
 
 import Stdlib.Data.Nat.Ord open;
 import Stdlib.Debug.Fail open;
+
+import Stdlib.Data.Nat.Ord as Nat;
 
 --- Encode a Sudoku ;Grid; to a ;ByteString;
 encode : Grid -> ByteString;
@@ -56,3 +59,13 @@ decode bs :=
     decodeSubGrid := subGrid ∘ chunksOf subGridWidth;
   in grid
     (chunksOf subGridWidth (map decodeSubGrid (subGrids rows)));
+
+--- Count the number of filled squares in a serialized ;Grid;
+filledSquares : ByteString -> Nat;
+filledSquares proposal :=
+  length (filter (square in proposal) entryFilled? square);
+
+--- Count the number of unfilled squares in a serialized ;Grid;
+emptySquares : ByteString -> Nat;
+emptySquares proposal :=
+  length (filter (square in proposal) not (entryFilled? square));

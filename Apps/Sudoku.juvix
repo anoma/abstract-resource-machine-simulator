@@ -1,5 +1,31 @@
--- Taiga Sudoku example
--- https://hackmd.io/DlCNpl4KRJq2j5dRTiUrFA
+--- A Sudoku puzzle application
+---
+--- To start an instance of the application a Dealer publishes a partial
+--- transaction which creates two ;Resource;s:
+---
+--- 1.1 A Sudoku ;Resource; that contains the initial state of the puzzle.
+---
+--- 1.2 A ;Resource; containing a logic function that checks the completed
+--- solution to the puzzle.
+---
+--- And consumes another resource:
+---
+--- 2.1 A Reward ;Resource; with quantity equal to the number of unfilled
+--- squares in the puzzle.
+---
+--- Participants publish partial transactions which consume:
+---
+--- 3.1 A Sudoku ;Resource; which represents the current parital solution to the puzzle.
+---
+--- 3.2. A Reward ;Resource; with quantity equal to the number of squares that the participant fills in on the Sudoku grid.
+---
+--- And create:
+---
+--- 3.3. A Sudoku ;Resource; that contains an updated Sudoku grid with their solutions filled in.
+---
+--- In the partial transaction which contains a full solution to the puzzle, the
+--- participant additionally consumes the ;Resource; containing the Dealer's
+--- logic function which was created in 1.2.
 module Apps.Sudoku;
 
 import Simulator open;
@@ -30,125 +56,158 @@ module Reward;
 end;
 
 module Sudoku;
-  type Data :=
-    | puzzleData : LogicHash -> ByteString -> Data;
+  type PuzzleData :=
+    | puzzleData : LogicHash -> ByteString -> PuzzleData;
 
-  logicHash : Data -> LogicHash;
+  logicHash : PuzzleData -> LogicHash;
   logicHash (puzzleData l _) := l;
 
-  mkResource : Data -> ByteString -> Int -> Resource;
+  mkResource : PuzzleData -> ByteString -> Int -> Resource;
   mkResource (puzzleData logicHash solution) :=
     resource logicHash solution;
 
-  denomination : Data -> Denomination;
+  denomination : PuzzleData -> Denomination;
   denomination (puzzleData l s) := l :: s;
 
-  solvedSquares : ByteString -> Nat;
-  solvedSquares proposal :=
-    length (filter λ {x := x Nat.> 0} proposal);
-
-  --- Checks the solution state transition.
+  --- Checks the state transition.
   ---
-  --- * The consumed puzzle represents a valid Sudoku grid
+  --- * The new ;Resource; represents a valid Sudoku grid
   ---
-  --- * If there is a consumed puzzle resource then there is exacly
-  --- one created puzzle resource and exacly one created reward resource.
-  ---
-  --- * The size of the solution doesn't change.
+  --- * The size of the encoded solution doesn't change.
   ---
   --- * The number of filled in squares does not decrease.
   ---
   --- * The claimed reward is equal to the number of newly filled in squares.
   ---
-  --- * The only squares that change between the consumed and created solutinos
+  --- * The only squares that change between the previous and new solutinos
   --- are changes from zero (i.e unfilled) to non-zero (i.e filled).
-  logicFunction : Data -> LogicFunction;
+  checkTransition : Resource -> Resource -> Resource -> Bool;
+  checkTransition fromResource toResource reward :=
+    let
+      fromSolution : ByteString := dynamicData fromResource;
+      toSolution : ByteString := dynamicData toResource;
+      rewardQuantity : Int := quantity reward;
+
+      -- Find the differences between the fromSolution and the toSolution,
+      -- compared index-wise
+      diff : List (Nat × Nat);
+      diff :=
+        filter (x, y in zip fromSolution toSolution) x Nat./= y;
+
+      -- Check that any solved squares in the toSolution are unsolved in the
+      -- fromSolution
+      checkSolvedFromUnsolved : Bool;
+      checkSolvedFromUnsolved :=
+        all (consumedSquare, _ in diff)
+          not (Sudoku.entryFilled? consumedSquare);
+    in length toSolution Nat.== length fromSolution
+      && Sudoku.filledSquares toSolution
+        Nat.>= Sudoku.filledSquares fromSolution
+      && Sudoku.validGrid? (Sudoku.decode toSolution)
+      && checkSolvedFromUnsolved
+      && ofNat (length diff) == rewardQuantity;
+
+  --- The logic function for the Sudoku solution parital transaction.
+  ---
+  --- Performs the following check:
+  ---
+  --- If there is a consumed ;Resource; representing a Sudoku puzzle then:
+  ---
+  --- 1. There is exactly one created ;Resource; corresponding to a new solution and
+  --- exactly one created ;Resource; representing the claimed reward.
+  ---
+  --- 2. The transition from a Sudoku puzzle to the new solution and reward
+  --- satisfies the ;checkTransition; function.
+  ---
+  --- If the partial transaction does not consume a Sudoku puzzle then it is
+  --- vacuously valid.
+  ---
+  --- If the logic function part of a ;Resource; that is created by the partial
+  --- transaction then it is valid.
+  logicFunction : PuzzleData -> LogicFunction;
   logicFunction data kind tx :=
     let
-      createdRs : List Resource;
-      createdRs := createdResources tx;
-      consumedRs : List Resource;
-      consumedRs := consumedResources tx;
-      checkTransition : Resource -> Bool;
-      checkTransition consumedR :=
-        let
-          checkCreated : Resource -> Bool;
-          checkCreated createdR :=
-            let
-              checkReward : Resource -> Bool;
-              checkReward rewardR :=
-                let
-                  createdSol : ByteString;
-                  createdSol := dynamicData createdR;
-                  consumedSol : ByteString;
-                  consumedSol := dynamicData consumedR;
-                  diff : List (Nat × Nat);
-                  diff :=
-                    filter
-                      λ {(x, y) := x Nat./= y}
-                      (zip consumedSol createdSol);
-                  rewardQ : Int;
-                  rewardQ := quantity rewardR;
-                in length createdSol Nat.== length consumedSol
-                  && solvedSquares createdSol Nat.>= solvedSquares consumedSol
-                  && Sudoku.validGrid? (Sudoku.decode createdSol)
-                  && all λ {x := x Nat.== 0} (map fst diff)
-                  && ofNat (length diff) == rewardQ;
-            in exactlyOneCheck
-              checkReward
-              (resourcesForDenom Reward.denomination createdRs);
-        in exactlyOneCheck
-          checkCreated
-          (resourcesForDenom (denomination data) createdRs);
+      puzzleDenom : Denomination := denomination data;
+      fromResources :
+        List Resource :=
+          resourcesForDenom puzzleDenom (consumedResources tx);
+      toResources :
+        List Resource :=
+          resourcesForDenom puzzleDenom (createdResources tx);
+      rewardResources :
+        List Resource :=
+          resourcesForDenom
+            Reward.denomination
+            (createdResources tx);
     in isCreated kind
-      || zeroOrOneCheck
-        checkTransition
-        (resourcesForDenom (denomination data) consumedRs);
+      || (case fromResources, toResources, rewardResources
+        | nil, _, _ := true
+        | fromResource :: nil, toResource :: nil, reward :: nil :=
+          checkTransition fromResource toResource reward
+        | _, _, _ := false);
+
 end;
 
 module DealerIntent;
-  logicFunction : Sudoku.Data -> LogicFunction;
+  --- The logic function for the Sudoku dealer parital transaction.
+  ---
+  --- Performs the following check:
+  ---
+  --- If there is exactly one consumed ;Resource; representing a Sudoku puzzle then:
+  ---
+  --- 1. The solution matches the Dealer's solution.
+  ---
+  --- If the partial transaction does not consume a Sudoku puzzle then it is
+  --- vacuously valid.
+  ---
+  --- If the logic function part of a ;Resource; that is created by the partial
+  --- transaction then it is valid.
+  logicFunction : Sudoku.PuzzleData -> LogicFunction;
   logicFunction p@(Sudoku.puzzleData _ solution) kind tx :=
     let
-      createdRs : List Resource;
-      createdRs := createdResources tx;
+      puzzleResources : List Resource;
+      puzzleResources :=
+        resourcesForDenom
+          (Sudoku.denomination p)
+          (createdResources tx);
       checkPuzzle : Resource -> Bool;
       checkPuzzle r :=
         eq ByteStringTraits.Eq solution (dynamicData r);
     in isCreated kind
-      || zeroOrOneCheck
-        checkPuzzle
-        (resourcesForDenom (Sudoku.denomination p) createdRs);
+      || (case puzzleResources
+        | nil := true
+        | puzzleResource :: nil := checkPuzzle puzzleResource
+        | _ := false);
 
-  logicHash : Sudoku.Data -> LogicHash;
+  logicHash : Sudoku.PuzzleData -> LogicHash;
   logicHash _ := 2;
 
-  staticData : Sudoku.Data -> ByteString;
+  staticData : Sudoku.PuzzleData -> ByteString;
   staticData _ := 2 :: nil;
 
-  denomination : Sudoku.Data -> Denomination;
+  denomination : Sudoku.PuzzleData -> Denomination;
   denomination d := logicHash d :: staticData d;
 
-  mkResource : Sudoku.Data -> Int -> Resource;
+  mkResource : Sudoku.PuzzleData -> Int -> Resource;
   mkResource d := resource (logicHash d) (staticData d) nil;
 end;
 
-dealer : Sudoku.Data -> ByteString -> PartialTx;
+dealer : Sudoku.PuzzleData -> ByteString -> PartialTx;
 dealer puzzleData initialBoard :=
   let
-    emptySquares : Int;
-    emptySquares :=
-      ofNat (length (filter λ {s := s Nat.== 0} initialBoard));
     consumedResources : Resource × Resource;
     consumedResources :=
-      Reward.mkResource emptySquares, dummyResource;
+      Reward.mkResource
+          (ofNat (Sudoku.emptySquares initialBoard))
+        , dummyResource;
     createdResources : Resource × Resource;
     createdResources :=
       DealerIntent.mkResource puzzleData 1
         , Sudoku.mkResource puzzleData initialBoard 1;
   in partialTx consumedResources createdResources;
 
-logicFunctions : Sudoku.Data -> Map LogicHash LogicFunction;
+logicFunctions :
+  Sudoku.PuzzleData -> Map LogicHash LogicFunction;
 logicFunctions puzzleData :=
   mkLogicFunctionMap
     ((Sudoku.logicHash puzzleData
