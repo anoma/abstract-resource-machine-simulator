@@ -63,7 +63,7 @@ sudoku :=
         consumedResources : Resource × Resource;
         consumedResources :=
           Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
-            , DealerIntent.mkResource puzzleData 1;
+            , Dealer.mkResource puzzleData 1;
       in partialTx consumedResources createdResources;
     txs : List PartialTx;
     txs :=

@@ -148,7 +148,7 @@ module Sudoku;
 
 end;
 
-module DealerIntent;
+module Dealer;
   --- The logic function for the Sudoku dealer parital transaction.
   ---
   --- Performs the following check:
@@ -202,7 +202,7 @@ dealer puzzleData initialBoard :=
         , dummyResource;
     createdResources : Resource × Resource;
     createdResources :=
-      DealerIntent.mkResource puzzleData 1
+      Dealer.mkResource puzzleData 1
         , Sudoku.mkResource puzzleData initialBoard 1;
   in partialTx consumedResources createdResources;
 
@@ -212,6 +212,6 @@ logicFunctions puzzleData :=
   mkLogicFunctionMap
     ((Sudoku.logicHash puzzleData
         , Sudoku.logicFunction puzzleData)
-      :: (DealerIntent.logicHash puzzleData
-        , DealerIntent.logicFunction puzzleData)
+      :: (Dealer.logicHash puzzleData
+        , Dealer.logicFunction puzzleData)
       :: nil);
