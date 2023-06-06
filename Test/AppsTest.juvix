@@ -77,34 +77,12 @@ sudoku :=
 twoPartyExchange : Test;
 twoPartyExchange :=
   let
-    alicePartialTx : PartialTx;
-    alicePartialTx :=
-      let
-        createdResources : Resource × Resource;
-        createdResources := AliceIntent.mkResource 1, dummyResource;
-        consumedResources : Resource × Resource;
-        consumedResources := A.mkResource 1, B.mkResource 2;
-      in partialTx consumedResources createdResources;
-    bobPartialTx : PartialTx;
-    bobPartialTx :=
-      let
-        createdResources : Resource × Resource;
-        createdResources := A.mkResource 1, dummyResource;
-        consumedResources : Resource × Resource;
-        consumedResources := Dolphin.mkResource 1, dummyResource;
-      in partialTx consumedResources createdResources;
-    solverPartialTx : PartialTx;
-    solverPartialTx :=
-      let
-        createdResources : Resource × Resource;
-        createdResources := Dolphin.mkResource 1, B.mkResource 2;
-        consumedResources : Resource × Resource;
-        consumedResources :=
-          AliceIntent.mkResource 1, dummyResource;
-      in partialTx consumedResources createdResources;
     txs : List PartialTx;
     txs :=
-      alicePartialTx :: bobPartialTx :: solverPartialTx :: nil;
+      Alice.partialTransaction
+        :: Bob.partialTransaction
+        :: Solver.partialTransaction
+        :: nil;
   in testCase
     "two party exchange"
     (assertTrue

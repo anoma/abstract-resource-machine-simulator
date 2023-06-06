@@ -55,6 +55,7 @@ module Reward;
   denomination := AlwaysValid.logicHash :: staticData;
 end;
 
+--- Definitions related to the Sudoku ;Resource; in the application
 module Sudoku;
   type PuzzleData :=
     | puzzleData : LogicHash -> ByteString -> PuzzleData;
@@ -148,6 +149,7 @@ module Sudoku;
 
 end;
 
+--- Definitions relating to the Dealer participant in the application
 module Dealer;
   --- The logic function for the Sudoku dealer parital transaction.
   ---

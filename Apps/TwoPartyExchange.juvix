@@ -1,5 +1,74 @@
--- Taiga two party exchange example
--- https://github.com/anoma/taiga/blob/main/book/src/exec_examples.md#1-two-party-exchange-with-an-intent-uservp
+--- A two-party exchange
+---
+--- In this scenario there are ;Resource; types Dolphin, A and B.
+---
+--- There are three participants, Alice, Bob and a Solver.
+---
+--- Alice has:
+--- * 1 A and 2 B
+---
+--- Bob has:
+--- * 1 Dolphin
+---
+--- Alice is willing to exchange either 2 B or 1 A for 1 Dolphin.
+--- Bob is willing to exchange 1 A for 1 Dolphin.
+---
+--- How to express this in Anoma using the Taiga execution model?
+---
+--- Alice publishes a ;PartialTx; (1) to the gossip network that consumes two
+--- resources:
+---
+--- 1.1 An A ;Resource; with quantity 1
+---
+--- 1.2 A B ;Resource; with quantity 2
+---
+--- and creates:
+---
+--- 1.3 A ;Resource; with quantity 1 containing a logic function which encodes
+--- her intent. i.e she wants to participate in a transaction that contains a
+--- partial transaction in which she receives either 1 Dolphin and 2 B or 1
+--- Dolphin and 1 A.
+---
+--- Bob publishes a ;PartialTx; (2) to the gossip network that encodes his intent.
+--- It consumes:
+---
+--- 2.2 A Dolphin ;Resource; with quantity 1.
+---
+--- and creates:
+---
+--- 2.1 An A ;Resource; with quantity 1
+---
+---
+--- The Solver finds both Alice's and Bob's partial transactions on the gossip
+--- network and publishes a new parital transaction (3) such that all the partial
+--- transactions logic are satisfied and the resources are balanced.
+---
+--- The Solver's partial transaction consumes:
+---
+--- 3.1 Alice's logic ;Resource; created in 1.3.
+---
+--- and creates:
+---
+--- 3.2 A Dolphin ;Resource; with quantity 1
+---
+--- 3.3 A B ;Resource; with quantity 2
+---
+--- For a partial transaction to be valid, all of the logic functions associated
+--- with its resources must be valid. In our case, Alice's logic function is
+--- valid when applied to partial transaction 3.
+---
+--- A transaction is formed from a collection of valid partial transaction that
+--- balance. i.e the quantities of created and consumed resources, for each
+--- resource type in the transaction must balance.
+---
+--- This is true for the transaction containing the partial transactions 1,2,3 above.
+---
+--- In particular:
+---
+--- 3.3 (create 2 B) balances with 1.2 (consume 2 B)
+--- 3.2 (create 1 Dolphin) balances with 2.2 (consume 1 Dolphin)
+--- 3.1 (consume Alice's intent) balances with 1.3 (create Alice's intent)
+--- 1.2 (creates 1 A) balances with 1.1 (consume 1 A).
 module Apps.TwoPartyExchange;
 
 import Simulator open;
@@ -11,6 +80,7 @@ import Stdlib.Prelude open;
 
 import Stdlib.Data.Int.Ord open;
 
+--- Definitions related to the Dolphin ;Resource;
 module Dolphin;
   staticData : ByteString;
   staticData := 0 :: nil;
@@ -22,6 +92,7 @@ module Dolphin;
   denomination := AlwaysValid.logicHash :: staticData;
 end;
 
+--- Definitions related to the A ;Resource;
 module A;
   staticData : ByteString;
   staticData := 1 :: nil;
@@ -33,6 +104,7 @@ module A;
   denomination := AlwaysValid.logicHash :: staticData;
 end;
 
+--- Definitions related to the B ;Resource;
 module B;
   staticData : ByteString;
   staticData := 2 :: nil;
@@ -44,6 +116,7 @@ module B;
   denomination := AlwaysValid.logicHash :: staticData;
 end;
 
+--- Definitions related to Alice's intent
 module AliceIntent;
   logicFunction : LogicFunction;
   logicFunction kind tx :=
@@ -73,6 +146,43 @@ module AliceIntent;
 
   mkResource : Int -> Resource;
   mkResource := resource logicHash staticData nil;
+end;
+
+--- Definitions related to Alice
+module Alice;
+  partialTransaction : PartialTx;
+  partialTransaction :=
+    let
+      createdResources : Resource × Resource;
+      createdResources := AliceIntent.mkResource 1, dummyResource;
+      consumedResources : Resource × Resource;
+      consumedResources := A.mkResource 1, B.mkResource 2;
+    in partialTx consumedResources createdResources;
+end;
+
+--- Definitions related to Bob
+module Bob;
+  partialTransaction : PartialTx;
+  partialTransaction :=
+    let
+      createdResources : Resource × Resource;
+      createdResources := A.mkResource 1, dummyResource;
+      consumedResources : Resource × Resource;
+      consumedResources := Dolphin.mkResource 1, dummyResource;
+    in partialTx consumedResources createdResources;
+end;
+
+--- Definitions related to the Solver
+module Solver;
+  partialTransaction : PartialTx;
+  partialTransaction :=
+    let
+      createdResources : Resource × Resource;
+      createdResources := Dolphin.mkResource 1, B.mkResource 2;
+      consumedResources : Resource × Resource;
+      consumedResources :=
+        AliceIntent.mkResource 1, dummyResource;
+    in partialTx consumedResources createdResources;
 end;
 
 logicFunctions : Map LogicHash LogicFunction;
