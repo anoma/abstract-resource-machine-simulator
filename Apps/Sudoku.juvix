@@ -17,9 +17,9 @@
 ---
 --- 3.1 A Sudoku ;Resource; which represents the current parital solution to the puzzle.
 ---
---- 3.2. A Reward ;Resource; with quantity equal to the number of squares that the participant fills in on the Sudoku grid.
----
 --- And create:
+---
+--- 3.2. A Reward ;Resource; with quantity equal to the number of squares that the participant fills in on the Sudoku grid.
 ---
 --- 3.3. A Sudoku ;Resource; that contains an updated Sudoku grid with their solutions filled in.
 ---
