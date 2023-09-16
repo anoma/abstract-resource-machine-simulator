@@ -9,104 +9,70 @@ import Stdlib.Data.Int as Int;
 --- A ;Resource; is an immutable object that represents part of an application's
 --- state.
 type Resource :=
-  | --- Create a ;Resource;
-    ---
-    --- Arguments:
-    ---
-    --- * logicHash: The address of the ;Resource;'s logic function
-    ---
-    --- * staticData: Data which is relevant to the fungibility of the ;Resource;
-    ---
-    --- * dynamicData: Extra data which is not relvabe to the fuungibility of the ;Resource;
-    ---
-    --- * quantity: An integer used to determine balance in transactions.
-    resource : LogicHash
-      -> ByteString
-      -> ByteString
-      -> Int
-      -> Resource;
+  mkResource {
+    -- The address of the ;Resource;'s logic function
+    logicHash : LogicHash;
+    -- Data which is relevant to the fungibility of the ;Resource;
+    staticData : ByteString;
+    -- Extra data which is not relvabe to the fuungibility of the ;Resource;
+    dynamicData : ByteString;
+    -- An integer used to determine balance in transactions.
+    quantity : Int
+  };
 
---- Extract the ;Resource;'s logicHash.
-logicHash : Resource -> LogicHash;
-logicHash (resource h _ _ _) := h;
+open Resource;
 
---- Extract the ;Resource;'s staticData.
-staticData : Resource -> ByteString;
-staticData (resource _ s _ _) := s;
+-- --- Extract the data which determines the ;Resource;'s fungibility.
+denomination (r : Resource) : Denomination :=
+  logicHash r :: staticData r;
 
---- Extract the ;Resource;'s dynamicData.
-dynamicData : Resource -> ByteString;
-dynamicData (resource _ _ d _) := d;
-
---- Extract the ;Resource;'s quantity.
-quantity : Resource -> Int;
-quantity (resource _ _ _ q) := q;
-
---- Extract the data which determines the ;Resource;'s fungibility.
-denomination : Resource -> Denomination;
-denomination (resource l s _ _) := l :: s;
-
---- Find all the resources associated with a denomination
-resourcesForDenom :
-  Denomination -> List Resource -> List Resource;
-resourcesForDenom denom rs :=
-  filter
-    λ {r := eq ByteStringTraits.Eq (denomination r) denom}
-    rs;
+-- --- Find all the resources associated with a denomination
+resourcesForDenom (d : Denomination) (rs : List Resource)
+  : List Resource :=
+  filter λ {r := Eq.eq (denomination r) d} rs;
 
 --- Aggregate the quantities associated with a denomination
-quantityOfDenom : Denomination -> List Resource -> Int;
-quantityOfDenom denom rs :=
-  for (acc := Int.ofNat 0) (r in resourcesForDenom denom rs)
+quantityOfDenom (d : Denomination) (rs : List Resource)
+  : Int :=
+  for (acc := Int.ofNat 0) (r in resourcesForDenom d rs)
     quantity r Int.+ acc;
 
 --- Return true if the list is empty or the list has exactly 1 element and the predicate is satisfied
-zeroOrOneCheck :
-  (Resource -> Bool) -> List Resource -> Bool;
-zeroOrOneCheck _ nil := true;
-zeroOrOneCheck p (x :: nil) := p x;
-zeroOrOneCheck _ _ := false;
+zeroOrOneCheck : (Resource -> Bool) -> List Resource -> Bool
+  | _ nil := true
+  | p (x :: nil) := p x
+  | _ _ := false;
 
-exactlyOneCheck :
-  (Resource -> Bool) -> List Resource -> Bool;
-exactlyOneCheck p (x :: nil) := p x;
-exactlyOneCheck _ _ := false;
+exactlyOneCheck
+  : (Resource -> Bool) -> List Resource -> Bool
+  | p (x :: nil) := p x
+  | _ _ := false;
 
 type ResourceKind :=
-  | created : ResourceKind
-  | consumed : ResourceKind;
+  | created
+  | consumed;
 
-module ResourceKindTraits;
-  Eq : Eq ResourceKind;
-  Eq :=
-    mkEq
-      λ {
-        | created created := true
-        | consumed consumed := true
-        | _ _ := false
-      };
-end;
+instance
+eq : Eq ResourceKind :=
+  mkEq
+    λ {
+      | created created := true
+      | consumed consumed := true
+      | _ _ := false
+    };
 
-isCreated : ResourceKind -> Bool;
-isCreated := eq ResourceKindTraits.Eq created;
+isCreated : ResourceKind -> Bool := Eq.eq created;
 
-isConsumed : ResourceKind -> Bool;
-isConsumed := eq ResourceKindTraits.Eq consumed;
+isConsumed : ResourceKind -> Bool := Eq.eq consumed;
 
 module ResourceTraits;
-  import Stdlib.Trait.Ord open using {Ord as OrdTrait};
-
-  Ord : Ord Resource;
-  Ord :=
+  instance
+  ord : Ord Resource :=
     let
-      prod : Resource -> Denomination × ByteString × Int;
-      prod r := denomination r, dynamicData r, quantity r;
-      prodOrd : OrdTrait (Denomination × ByteString × Int);
-      prodOrd :=
-        ProductTraits.Ord
-          ByteStringTraits.Ord
-          (ProductTraits.Ord ByteStringTraits.Ord IntTraits.Ord);
-      go : Resource -> Resource -> Ordering;
-      go r1 r2 := cmp prodOrd (prod r1) (prod r2);
+      prod (r : Resource) : Denomination × ByteString × Int :=
+        denomination r, dynamicData r, quantity r;
+
+      go (r1 : Resource) (r2 : Resource) : Ordering :=
+        Ord.cmp (prod r1) (prod r2);
     in mkOrd go;
 end;

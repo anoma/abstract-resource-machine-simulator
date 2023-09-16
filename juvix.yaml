@@ -1,6 +1,12 @@
 dependencies:
-- deps/stdlib/
+- git:
+    url: https://github.com/anoma/juvix-stdlib
+    ref: 4facf14d9b2d06b81ce1be1882aa9050f768cb45
+    name: stdlib
+- git:
+    url: https://github.com/anoma/juvix-test
+    ref: v0.6.1
+    name: test
 - deps/containers
-- deps/test
 name: taiga-simulator
 version: 0.0.0

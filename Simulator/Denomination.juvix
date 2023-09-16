@@ -4,9 +4,7 @@ import Stdlib.Prelude open;
 import Data.ByteString open;
 
 --- The hash of a logic function
-LogicHash : Type;
-LogicHash := Nat;
+LogicHash : Type := Nat;
 
 --- The type of a resource
-Denomination : Type;
-Denomination := ByteString;
+Denomination : Type := ByteString;
