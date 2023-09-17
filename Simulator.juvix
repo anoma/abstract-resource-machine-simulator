@@ -12,45 +12,41 @@ import Data.ByteString open public;
 
 import Data.Map as Map;
 open Map using {Map};
-
-validPartialTx :
-  Map LogicHash LogicFunction -> PartialTx -> Bool;
-validPartialTx m tx :=
+open Resource;
+validPartialTx (m : Map LogicHash LogicFunction) 
+  (ptx : PartialTx) : Bool :=
   let
-    getLogicFn :
-      ResourceKind -> Resource -> PartialTx -> Bool;
-    getLogicFn kind res :=
+    getLogicFn (kind : ResourceKind) (res : Resource)
+      : PartialTx -> Bool :=
       let
-        hash : LogicHash := logicHash res;
-      in case Map.lookup NatTraits.Ord hash m
+        hash : LogicHash := Resource.logicHash res;
+      in case Map.lookup hash m of {
         | just f := f kind
         | _ :=
           fail
             ("Could not find function associated with hash: "
-              ++str natToString hash);
+              ++str natToString hash)
+      };
   in all
-      λ {r := getLogicFn created r tx}
-      (createdResources tx)
+      λ {r := getLogicFn created r ptx}
+      (createdResources ptx)
     && all
-      λ {r := getLogicFn consumed r tx}
-      (consumedResources tx);
+      λ {r := getLogicFn consumed r ptx}
+      (consumedResources ptx);
 
-mkBalance : Resource -> Balance;
-mkBalance r :=
+mkBalance (r : Resource) : Balance :=
   balance ((denomination r, quantity r) :: nil);
 
-balanceDelta : PartialTx -> Balance;
-balanceDelta tx :=
+balanceDelta (tx : PartialTx) : Balance :=
   subBalance
     (sumBalances (map mkBalance (consumedResources tx)))
     (sumBalances (map mkBalance (createdResources tx)));
 
-checkTransaction :
-  Map LogicHash LogicFunction -> List PartialTx -> Bool;
-checkTransaction m ptxs :=
+checkTransaction 
+  (m : Map LogicHash LogicFunction) 
+  (ptxs : List PartialTx) : Bool :=
   let
     allValid : Bool := all (validPartialTx m) ptxs;
-    sumDeltasIsZero :
-      Bool :=
-        balanceIsZero (sumBalances (map balanceDelta ptxs));
+    sumDeltasIsZero : Bool :=
+      balanceIsZero (sumBalances (map balanceDelta ptxs));
   in allValid && sumDeltasIsZero;

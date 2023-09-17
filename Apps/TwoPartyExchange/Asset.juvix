@@ -1,0 +1,55 @@
+module Apps.TwoPartyExchange.Asset;
+
+import Simulator open;
+import Simulator.Resource open using {mkResource as mkResource'};
+
+import Data.Map as Map;
+open Map using {Map};
+
+import Stdlib.Prelude open;
+import Stdlib.Data.Int.Ord open;
+
+--- Definitions related to the Dolphin ;Resource;
+module Dolphin;
+  staticData : ByteString := 0 :: nil;
+
+  mkResource (n : Int) : Resource :=
+    mkResource'
+      (logicHash := AlwaysValid.logicHash;
+      staticData := staticData;
+      dynamicData := nil;
+      quantity := n);
+
+  denomination : Denomination :=
+    AlwaysValid.logicHash :: staticData;
+end;
+
+--- Definitions related to the A ;Resource;
+module A;
+  staticData : ByteString := 1 :: nil;
+
+  mkResource (n : Int) : Resource :=
+    mkResource'
+      (logicHash := AlwaysValid.logicHash;
+      staticData := staticData;
+      dynamicData := nil;
+      quantity := n);
+
+  denomination : Denomination :=
+    AlwaysValid.logicHash :: staticData;
+end;
+
+--- Definitions related to the B ;Resource;
+module B;
+  staticData : ByteString := 2 :: nil;
+
+  mkResource (n : Int) : Resource :=
+    mkResource'
+      (logicHash := AlwaysValid.logicHash;
+      staticData := staticData;
+      dynamicData := nil;
+      quantity := n);
+
+  denomination : Denomination :=
+    AlwaysValid.logicHash :: staticData;
+end;

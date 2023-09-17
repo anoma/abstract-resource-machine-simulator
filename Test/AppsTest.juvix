@@ -13,13 +13,26 @@ open TwoPartyExchange hiding {logicFunctions};
 import Apps.Sudoku as Sudoku;
 open Sudoku hiding {logicFunctions};
 
+
 import Test.JuvixUnit open;
 
-sudoku : Test;
-sudoku :=
+twoPartyExchange : Test :=
   let
-    solution : ByteString;
-    solution :=
+    txs : List PartialTx :=
+      Alice.partialTransaction
+        :: Bob.partialTransaction
+        :: Solver.partialTransaction
+        :: nil;
+  in testCase
+    "two party exchange"
+    (assertTrue
+      "expected two-party exchange transactions to validate"
+      (checkTransaction TwoPartyExchange.logicFunctions txs));
+
+
+sudoku : Test :=
+  let
+    solution : ByteString :=
       1
         :: 2
         :: 3
@@ -37,71 +50,50 @@ sudoku :=
         :: 2
         :: 3
         :: nil;
-    puzzleData : Sudoku.PuzzleData;
-    puzzleData := Sudoku.Sudoku.puzzleData 3 solution;
-    dealerPartialTx : PartialTx;
-    dealerPartialTx := dealer puzzleData (1 :: replicate 15 0);
-    alicePartialTx : PartialTx;
-    alicePartialTx :=
-      let
-        createdResources : Resource × Resource;
-        createdResources :=
-          Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
+
+    puzzleData : Sudoku.Puzzle := 
+      Sudoku.mkPuzzle (logicHash := 3; solution := solution);
+    
+    dealerPartialTx : PartialTx := dealer puzzleData (1 :: replicate 15 0);
+
+    alicePartialTx : PartialTx  := 
+      mkPartialTx (
+        createdPair := Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
             , Reward.mkResource 1;
-        consumedResources : Resource × Resource;
-        consumedResources :=
-          Sudoku.mkResource puzzleData (1 :: replicate 15 0) 1
-            , dummyResource;
-      in partialTx consumedResources createdResources;
-    bobPartialTx : PartialTx;
-    bobPartialTx :=
-      let
-        createdResources : Resource × Resource;
-        createdResources :=
+        consumedPair  :=  Sudoku.mkResource puzzleData (1 :: replicate 15 0) 1
+            , dummyResource
+            );
+
+    bobPartialTx : PartialTx :=
+      mkPartialTx (
+        createdPair := 
           Sudoku.mkResource puzzleData solution 0
             , Reward.mkResource 14;
-        consumedResources : Resource × Resource;
-        consumedResources :=
+        consumedPair := 
           Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
-            , Dealer.mkResource puzzleData 1;
-      in partialTx consumedResources createdResources;
-    txs : List PartialTx;
-    txs :=
+            , Dealer.mkResource puzzleData 1
+          );
+    txs : List PartialTx :=
       dealerPartialTx :: alicePartialTx :: bobPartialTx :: nil;
+
   in testCase
     "Sudoku"
     (assertTrue
       "expected Sudoku solutions to validate"
       (checkTransaction (Sudoku.logicFunctions puzzleData) txs));
 
-twoPartyExchange : Test;
-twoPartyExchange :=
+emptyTest : Test :=
   let
-    txs : List PartialTx;
-    txs :=
-      Alice.partialTransaction
-        :: Bob.partialTransaction
-        :: Solver.partialTransaction
-        :: nil;
-  in testCase
-    "two party exchange"
-    (assertTrue
-      "expected two-party exchange transactions to validate"
-      (checkTransaction TwoPartyExchange.logicFunctions txs));
-
-emptyTest : Test;
-emptyTest :=
-  let
-    emptyFunctions : Map LogicHash LogicFunction;
-    emptyFunctions := Map.empty;
+    emptyFunctions : Map LogicHash LogicFunction := Map.empty;
   in testCase
     "The empty set of partial transactions validates"
     (assertTrue
       "expected transactions to validate"
       (checkTransaction emptyFunctions nil));
 
-tests : List Test;
-tests := emptyTest :: twoPartyExchange :: sudoku :: nil;
+tests : List Test := emptyTest :: 
+  twoPartyExchange :: 
+  sudoku :: 
+  nil;
 
-main : IO;
-main := runTestSuite (testSuite "Taiga simulator" tests);
+main : IO := runTestSuite (testSuite "Taiga simulator" tests);

@@ -10,27 +10,24 @@ import Stdlib.Data.Int as Int;
 import Stdlib.Data.Int.Ord as Int;
 
 type Balance :=
-  | balance : List (Denomination × Int) -> Balance;
+  balance : List (Denomination × Int) -> Balance;
 
-emptyBalance : Balance;
-emptyBalance := balance nil;
+emptyBalance : Balance := balance nil;
 
-addBalance : Balance -> Balance -> Balance;
-addBalance (balance xs) (balance ys) :=
-  balance
-    (Map.toList
-      (Map.fromListWith ByteStringTraits.Ord (Int.+) (xs ++ ys)));
+addBalance : Balance -> Balance -> Balance
+  | (balance xs) (balance ys) :=
+    balance
+      (Map.toList (Map.fromListWith (Int.+) (xs ++ ys)));
 
-negateBalance : Balance -> Balance;
-negateBalance (balance bs) :=
-  balance (map (b in bs) second neg b);
+negateBalance : Balance -> Balance
+  | (balance bs) := balance (map (b in bs) second neg b);
 
-subBalance : Balance -> Balance -> Balance;
-subBalance b1 b2 := addBalance b1 (negateBalance b2);
+subBalance (b1 : Balance) (b2 : Balance) : Balance :=
+  addBalance b1 (negateBalance b2);
 
-sumBalances : List Balance -> Balance;
-sumBalances bs :=
-  for (acc := emptyBalance) (b in bs) addBalance acc b;
+sumBalances (bs : List Balance) : Balance :=
+  for (acc := emptyBalance) (b in bs)
+    addBalance acc b;
 
-balanceIsZero : Balance -> Bool;
-balanceIsZero (balance bs) := all (b in bs) snd b Int.== 0;
+balanceIsZero : Balance -> Bool
+  | (balance bs) := all (b in bs) snd b Int.== 0;

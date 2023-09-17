@@ -2,13 +2,5 @@ module Data.ByteString;
 
 import Stdlib.Prelude open;
 
-ByteString : Type;
-ByteString := List Nat;
-
-module ByteStringTraits;
-  Ord : Ord (List Nat);
-  Ord := ListTraits.Ord NatTraits.Ord;
-
-  Eq : Eq (List Nat);
-  Eq := ListTraits.Eq NatTraits.Eq;
-end;
+ByteString : Type := List Nat;
+syntax alias none := nil;

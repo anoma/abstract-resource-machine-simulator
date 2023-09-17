@@ -3,44 +3,43 @@ module Simulator.PartialTx;
 import Stdlib.Prelude open;
 import Simulator.Resource open;
 
+--- A partial transaction consists of two consumed resources and two
+--- of created resources
 type PartialTx :=
-  | --- A partial transaction consists of two consumed resources and two
-    --- of created resources
-    partialTx : Resource × Resource
-      -> Resource × Resource
-      -> PartialTx;
+  mkPartialTx {
+    consumedPair : Resource × Resource;
+    createdPair : Resource × Resource
+  };
 
-consumedResources : PartialTx -> List Resource;
-consumedResources (partialTx (r1, r2) _) := r1 :: r2 :: nil;
+open PartialTx;
 
-createdResources : PartialTx -> List Resource;
-createdResources (partialTx _ (r1, r2)) := r1 :: r2 :: nil;
+consumedResources (ptx : PartialTx) : List Resource :=
+  case consumedPair ptx of 
+    {r1, r2 := r1 :: r2 :: nil};
 
---- A function that determines whether a ;PartialTx; is valid
----
---- Arguments:
----
---- * kind: Indicating whether the resource associated with this logic function
---- was consumed or created in the subject ;PartialTx;.
----
---- * partialTx: The ;PartialTx; being validated.
-LogicFunction : Type;
-LogicFunction := ResourceKind -> PartialTx -> Bool;
+createdResources (ptx : PartialTx) : List Resource :=
+  case createdPair ptx of 
+    {r1, r2 := r1 :: r2 :: nil};
 
-module PartialTxTraits;
-  import Stdlib.Trait.Ord open using {Ord as OrdTrait};
+{-- A function that determines whether a ;PartialTx; is valid
 
-  Ord : Ord PartialTx;
-  Ord :=
-    let
-      prod : PartialTx -> List Resource × List Resource;
-      prod r := consumedResources r, createdResources r;
-      listResourceOrd : OrdTrait (List Resource);
-      listResourceOrd := ListTraits.Ord ResourceTraits.Ord;
-      prodOrd : OrdTrait (List Resource × List Resource);
-      prodOrd :=
-        ProductTraits.Ord listResourceOrd listResourceOrd;
-      go : PartialTx -> PartialTx -> Ordering;
-      go p1 p2 := cmp prodOrd (prod p1) (prod p2);
-    in mkOrd go;
-end;
+Arguments:
+
+* kind: Indicating whether the resource associated with this logic function
+ was consumed or created in the subject ;PartialTx;.
+
+* partialTx: The ;PartialTx; being validated. 
+
+--}
+
+LogicFunction : Type := ResourceKind -> PartialTx -> Bool;
+
+instance
+ordPartialTx : Ord PartialTx :=
+  let
+    prod (r : PartialTx) : List Resource × List Resource :=
+      consumedResources r, createdResources r;
+
+    go (p1 : PartialTx) (p2 : PartialTx) : Ordering :=
+      Ord.cmp (prod p1) (prod p2);
+  in mkOrd go;

@@ -6,34 +6,33 @@ import Stdlib.Prelude open;
 
 import Test.JuvixUnit open;
 
-sudokuTests : List Test;
-sudokuTests :=
+sudokuTests : List Test :=
   let
-    row1 : List SubGrid;
-    row1 :=
+    row1 : List SubGrid :=
       subGrid ((1 :: 2 :: nil) :: (3 :: 4 :: nil) :: nil)
         :: subGrid ((3 :: 4 :: nil) :: (1 :: 2 :: nil) :: nil)
         :: nil;
-    row2 : List SubGrid;
-    row2 :=
+    row2 : List SubGrid  :=
       subGrid ((2 :: 3 :: nil) :: (4 :: 1 :: nil) :: nil)
         :: subGrid ((4 :: 1 :: nil) :: (2 :: 3 :: nil) :: nil)
         :: nil;
     sudoku2Full : Grid := grid (row1 :: row2 :: nil);
     sudoku2InvalidShapeFull : Grid := grid (row1 :: nil);
     sudoku2DuplicatesFull : Grid := grid (row1 :: row1 :: nil);
-    zeros : Nat -> List Nat;
-    zeros zero := nil;
-    zeros (suc n) := 0 :: zeros n;
-    zs : List Nat;
-    zs := zeros 2;
-    emptyRow : List SubGrid;
-    emptyRow :=
+    zeros : Nat -> List Nat
+    | zero := nil
+    | (suc n) := 0 :: zeros n;
+    zs : List Nat := zeros 2;
+
+    emptyRow : List SubGrid :=
       subGrid (zs :: zs :: nil)
         :: subGrid (zs :: zs :: nil)
         :: nil;
+    
     sudoku2Empty : Grid := grid (emptyRow :: emptyRow :: nil);
+    
     sudoku2Partial : Grid := grid (row1 :: emptyRow :: nil);
+
     decodedSol :
       Grid :=
         decode
@@ -92,7 +91,6 @@ sudokuTests :=
     :: testCase
       "4x4 partially completed Sudoku serialization roundtrip"
       (assertEqual
-        gridEq
         "Expected encode . decode to be identity"
         sudoku2Full
         (decode (encode sudoku2Full)))
@@ -103,5 +101,4 @@ sudokuTests :=
         (validGrid? decodedSol))
     :: nil;
 
-main : IO;
-main := runTestSuite (testSuite "Sudoku tests" sudokuTests);
+main : IO := runTestSuite (testSuite "Sudoku tests" sudokuTests);

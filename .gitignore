@@ -2,3 +2,6 @@
 deps/
 build/
 .juvix-build
+.vscode/
+/docs/
+.history
