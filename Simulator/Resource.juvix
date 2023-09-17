@@ -53,7 +53,7 @@ type ResourceKind :=
   | consumed;
 
 instance
-eq : Eq ResourceKind :=
+eqResourceKind : Eq ResourceKind :=
   mkEq
     λ {
       | created created := true
@@ -65,14 +65,12 @@ isCreated : ResourceKind -> Bool := Eq.eq created;
 
 isConsumed : ResourceKind -> Bool := Eq.eq consumed;
 
-module ResourceTraits;
-  instance
-  ord : Ord Resource :=
-    let
-      prod (r : Resource) : Denomination × ByteString × Int :=
-        denomination r, dynamicData r, quantity r;
+instance
+ordResource : Ord Resource :=
+  let
+    prod (r : Resource) : Denomination × ByteString × Int :=
+      denomination r, dynamicData r, quantity r;
 
-      go (r1 : Resource) (r2 : Resource) : Ordering :=
-        Ord.cmp (prod r1) (prod r2);
-    in mkOrd go;
-end;
+    go (r1 : Resource) (r2 : Resource) : Ordering :=
+      Ord.cmp (prod r1) (prod r2);
+  in mkOrd go;

@@ -9,26 +9,23 @@ import Apps.Sudoku.Grid open public;
 import Apps.Sudoku.Extra open;
 
 --- Check that the number of rows equals the number of columns
-square? : {A : Type} -> List (List A) -> Bool;
-square? nil := true;
-square? rows@(r :: rs) :=
-  allEq NatTraits.Eq (map length rows)
+square?  {A : Type} : List (List A) -> Bool
+| nil := true
+| rows@(r :: rs) :=
+  allEq (map length rows)
     && length r == length rows;
 
-entryFilled? : Nat -> Bool;
-entryFilled? x := x > 0;
+entryFilled? (x : Nat) : Bool := x > 0;
 
-allFilled? : List Nat -> Bool;
-allFilled? := null ∘ filter (not ∘ entryFilled?);
+allFilled? : List Nat -> Bool := null ∘ filter (not ∘ entryFilled?);
 
 --- Check that there are no duplicate filled entries
-noDuplicates? : List Nat -> Bool;
-noDuplicates? :=
-  not ∘ hasDuplicates NatTraits.Ord ∘ filter entryFilled?;
+noDuplicates? : List Nat -> Bool :=
+  not ∘ hasDuplicates ∘ filter entryFilled?;
 
 --- Check that a subgrid satisfies the Sudoku constraints
-validSubGrid? : SubGrid -> Bool;
-validSubGrid? s@(subGrid rows) :=
+validSubGrid? : SubGrid -> Bool
+  | s@(subGrid rows) :=
   let
     entries : List Nat := subGridEntries s;
   in square? rows
@@ -37,13 +34,12 @@ validSubGrid? s@(subGrid rows) :=
 
 --- Check that a subgrid is complete. i.e it satisfies the Sudoku constraints
 --- and all of its entries are filled
-completeSubGrid? : SubGrid -> Bool;
-completeSubGrid? sg :=
+completeSubGrid? (sg : SubGrid) : Bool :=
   validSubGrid? sg && allFilled? (subGridEntries sg);
 
 --- Check that a grid satisfies the Sudoku constraints
-validGrid? : Grid -> Bool;
-validGrid? g@(grid subGridRows) :=
+validGrid? : Grid -> Bool
+  | g@(grid subGridRows) :=
   let
     subGrids : List SubGrid := flatten subGridRows;
     rows : List (List Nat) := gridRows g;
@@ -55,6 +51,5 @@ validGrid? g@(grid subGridRows) :=
 
 --- Check that a grid is complete. i.e it satisfies the Sudoku constraints
 --- and all of its entries are filled
-completeGrid? : Grid -> Bool;
-completeGrid? g :=
+completeGrid? (g : Grid) : Bool :=
   validGrid? g && allFilled? (gridEntries g);

@@ -7,78 +7,68 @@ import Apps.Sudoku.Extra open;
 import Stdlib.Data.Nat.Ord open;
 
 --- A Sudoku subgrid
-type SubGrid :=
-  | subGrid : List (List Nat) -> SubGrid;
+type SubGrid := subGrid : List (List Nat) -> SubGrid;
 
-subGridEntries : SubGrid -> List Nat;
-subGridEntries (subGrid rows) := flatten rows;
+subGridEntries : SubGrid -> List Nat
+  | (subGrid rows) := flatten rows;
 
 --- The rows of ;SubGrid;s that comprise a Sudoku grid.
-type Grid :=
-  | grid : List (List SubGrid) -> Grid;
+type Grid := grid : List (List SubGrid) -> Grid;
 
-gridEntries : Grid -> List Nat;
-gridEntries (grid sgs) :=
-  flatten (concatMap (map subGridEntries) sgs);
+gridEntries : Grid -> List Nat
+  | (grid sgs) :=
+    flatten (concatMap (map subGridEntries) sgs);
 
-gridRows : Grid -> List (List Nat);
-gridRows (grid rows) :=
-  let
-    combineSubGridRows :
-      List (List Nat) -> SubGrid -> List (List Nat);
-    combineSubGridRows rs1 (subGrid rs2) :=
-      zipWith (++) rs1 rs2;
-    combineRows : List SubGrid -> List (List Nat);
-    combineRows nil := nil;
-    combineRows (subGrid rs :: sgs) :=
-      for (acc := rs) (sg in sgs) combineSubGridRows acc sg;
-  in concatMap combineRows rows;
+gridRows : Grid -> List (List Nat)
+  | (grid rows) :=
+    let
+      combineSubGridRows (rs1 : List (List Nat)) (sg : SubGrid)
+        : List (List Nat) :=
+        case sg of {subGrid rs2 := zipWith (++) rs1 rs2};
+      combineRows : List SubGrid -> List (List Nat)
+        | nil := nil
+        | (subGrid rs :: sgs) :=
+          for (acc := rs) (sg in sgs)
+            combineSubGridRows acc sg;
+    in concatMap combineRows rows;
 
-gridEq : Eq Grid;
-gridEq :=
-  mkEq
-    λ {g1 g2 :=
-      eq
-        (ListTraits.Eq (ListTraits.Eq NatTraits.Eq))
-        (gridRows g1)
-        (gridRows g2)};
+instance
+gridEq : Eq Grid :=
+  mkEq λ {g1 g2 := Eq.eq (gridRows g1) (gridRows g2)};
 
-prettyGrid : Grid -> String;
-prettyGrid g@(grid (sg@(subGrid (r :: _) :: _) :: _)) :=
-  let
-    subGridWidth : Nat := length r;
-    numSubGrids : Nat := length sg;
-    showSquare : Nat -> String;
-    showSquare zero := "   ";
-    showSquare n := " " ++str natToString n ++str " ";
-    showSplitRow : List Nat -> String;
-    showSplitRow := concatStr ∘ map showSquare;
-    showRow : Nat -> List Nat -> String;
-    showRow subGridWidth xs :=
-      concatStr
-        (surround
-          "|"
-          (map showSplitRow (chunksOf subGridWidth xs)));
-    showRowChunk : Nat -> List (List Nat) -> String;
-    showRowChunk subGridWidth xs :=
-      unlines (map (showRow subGridWidth) xs);
-  in case gridRows g
-    | nil := ""
-    | xs@(x :: _) :=
-      let
-        oneSquareWidth : Nat := 3;
-        borderOneSubgrid :
-          String :=
+prettyGrid : Grid -> String
+  | g@(grid (sg@(subGrid (r :: _) :: _) :: _)) :=
+    let
+      subGridWidth : Nat := length r;
+      numSubGrids : Nat := length sg;
+      showSquare : Nat -> String
+        | zero := "   "
+        | n := " " ++str natToString n ++str " ";
+      showSplitRow : List Nat -> String :=
+        concatStr ∘ map showSquare;
+      showRow (subGridWith : Nat) (xs : List Nat) : String :=
+        concatStr
+          (surround
+            "|"
+            (map showSplitRow (chunksOf subGridWidth xs)));
+      showRowChunk (subGridWidth : Nat) (xs : List (List Nat))
+        : String := unlines (map (showRow subGridWidth) xs);
+    in case gridRows g of {
+      | nil := ""
+      | xs@(x :: _) :=
+        let
+          oneSquareWidth : Nat := 3;
+          borderOneSubgrid : String :=
             concatStr (replicate (oneSquareWidth * subGridWidth) "-")
               ++str "+";
-        border :
-          String :=
+          border : String :=
             "+"
               ++str concatStr (replicate numSubGrids borderOneSubgrid);
-      in unlines
-        (surround
-          border
-          (map
-            (showRowChunk subGridWidth)
-            (chunksOf subGridWidth xs)));
-prettyGrid _ := "";
+        in unlines
+          (surround
+            border
+            (map
+              (showRowChunk subGridWidth)
+              (chunksOf subGridWidth xs)))
+    }
+  | _ := "";

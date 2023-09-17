@@ -1,10 +1,10 @@
 module Simulator.Denomination;
 
 import Stdlib.Prelude open;
-import Data.ByteString open;
+import Data.ByteString open public;
 
 --- The hash of a logic function
-LogicHash : Type := Nat;
+syntax alias LogicHash := Nat;
 
 --- The type of a resource
-Denomination : Type := ByteString;
+syntax alias Denomination := ByteString;

@@ -6,7 +6,7 @@ import Simulator.Resource open;
 --- A partial transaction consists of two consumed resources and two
 --- of created resources
 type PartialTx :=
-  partialTx {
+  mkPartialTx {
     consumedPair : Resource × Resource;
     createdPair : Resource × Resource
   };
@@ -14,31 +14,32 @@ type PartialTx :=
 open PartialTx;
 
 consumedResources (ptx : PartialTx) : List Resource :=
-  case consumedPair ptx of {r1, r2 := r1 :: r2 :: nil};
+  case consumedPair ptx of 
+    {r1, r2 := r1 :: r2 :: nil};
 
 createdResources (ptx : PartialTx) : List Resource :=
-  case createdPair ptx of {r1, r2 := r1 :: r2 :: nil};
+  case createdPair ptx of 
+    {r1, r2 := r1 :: r2 :: nil};
 
-{--
-A function that determines whether a ;PartialTx; is valid
+{-- A function that determines whether a ;PartialTx; is valid
 
- Arguments:
+Arguments:
 
- * kind: Indicating whether the resource associated with this logic function
+* kind: Indicating whether the resource associated with this logic function
  was consumed or created in the subject ;PartialTx;.
 
- * partialTx: The ;PartialTx; being validated.
+* partialTx: The ;PartialTx; being validated. 
+
 --}
 
 LogicFunction : Type := ResourceKind -> PartialTx -> Bool;
 
-  instance
-  ordPartialTx : Ord PartialTx  :=
-    let
-      prod (r : PartialTx) : List Resource × List Resource
-       := consumedResources r, createdResources r;
+instance
+ordPartialTx : Ord PartialTx :=
+  let
+    prod (r : PartialTx) : List Resource × List Resource :=
+      consumedResources r, createdResources r;
 
-      go (p1 : PartialTx) (p2 : PartialTx) : Ordering
-       := Ord.cmp (prod p1) (prod p2);
-    in mkOrd go;
-end;
+    go (p1 : PartialTx) (p2 : PartialTx) : Ordering :=
+      Ord.cmp (prod p1) (prod p2);
+  in mkOrd go;
