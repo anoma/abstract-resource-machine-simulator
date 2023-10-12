@@ -3,8 +3,6 @@ module Apps.Sudoku.Validator;
 import Stdlib.Prelude open;
 import Data.ByteString open;
 
-import Stdlib.Data.Nat.Ord open;
-
 import Apps.Sudoku.Grid open public;
 import Apps.Sudoku.Extra open;
 

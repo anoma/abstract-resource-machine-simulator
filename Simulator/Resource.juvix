@@ -4,8 +4,6 @@ import Stdlib.Prelude open;
 import Data.ByteString open;
 import Simulator.Denomination open;
 
-import Stdlib.Data.Int as Int;
-
 --- A ;Resource; is an immutable object that represents part of an application's
 --- state.
 type Resource :=
@@ -34,8 +32,8 @@ resourcesForDenom (d : Denomination) (rs : List Resource)
 --- Aggregate the quantities associated with a denomination
 quantityOfDenom (d : Denomination) (rs : List Resource)
   : Int :=
-  for (acc := Int.ofNat 0) (r in resourcesForDenom d rs)
-    quantity r Int.+ acc;
+  for (acc := ofNat 0) (r in resourcesForDenom d rs)
+    quantity r + acc;
 
 --- Return true if the list is empty or the list has exactly 1 element and the predicate is satisfied
 zeroOrOneCheck : (Resource -> Bool) -> List Resource -> Bool

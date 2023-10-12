@@ -6,7 +6,6 @@ import Simulator.Resource open;
 import Simulator.Denomination open;
 
 import Data.Map as Map;
-import Stdlib.Data.Int as Int;
 import Stdlib.Data.Int.Ord as Int;
 
 type Balance :=
@@ -17,7 +16,7 @@ emptyBalance : Balance := balance nil;
 addBalance : Balance -> Balance -> Balance
   | (balance xs) (balance ys) :=
     balance
-      (Map.toList (Map.fromListWith (Int.+) (xs ++ ys)));
+      (Map.toList (Map.fromListWith (+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance
   | (balance bs) := balance (map (b in bs) second neg b);

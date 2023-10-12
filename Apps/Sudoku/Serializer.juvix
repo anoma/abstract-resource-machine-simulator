@@ -7,9 +7,6 @@ import Data.ByteString open;
 
 import Stdlib.Prelude open;
 
-import Stdlib.Data.Nat.Ord open;
-import Stdlib.Debug.Fail open;
-
 import Stdlib.Data.Nat.Ord as Nat;
 
 --- Encode a Sudoku ;Grid; to a ;ByteString;
@@ -29,7 +26,7 @@ floorSquareRoot : Nat -> Nat
 
 --- Partial function that computes a square root. If the input ;Nat; is not a
 --- square number then fail.
-checkSquareRoot (n : Nat) : Nat
+checkSquareRoot {{Partial}} (n : Nat) : Nat
 :=  let
     root : Nat := floorSquareRoot n;
   in if
@@ -38,24 +35,24 @@ checkSquareRoot (n : Nat) : Nat
     (fail "checkSquareRoot: not a square number");
 
 --- Decode a Sudoku ;Grid; from a ;ByteString;
-decode (bs : ByteString ) : Grid
+decode {{Partial}} (bs : ByteString ) : Grid
 :=  let
     gridWidth : Nat := checkSquareRoot (length bs);
-    
+
     subGridWidth : Nat := checkSquareRoot gridWidth;
 
     rows : List (List Nat) := chunksOf gridWidth bs;
-    
+
     split {A : Type} : List A -> List (List A) := chunksOf subGridWidth;
-    
+
     pack : List (List Nat) -> List (List (List (List Nat)))
       := split ∘ map split;
-    
-    unpack : List (List (List (List Nat))) -> List (List Nat) 
+
+    unpack : List (List (List (List Nat))) -> List (List Nat)
       := map flatten ∘ flatten;
     subGrids : List (List Nat) -> List (List Nat) := unpack ∘ map transpose ∘ pack;
 
-    decodeSubGrid : List Nat -> SubGrid 
+    decodeSubGrid : List Nat -> SubGrid
       := subGrid ∘ chunksOf subGridWidth;
   in grid
     (chunksOf subGridWidth (map decodeSubGrid (subGrids rows)));

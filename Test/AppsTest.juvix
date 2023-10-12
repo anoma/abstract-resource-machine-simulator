@@ -16,7 +16,7 @@ open Sudoku hiding {logicFunctions};
 
 import Test.JuvixUnit open;
 
-twoPartyExchange : Test :=
+twoPartyExchange {{Partial}} : Test :=
   let
     txs : List PartialTx :=
       Alice.partialTransaction
@@ -29,8 +29,7 @@ twoPartyExchange : Test :=
       "expected two-party exchange transactions to validate"
       (checkTransaction TwoPartyExchange.logicFunctions txs));
 
-
-sudoku : Test :=
+sudoku {{Partial}} : Test :=
   let
     solution : ByteString :=
       1
@@ -51,12 +50,12 @@ sudoku : Test :=
         :: 3
         :: nil;
 
-    puzzleData : Sudoku.Puzzle := 
+    puzzleData : Sudoku.Puzzle :=
       Sudoku.mkPuzzle (logicHash := 3; solution := solution);
-    
+
     dealerPartialTx : PartialTx := dealer puzzleData (1 :: replicate 15 0);
 
-    alicePartialTx : PartialTx  := 
+    alicePartialTx : PartialTx  :=
       mkPartialTx (
         createdPair := Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
             , Reward.mkResource 1;
@@ -66,10 +65,10 @@ sudoku : Test :=
 
     bobPartialTx : PartialTx :=
       mkPartialTx (
-        createdPair := 
+        createdPair :=
           Sudoku.mkResource puzzleData solution 0
             , Reward.mkResource 14;
-        consumedPair := 
+        consumedPair :=
           Sudoku.mkResource puzzleData (1 :: 2 :: replicate 14 0) 1
             , Dealer.mkResource puzzleData 1
           );
@@ -82,7 +81,7 @@ sudoku : Test :=
       "expected Sudoku solutions to validate"
       (checkTransaction (Sudoku.logicFunctions puzzleData) txs));
 
-emptyTest : Test :=
+emptyTest {{Partial}} : Test :=
   let
     emptyFunctions : Map LogicHash LogicFunction := Map.empty;
   in testCase
@@ -91,9 +90,10 @@ emptyTest : Test :=
       "expected transactions to validate"
       (checkTransaction emptyFunctions nil));
 
-tests : List Test := emptyTest :: 
-  twoPartyExchange :: 
-  sudoku :: 
+tests {{Partial}} : List Test := emptyTest ::
+  twoPartyExchange ::
+  sudoku ::
   nil;
 
-main : IO := runTestSuite (testSuite "Taiga simulator" tests);
+main : IO :=
+  runPartial λ {{{_}} := runTestSuite (testSuite "Taiga simulator" tests)};

@@ -7,13 +7,14 @@ import Simulator.PartialTx open public;
 import Simulator.Denomination open public;
 
 import Stdlib.Prelude open;
-import Stdlib.Debug.Fail open;
 import Data.ByteString open public;
 
 import Data.Map as Map;
 open Map using {Map};
 open Resource;
-validPartialTx (m : Map LogicHash LogicFunction) 
+
+validPartialTx {{Partial}}
+  (m : Map LogicHash LogicFunction)
   (ptx : PartialTx) : Bool :=
   let
     getLogicFn (kind : ResourceKind) (res : Resource)
@@ -42,8 +43,8 @@ balanceDelta (tx : PartialTx) : Balance :=
     (sumBalances (map mkBalance (consumedResources tx)))
     (sumBalances (map mkBalance (createdResources tx)));
 
-checkTransaction 
-  (m : Map LogicHash LogicFunction) 
+checkTransaction {{Partial}}
+  (m : Map LogicHash LogicFunction)
   (ptxs : List PartialTx) : Bool :=
   let
     allValid : Bool := all (validPartialTx m) ptxs;
