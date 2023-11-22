@@ -82,7 +82,6 @@ import Data.Map as Map;
 open Map using {Map};
 
 import Stdlib.Prelude open;
-import Stdlib.Data.Int.Ord open;
 
 --- Definitions related to Alice's intent
 module AliceIntent;

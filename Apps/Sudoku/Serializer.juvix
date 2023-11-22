@@ -7,10 +7,7 @@ import Data.ByteString open;
 
 import Stdlib.Prelude open;
 
-import Stdlib.Data.Nat.Ord open;
 import Stdlib.Debug.Fail open;
-
-import Stdlib.Data.Nat.Ord as Nat;
 
 --- Encode a Sudoku ;Grid; to a ;ByteString;
 encode : Grid -> ByteString := flatten ∘ gridRows;
@@ -35,11 +32,10 @@ checkSquareRoot (n : Nat) : Nat
   in if
     (root * root == n)
     root
-    (fail "checkSquareRoot: not a square number");
+    (failwith "checkSquareRoot: not a square number");
 
 --- Decode a Sudoku ;Grid; from a ;ByteString;
-decode (bs : ByteString ) : Grid
-:=  let
+decode (bs : ByteString ) : Grid :=  let
     gridWidth : Nat := checkSquareRoot (length bs);
     
     subGridWidth : Nat := checkSquareRoot gridWidth;
@@ -61,8 +57,7 @@ decode (bs : ByteString ) : Grid
     (chunksOf subGridWidth (map decodeSubGrid (subGrids rows)));
 
 --- Count the number of filled squares in a serialized ;Grid;
-filledSquares (proposal : ByteString)  : Nat
-:= length (filter (square in proposal) entryFilled? square);
+filledSquares (proposal : ByteString)  : Nat := length (filter (square in proposal) entryFilled? square);
 
 --- Count the number of unfilled squares in a serialized ;Grid;
 emptySquares (proposal : ByteString)  : Nat :=

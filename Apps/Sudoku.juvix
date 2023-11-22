@@ -40,9 +40,6 @@ import Data.Map as Map;
 open Map using {Map};
 
 import Stdlib.Prelude open;
-import Stdlib.Data.Int.Ord open;
-
-import Stdlib.Data.Nat.Ord as Nat;
 
 module Reward;
   staticData : ByteString := 0 :: nil;
@@ -99,7 +96,7 @@ checkTransition (fromResource : Resource) (toResource : Resource) (reward : Reso
     -- compared index-wise
     diff : List (Nat × Nat) :=
       filter (x, y in zip fromSolution toSolution)
-        x Nat./= y;
+        x /= y;
 
     -- Check that any solved squares in the toSolution are unsolved in the
     -- fromSolution
@@ -107,9 +104,9 @@ checkTransition (fromResource : Resource) (toResource : Resource) (reward : Reso
       all (consumedSquare, _ in diff)
         not (Sudoku.entryFilled? consumedSquare);
 
-  in length toSolution Nat.== length fromSolution
+  in length toSolution == length fromSolution
     && Sudoku.filledSquares toSolution
-      Nat.>= Sudoku.filledSquares fromSolution
+      >= Sudoku.filledSquares fromSolution
     && Sudoku.validGrid? (Sudoku.decode toSolution)
     && checkSolvedFromUnsolved
     && ofNat (length diff) == rewardQuantity;

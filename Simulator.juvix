@@ -13,6 +13,7 @@ import Data.ByteString open public;
 import Data.Map as Map;
 open Map using {Map};
 open Resource;
+
 validPartialTx (m : Map LogicHash LogicFunction) 
   (ptx : PartialTx) : Bool :=
   let
@@ -23,7 +24,7 @@ validPartialTx (m : Map LogicHash LogicFunction)
       in case Map.lookup hash m of {
         | just f := f kind
         | _ :=
-          fail
+          failwith
             ("Could not find function associated with hash: "
               ++str natToString hash)
       };
