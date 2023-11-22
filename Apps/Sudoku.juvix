@@ -57,7 +57,7 @@ end;
 
 --- Definitions related to the Sudoku ;Resource; in the application
 module Sudoku;
-  
+
   type Puzzle :=
     mkPuzzle {
       logicHash : LogicHash;
@@ -142,79 +142,75 @@ logicFunction : Sudoku.Puzzle -> LogicFunction
           (createdResources tx);
     in isCreated kind
       || case fromResources, toResources, rewardResources of {
-        | nil, _, _ := true
-        | fromResource :: nil, toResource :: nil, reward :: nil :=
-          checkTransition fromResource toResource reward
-        | _, _, _ := false
-      };
-
-
+           | nil, _, _ := true
+           | fromResource :: nil, toResource :: nil, reward :: nil :=
+             checkTransition fromResource toResource reward
+           | _, _, _ := false
+         };
 
 -- Definitions relating to the Dealer participant in the application
 module Dealer;
   {-- The logic function for the Sudoku dealer parital transaction.
-  
-   Performs the following check:
-  
-   If there is exactly one consumed ;Resource; representing a Sudoku puzzle then:
-  
-   1. The solution matches the Dealer's solution.
-  
-   If the partial transaction does not consume a Sudoku puzzle then it is
-   vacuously valid.
-  
-   If the logic function part of a ;Resource; that is created by the partial
-   transaction then it is valid.
+
+  Performs the following check:
+
+  If there is exactly one consumed ;Resource; representing a Sudoku puzzle then:
+
+  1. The solution matches the Dealer's solution.
+
+  If the partial transaction does not consume a Sudoku puzzle then it is
+       vacuously valid.
+
+  If the logic function part of a ;Resource; that is created by the partial
+       transaction then it is valid.
    --}
 
   logicFunction : Sudoku.Puzzle -> LogicFunction
     | p kind tx :=
-    let
-      puzzleResources : List Resource :=
-        resourcesForDenom
-          (Sudoku.denomination p)
-          (createdResources tx);
+      let
+        puzzleResources : List Resource :=
+          resourcesForDenom
+            (Sudoku.denomination p)
+            (createdResources tx);
 
-      checkPuzzle (r : Resource) : Bool :=
-        Eq.eq (Sudoku.Puzzle.solution p) (Resource.dynamicData r);
-    in isCreated kind
-      || (case puzzleResources of {
-        | nil := true
-        | puzzleResource :: nil := checkPuzzle puzzleResource
-        | _ := false});
+        checkPuzzle (r : Resource) : Bool :=
+          Eq.eq (Sudoku.Puzzle.solution p) (Resource.dynamicData r);
+      in isCreated kind
+        || case puzzleResources of {
+             | nil := true
+             | puzzleResource :: nil := checkPuzzle puzzleResource
+             | _ := false
+           };
 
   logicHash : Sudoku.Puzzle -> LogicHash
-  | _ := 2;
+    | _ := 2;
 
   staticData : Sudoku.Puzzle -> ByteString
-   | _ := 2 :: nil;
+    | _ := 2 :: nil;
 
-  denomination (d : Sudoku.Puzzle) : Denomination
-   := logicHash d :: staticData d;
+  denomination (d : Sudoku.Puzzle) : Denomination :=
+    logicHash d :: staticData d;
 
-  mkResource (d : Sudoku.Puzzle) (n : Int) : Resource 
-    := mkResource' (
-    logicHash := logicHash d;
-    staticData := staticData d;
-    dynamicData := nil;
-    quantity := n);
+  mkResource (d : Sudoku.Puzzle) (n : Int) : Resource :=
+    mkResource'
+      (logicHash := logicHash d;
+      staticData := staticData d;
+      dynamicData := nil;
+      quantity := n);
 end;
 
-dealer (puzzle : Sudoku.Puzzle)
- (initialBoard : ByteString) : PartialTx
-:= mkPartialTx (
-  consumedPair := Reward.mkResource
-          (ofNat (Sudoku.emptySquares initialBoard))
-        , dummyResource;
-  createdPair := Dealer.mkResource puzzle 1
-        , Sudoku.mkResource puzzle initialBoard 1
-    );
+dealer (puzzle : Sudoku.Puzzle) (initialBoard : ByteString)
+  : PartialTx :=
+  mkPartialTx
+    (consumedPair := Reward.mkResource
+        (ofNat (Sudoku.emptySquares initialBoard))
+      , dummyResource;
+    createdPair := Dealer.mkResource puzzle 1
+      , Sudoku.mkResource puzzle initialBoard 1);
 
 logicFunctions (puzzle : Sudoku.Puzzle)
- : Map LogicHash LogicFunction :=
+  : Map LogicHash LogicFunction :=
   mkLogicFunctionMap
-    ((Sudoku.Puzzle.logicHash puzzle
-        , logicFunction puzzle)
-      :: (Dealer.logicHash puzzle
-        , Dealer.logicFunction puzzle)
+    ((Sudoku.Puzzle.logicHash puzzle, logicFunction puzzle)
+      :: (Dealer.logicHash puzzle, Dealer.logicFunction puzzle)
       :: nil);

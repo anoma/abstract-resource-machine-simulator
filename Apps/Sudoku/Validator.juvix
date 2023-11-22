@@ -7,15 +7,15 @@ import Apps.Sudoku.Grid open public;
 import Apps.Sudoku.Extra open;
 
 --- Check that the number of rows equals the number of columns
-square?  {A : Type} : List (List A) -> Bool
-| nil := true
-| rows@(r :: rs) :=
-  allEq (map length rows)
-    && length r == length rows;
+square? {A : Type} : List (List A) -> Bool
+  | nil := true
+  | rows@(r :: rs) :=
+    allEq (map length rows) && length r == length rows;
 
 entryFilled? (x : Nat) : Bool := x > 0;
 
-allFilled? : List Nat -> Bool := null ∘ filter (not ∘ entryFilled?);
+allFilled? : List Nat -> Bool :=
+  null ∘ filter (not ∘ entryFilled?);
 
 --- Check that there are no duplicate filled entries
 noDuplicates? : List Nat -> Bool :=
@@ -24,11 +24,11 @@ noDuplicates? : List Nat -> Bool :=
 --- Check that a subgrid satisfies the Sudoku constraints
 validSubGrid? : SubGrid -> Bool
   | s@(subGrid rows) :=
-  let
-    entries : List Nat := subGridEntries s;
-  in square? rows
-    && noDuplicates? (subGridEntries s)
-    && all λ {x := x < length entries + 1} entries;
+    let
+      entries : List Nat := subGridEntries s;
+    in square? rows
+      && noDuplicates? (subGridEntries s)
+      && all λ {x := x < length entries + 1} entries;
 
 --- Check that a subgrid is complete. i.e it satisfies the Sudoku constraints
 --- and all of its entries are filled
@@ -38,14 +38,14 @@ completeSubGrid? (sg : SubGrid) : Bool :=
 --- Check that a grid satisfies the Sudoku constraints
 validGrid? : Grid -> Bool
   | g@(grid subGridRows) :=
-  let
-    subGrids : List SubGrid := flatten subGridRows;
-    rows : List (List Nat) := gridRows g;
-    columns : List (List Nat) := transpose rows;
-  in all validSubGrid? subGrids
-    && square? subGridRows
-    && all noDuplicates? rows
-    && all noDuplicates? columns;
+    let
+      subGrids : List SubGrid := flatten subGridRows;
+      rows : List (List Nat) := gridRows g;
+      columns : List (List Nat) := transpose rows;
+    in all validSubGrid? subGrids
+      && square? subGridRows
+      && all noDuplicates? rows
+      && all noDuplicates? columns;
 
 --- Check that a grid is complete. i.e it satisfies the Sudoku constraints
 --- and all of its entries are filled

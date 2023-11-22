@@ -12,7 +12,7 @@ sudokuTests : List Test :=
       subGrid ((1 :: 2 :: nil) :: (3 :: 4 :: nil) :: nil)
         :: subGrid ((3 :: 4 :: nil) :: (1 :: 2 :: nil) :: nil)
         :: nil;
-    row2 : List SubGrid  :=
+    row2 : List SubGrid :=
       subGrid ((2 :: 3 :: nil) :: (4 :: 1 :: nil) :: nil)
         :: subGrid ((4 :: 1 :: nil) :: (2 :: 3 :: nil) :: nil)
         :: nil;
@@ -20,39 +20,38 @@ sudokuTests : List Test :=
     sudoku2InvalidShapeFull : Grid := grid (row1 :: nil);
     sudoku2DuplicatesFull : Grid := grid (row1 :: row1 :: nil);
     zeros : Nat -> List Nat
-    | zero := nil
-    | (suc n) := 0 :: zeros n;
+      | zero := nil
+      | (suc n) := 0 :: zeros n;
     zs : List Nat := zeros 2;
 
     emptyRow : List SubGrid :=
       subGrid (zs :: zs :: nil)
         :: subGrid (zs :: zs :: nil)
         :: nil;
-    
+
     sudoku2Empty : Grid := grid (emptyRow :: emptyRow :: nil);
-    
+
     sudoku2Partial : Grid := grid (row1 :: emptyRow :: nil);
 
-    decodedSol :
-      Grid :=
-        decode
-          (1
-            :: 2
-            :: 3
-            :: 4
-            :: 3
-            :: 4
-            :: 1
-            :: 2
-            :: 2
-            :: 3
-            :: 4
-            :: 1
-            :: 4
-            :: 1
-            :: 2
-            :: 3
-            :: nil);
+    decodedSol : Grid :=
+      decode
+        (1
+          :: 2
+          :: 3
+          :: 4
+          :: 3
+          :: 4
+          :: 1
+          :: 2
+          :: 2
+          :: 3
+          :: 4
+          :: 1
+          :: 4
+          :: 1
+          :: 2
+          :: 3
+          :: nil);
   in testCase
       "Basic 4x4 Sudoku is complete"
       (assertTrue
@@ -101,4 +100,5 @@ sudokuTests : List Test :=
         (validGrid? decodedSol))
     :: nil;
 
-main : IO := runTestSuite (testSuite "Sudoku tests" sudokuTests);
+main : IO :=
+  runTestSuite (testSuite "Sudoku tests" sudokuTests);

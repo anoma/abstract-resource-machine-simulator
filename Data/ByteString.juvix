@@ -3,4 +3,5 @@ module Data.ByteString;
 import Stdlib.Prelude open;
 
 ByteString : Type := List Nat;
+
 syntax alias none := nil;

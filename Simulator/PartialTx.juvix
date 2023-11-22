@@ -14,12 +14,10 @@ type PartialTx :=
 open PartialTx;
 
 consumedResources (ptx : PartialTx) : List Resource :=
-  case consumedPair ptx of 
-    {r1, r2 := r1 :: r2 :: nil};
+  case consumedPair ptx of {r1, r2 := r1 :: r2 :: nil};
 
 createdResources (ptx : PartialTx) : List Resource :=
-  case createdPair ptx of 
-    {r1, r2 := r1 :: r2 :: nil};
+  case createdPair ptx of {r1, r2 := r1 :: r2 :: nil};
 
 {-- A function that determines whether a ;PartialTx; is valid
 
@@ -28,9 +26,7 @@ Arguments:
 * kind: Indicating whether the resource associated with this logic function
  was consumed or created in the subject ;PartialTx;.
 
-* partialTx: The ;PartialTx; being validated. 
-
---}
+* partialTx: The ;PartialTx; being validated. --}
 
 LogicFunction : Type := ResourceKind -> PartialTx -> Bool;
 

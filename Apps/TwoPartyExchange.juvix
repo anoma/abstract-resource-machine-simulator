@@ -85,12 +85,12 @@ import Stdlib.Prelude open;
 
 --- Definitions related to Alice's intent
 module AliceIntent;
-  
+
   logicFunction : LogicFunction
     | kind tx :=
       let
         {- check if the resource associated to this logic function is among
-        the created (output) resources. Then check if alice's intent is satisfied. -}
+                                the created (output) resources. Then check if alice's intent is satisfied. -}
         createdRs : List Resource := createdResources tx;
         createdHashes : List LogicHash :=
           map Resource.logicHash createdRs;
@@ -107,7 +107,8 @@ module AliceIntent;
 
   denomination : Denomination := 1 :: staticData;
 
-  mkResource (n : Int) : Resource := mkResource'
+  mkResource (n : Int) : Resource :=
+    mkResource'
       (logicHash := logicHash;
       staticData := staticData;
       dynamicData := nil;
@@ -116,23 +117,26 @@ end;
 
 --- Definitions related to Alice
 module Alice;
-  partialTransaction : PartialTx := mkPartialTx
-    (consumedPair := A.mkResource 1, B.mkResource 2;
-    createdPair := AliceIntent.mkResource 1, dummyResource);
+  partialTransaction : PartialTx :=
+    mkPartialTx
+      (consumedPair := A.mkResource 1, B.mkResource 2;
+      createdPair := AliceIntent.mkResource 1, dummyResource);
 end;
 
 --- Definitions related to Bob
 module Bob;
-  partialTransaction : PartialTx := mkPartialTx
-    (consumedPair := Dolphin.mkResource 1, dummyResource;
-    createdPair := A.mkResource 1, dummyResource);
+  partialTransaction : PartialTx :=
+    mkPartialTx
+      (consumedPair := Dolphin.mkResource 1, dummyResource;
+      createdPair := A.mkResource 1, dummyResource);
 end;
 
 --- Definitions related to the Solver
 module Solver;
-  partialTransaction : PartialTx := mkPartialTx
-    (consumedPair := AliceIntent.mkResource 1, dummyResource;
-    createdPair := Dolphin.mkResource 1, B.mkResource 2);
+  partialTransaction : PartialTx :=
+    mkPartialTx
+      (consumedPair := AliceIntent.mkResource 1, dummyResource;
+      createdPair := Dolphin.mkResource 1, B.mkResource 2);
 end;
 
 logicFunctions : Map LogicHash LogicFunction :=

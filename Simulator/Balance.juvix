@@ -14,8 +14,7 @@ emptyBalance : Balance := balance nil;
 
 addBalance : Balance -> Balance -> Balance
   | (balance xs) (balance ys) :=
-    balance
-      (Map.toList (Map.fromListWith (+) (xs ++ ys)));
+    balance (Map.toList (Map.fromListWith (+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance
   | (balance bs) := balance (map (b in bs) second neg b);

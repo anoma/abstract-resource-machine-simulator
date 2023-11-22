@@ -14,20 +14,21 @@ import Data.Map as Map;
 open Map using {Map};
 open Resource;
 
-validPartialTx (m : Map LogicHash LogicFunction) 
-  (ptx : PartialTx) : Bool :=
+validPartialTx (m : Map
+  LogicHash
+  LogicFunction) (ptx : PartialTx) : Bool :=
   let
     getLogicFn (kind : ResourceKind) (res : Resource)
       : PartialTx -> Bool :=
       let
         hash : LogicHash := Resource.logicHash res;
       in case Map.lookup hash m of {
-        | just f := f kind
-        | _ :=
-          failwith
-            ("Could not find function associated with hash: "
-              ++str natToString hash)
-      };
+           | just f := f kind
+           | _ :=
+             failwith
+               ("Could not find function associated with hash: "
+                 ++str natToString hash)
+         };
   in all
       λ {r := getLogicFn created r ptx}
       (createdResources ptx)
@@ -43,9 +44,9 @@ balanceDelta (tx : PartialTx) : Balance :=
     (sumBalances (map mkBalance (consumedResources tx)))
     (sumBalances (map mkBalance (createdResources tx)));
 
-checkTransaction 
-  (m : Map LogicHash LogicFunction) 
-  (ptxs : List PartialTx) : Bool :=
+checkTransaction (m : Map
+  LogicHash
+  LogicFunction) (ptxs : List PartialTx) : Bool :=
   let
     allValid : Bool := all (validPartialTx m) ptxs;
     sumDeltasIsZero : Bool :=
