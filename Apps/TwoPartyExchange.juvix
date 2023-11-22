@@ -90,7 +90,7 @@ module AliceIntent;
     | kind tx :=
       let
         {- check if the resource associated to this logic function is among
-                                the created (output) resources. Then check if alice's intent is satisfied. -}
+                                        the created (output) resources. Then check if alice's intent is satisfied. -}
         createdRs : List Resource := createdResources tx;
         createdHashes : List LogicHash :=
           map Resource.logicHash createdRs;

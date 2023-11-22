@@ -15,7 +15,7 @@ open Sudoku hiding {logicFunctions};
 
 import Test.JuvixUnit open;
 
-twoPartyExchange : Test :=
+twoPartyExchange {{Partial}} : Test :=
   let
     txs : List PartialTx :=
       Alice.partialTransaction
@@ -28,7 +28,7 @@ twoPartyExchange : Test :=
       "expected two-party exchange transactions to validate"
       (checkTransaction TwoPartyExchange.logicFunctions txs));
 
-sudoku : Test :=
+sudoku {{Partial}} : Test :=
   let
     solution : ByteString :=
       1
@@ -86,7 +86,7 @@ sudoku : Test :=
       "expected Sudoku solutions to validate"
       (checkTransaction (Sudoku.logicFunctions puzzleData) txs));
 
-emptyTest : Test :=
+emptyTest {{Partial}} : Test :=
   let
     emptyFunctions : Map LogicHash LogicFunction := Map.empty;
   in testCase
@@ -95,8 +95,10 @@ emptyTest : Test :=
       "expected transactions to validate"
       (checkTransaction emptyFunctions nil));
 
-tests : List Test :=
+tests {{Partial}} : List Test :=
   emptyTest :: twoPartyExchange :: sudoku :: nil;
 
 main : IO :=
-  runTestSuite (testSuite "Taiga simulator" tests);
+  runPartial
+    λ {{{_}} :=
+      runTestSuite (testSuite "Taiga simulator" tests)};

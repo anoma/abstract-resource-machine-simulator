@@ -84,7 +84,7 @@ end;
     * The only squares that change between the previous and new solutinos
     are changes from zero (i.e unfilled) to non-zero (i.e filled).
  --}
-checkTransition (fromResource : Resource) (toResource : Resource) (reward : Resource)
+checkTransition {{Partial}} (fromResource : Resource) (toResource : Resource) (reward : Resource)
   : Bool :=
   let
     fromSolution : ByteString :=
@@ -128,7 +128,7 @@ vacuously valid.
 
 If the logic function part of a ;Resource; that is created by the partial
 transaction then it is valid. --}
-logicFunction : Sudoku.Puzzle -> LogicFunction
+logicFunction {{Partial}} : Sudoku.Puzzle -> LogicFunction
   | data kind tx :=
     let
       puzzleDenom : Denomination := Sudoku.denomination data;
@@ -159,10 +159,10 @@ module Dealer;
   1. The solution matches the Dealer's solution.
 
   If the partial transaction does not consume a Sudoku puzzle then it is
-       vacuously valid.
+         vacuously valid.
 
   If the logic function part of a ;Resource; that is created by the partial
-       transaction then it is valid.
+         transaction then it is valid.
    --}
 
   logicFunction : Sudoku.Puzzle -> LogicFunction
@@ -208,7 +208,7 @@ dealer (puzzle : Sudoku.Puzzle) (initialBoard : ByteString)
     createdPair := Dealer.mkResource puzzle 1
       , Sudoku.mkResource puzzle initialBoard 1);
 
-logicFunctions (puzzle : Sudoku.Puzzle)
+logicFunctions {{Partial}} (puzzle : Sudoku.Puzzle)
   : Map LogicHash LogicFunction :=
   mkLogicFunctionMap
     ((Sudoku.Puzzle.logicHash puzzle, logicFunction puzzle)
