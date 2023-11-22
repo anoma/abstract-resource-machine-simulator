@@ -18,10 +18,10 @@ import Test.JuvixUnit open;
 twoPartyExchange {{Partial}} : Test :=
   let
     txs : List PartialTx :=
-      Alice.partialTransaction
-        :: Bob.partialTransaction
-        :: Solver.partialTransaction
-        :: nil;
+      [ Alice.partialTransaction
+      ; Bob.partialTransaction
+      ; Solver.partialTransaction
+      ];
   in testCase
     "two party exchange"
     (assertTrue
@@ -31,23 +31,7 @@ twoPartyExchange {{Partial}} : Test :=
 sudoku {{Partial}} : Test :=
   let
     solution : ByteString :=
-      1
-        :: 2
-        :: 3
-        :: 4
-        :: 3
-        :: 4
-        :: 1
-        :: 2
-        :: 2
-        :: 3
-        :: 4
-        :: 1
-        :: 4
-        :: 1
-        :: 2
-        :: 3
-        :: nil;
+      [1; 2; 3; 4; 3; 4; 1; 2; 2; 3; 4; 1; 4; 1; 2; 3];
 
     puzzleData : Sudoku.Puzzle :=
       Sudoku.mkPuzzle (logicHash := 3; solution := solution);
@@ -78,7 +62,7 @@ sudoku {{Partial}} : Test :=
             1
           , Dealer.mkResource puzzleData 1);
     txs : List PartialTx :=
-      dealerPartialTx :: alicePartialTx :: bobPartialTx :: nil;
+      [dealerPartialTx; alicePartialTx; bobPartialTx];
 
   in testCase
     "Sudoku"
@@ -96,7 +80,7 @@ emptyTest {{Partial}} : Test :=
       (checkTransaction emptyFunctions nil));
 
 tests {{Partial}} : List Test :=
-  emptyTest :: twoPartyExchange :: sudoku :: nil;
+  emptyTest :: [twoPartyExchange; sudoku];
 
 main : IO :=
   runPartial

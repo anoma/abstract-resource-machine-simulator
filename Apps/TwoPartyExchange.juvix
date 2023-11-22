@@ -89,8 +89,7 @@ module AliceIntent;
   logicFunction : LogicFunction
     | kind tx :=
       let
-        {- check if the resource associated to this logic function is among
-                                        the created (output) resources. Then check if alice's intent is satisfied. -}
+        {- check if the resource associated to this logic function is among the created (output) resources. Then check if alice's intent is satisfied. -}
         createdRs : List Resource := createdResources tx;
         createdHashes : List LogicHash :=
           map Resource.logicHash createdRs;
@@ -103,7 +102,7 @@ module AliceIntent;
   --- This will be computed from the logic function
   logicHash : LogicHash := 1;
 
-  staticData : ByteString := 3 :: nil;
+  staticData : ByteString := [3];
 
   denomination : Denomination := 1 :: staticData;
 
@@ -141,4 +140,4 @@ end;
 
 logicFunctions : Map LogicHash LogicFunction :=
   mkLogicFunctionMap
-    ((AliceIntent.logicHash, AliceIntent.logicFunction) :: nil);
+    [AliceIntent.logicHash, AliceIntent.logicFunction];

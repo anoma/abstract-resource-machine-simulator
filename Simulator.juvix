@@ -36,7 +36,7 @@ validPartialTx {{Partial}} (m : Map
       (consumedResources ptx);
 
 mkBalance (r : Resource) : Balance :=
-  balance ((denomination r, quantity r) :: nil);
+  balance [denomination r, quantity r];
 
 balanceDelta (tx : PartialTx) : Balance :=
   subBalance

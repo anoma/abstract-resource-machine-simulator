@@ -14,10 +14,10 @@ type PartialTx :=
 open PartialTx;
 
 consumedResources (ptx : PartialTx) : List Resource :=
-  case consumedPair ptx of {r1, r2 := r1 :: r2 :: nil};
+  case consumedPair ptx of {r1, r2 := [r1; r2]};
 
 createdResources (ptx : PartialTx) : List Resource :=
-  case createdPair ptx of {r1, r2 := r1 :: r2 :: nil};
+  case createdPair ptx of {r1, r2 := [r1; r2]};
 
 {-- A function that determines whether a ;PartialTx; is valid
 

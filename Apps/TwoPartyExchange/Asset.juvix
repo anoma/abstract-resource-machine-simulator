@@ -11,7 +11,7 @@ import Stdlib.Data.Int.Ord open;
 
 --- Definitions related to the Dolphin ;Resource;
 module Dolphin;
-  staticData : ByteString := 0 :: nil;
+  staticData : ByteString := [0];
 
   mkResource (n : Int) : Resource :=
     mkResource'
@@ -26,7 +26,7 @@ end;
 
 --- Definitions related to the A ;Resource;
 module A;
-  staticData : ByteString := 1 :: nil;
+  staticData : ByteString := [1];
 
   mkResource (n : Int) : Resource :=
     mkResource'
@@ -41,7 +41,7 @@ end;
 
 --- Definitions related to the B ;Resource;
 module B;
-  staticData : ByteString := 2 :: nil;
+  staticData : ByteString := [2];
 
   mkResource (n : Int) : Resource :=
     mkResource'
