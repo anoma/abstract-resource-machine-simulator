@@ -2,8 +2,6 @@ module Apps.Sudoku.Extra;
 
 import Stdlib.Prelude open;
 
-import Stdlib.Data.Nat.Ord open;
-
 import Data.Set as Set;
 open Set using {Set};
 
@@ -39,7 +37,7 @@ chunksOf {A : Type} : Nat -> List A -> List (List A)
 --- Insert the first ;String; at the beginning, in between, and at the end of
 --- the second list
 surround (x : String) (xs : List String) : List String :=
-  (x :: intersperse x xs) ++ x :: nil;
+  (x :: intersperse x xs) ++ [x];
 
 --- Insert the first ;String; in between the ;String;s in the second list and
 --- concatenates the result

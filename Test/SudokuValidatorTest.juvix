@@ -6,99 +6,78 @@ import Stdlib.Prelude open;
 
 import Test.JuvixUnit open;
 
-sudokuTests : List Test :=
+sudokuTests {{Partial}} : List Test :=
   let
     row1 : List SubGrid :=
-      subGrid ((1 :: 2 :: nil) :: (3 :: 4 :: nil) :: nil)
-        :: subGrid ((3 :: 4 :: nil) :: (1 :: 2 :: nil) :: nil)
-        :: nil;
-    row2 : List SubGrid  :=
-      subGrid ((2 :: 3 :: nil) :: (4 :: 1 :: nil) :: nil)
-        :: subGrid ((4 :: 1 :: nil) :: (2 :: 3 :: nil) :: nil)
-        :: nil;
-    sudoku2Full : Grid := grid (row1 :: row2 :: nil);
-    sudoku2InvalidShapeFull : Grid := grid (row1 :: nil);
-    sudoku2DuplicatesFull : Grid := grid (row1 :: row1 :: nil);
+      [subGrid [[1; 2]; [3; 4]]; subGrid [[3; 4]; [1; 2]]];
+    row2 : List SubGrid :=
+      [subGrid [[2; 3]; [4; 1]]; subGrid [[4; 1]; [2; 3]]];
+    sudoku2Full : Grid := grid [row1; row2];
+    sudoku2InvalidShapeFull : Grid := grid [row1];
+    sudoku2DuplicatesFull : Grid := grid [row1; row1];
     zeros : Nat -> List Nat
-    | zero := nil
-    | (suc n) := 0 :: zeros n;
+      | zero := nil
+      | (suc n) := 0 :: zeros n;
     zs : List Nat := zeros 2;
 
     emptyRow : List SubGrid :=
-      subGrid (zs :: zs :: nil)
-        :: subGrid (zs :: zs :: nil)
-        :: nil;
-    
-    sudoku2Empty : Grid := grid (emptyRow :: emptyRow :: nil);
-    
-    sudoku2Partial : Grid := grid (row1 :: emptyRow :: nil);
+      [subGrid [zs; zs]; subGrid [zs; zs]];
 
-    decodedSol :
-      Grid :=
-        decode
-          (1
-            :: 2
-            :: 3
-            :: 4
-            :: 3
-            :: 4
-            :: 1
-            :: 2
-            :: 2
-            :: 3
-            :: 4
-            :: 1
-            :: 4
-            :: 1
-            :: 2
-            :: 3
-            :: nil);
-  in testCase
-      "Basic 4x4 Sudoku is complete"
-      (assertTrue
-        "Expected grid to be complete"
-        (completeGrid? sudoku2Full))
-    :: testCase
-      "Basic 2x4 Sudoku is incomplete"
-      (assertFalse
-        "Expected grid to be incomplete"
-        (completeGrid? sudoku2InvalidShapeFull))
-    :: testCase
-      "4x4 Sudoku with duplicate rows is incomplete"
-      (assertFalse
-        "Expected grid to be incomplete"
-        (completeGrid? sudoku2DuplicatesFull))
-    :: testCase
-      "4x4 empty Sudoku is valid"
-      (assertTrue
-        "Expected grid to be valid"
-        (validGrid? sudoku2Empty))
-    :: testCase
-      "4x4 empty Sudoku is incomplete"
-      (assertFalse
-        "Expected grid to be incomplete"
-        (completeGrid? sudoku2Empty))
-    :: testCase
-      "4x4 paritally completed Sudoku is valid"
-      (assertTrue
-        "Expected grid to be valid"
-        (validGrid? sudoku2Partial))
-    :: testCase
-      "4x4 partially completed Sudoku is incomplete"
-      (assertFalse
-        "Expected grid to be incomplete"
-        (completeGrid? sudoku2Partial))
-    :: testCase
-      "4x4 partially completed Sudoku serialization roundtrip"
-      (assertEqual
-        "Expected encode . decode to be identity"
-        sudoku2Full
-        (decode (encode sudoku2Full)))
-    :: testCase
-      "4x4 paritally completed Sudoku is valid"
-      (assertTrue
-        ("Expected grid to be valid\n" ++str prettyGrid decodedSol)
-        (validGrid? decodedSol))
-    :: nil;
+    sudoku2Empty : Grid := grid [emptyRow; emptyRow];
 
-main : IO := runTestSuite (testSuite "Sudoku tests" sudokuTests);
+    sudoku2Partial : Grid := grid [row1; emptyRow];
+
+    decodedSol : Grid :=
+      decode [1; 2; 3; 4; 3; 4; 1; 2; 2; 3; 4; 1; 4; 1; 2; 3];
+  in [ testCase
+       "Basic 4x4 Sudoku is complete"
+       (assertTrue
+         "Expected grid to be complete"
+         (completeGrid? sudoku2Full))
+     ; testCase
+       "Basic 2x4 Sudoku is incomplete"
+       (assertFalse
+         "Expected grid to be incomplete"
+         (completeGrid? sudoku2InvalidShapeFull))
+     ; testCase
+       "4x4 Sudoku with duplicate rows is incomplete"
+       (assertFalse
+         "Expected grid to be incomplete"
+         (completeGrid? sudoku2DuplicatesFull))
+     ; testCase
+       "4x4 empty Sudoku is valid"
+       (assertTrue
+         "Expected grid to be valid"
+         (validGrid? sudoku2Empty))
+     ; testCase
+       "4x4 empty Sudoku is incomplete"
+       (assertFalse
+         "Expected grid to be incomplete"
+         (completeGrid? sudoku2Empty))
+     ; testCase
+       "4x4 partially completed Sudoku is valid"
+       (assertTrue
+         "Expected grid to be valid"
+         (validGrid? sudoku2Partial))
+     ; testCase
+       "4x4 partially completed Sudoku is incomplete"
+       (assertFalse
+         "Expected grid to be incomplete"
+         (completeGrid? sudoku2Partial))
+     ; testCase
+       "4x4 partially completed Sudoku serialization roundtrip"
+       (assertEqual
+         "Expected encode . decode to be identity"
+         sudoku2Full
+         (decode (encode sudoku2Full)))
+     ; testCase
+       "4x4 paritally completed Sudoku is valid"
+       (assertTrue
+         ("Expected grid to be valid\n" ++str prettyGrid decodedSol)
+         (validGrid? decodedSol))
+     ];
+
+main : IO :=
+  runPartial
+    λ {{{_}} :=
+      runTestSuite (testSuite "Sudoku tests" sudokuTests)};

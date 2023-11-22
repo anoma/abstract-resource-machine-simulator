@@ -6,8 +6,6 @@ import Simulator.Resource open;
 import Simulator.Denomination open;
 
 import Data.Map as Map;
-import Stdlib.Data.Int as Int;
-import Stdlib.Data.Int.Ord as Int;
 
 type Balance :=
   balance : List (Denomination × Int) -> Balance;
@@ -16,8 +14,7 @@ emptyBalance : Balance := balance nil;
 
 addBalance : Balance -> Balance -> Balance
   | (balance xs) (balance ys) :=
-    balance
-      (Map.toList (Map.fromListWith (Int.+) (xs ++ ys)));
+    balance (Map.toList (Map.fromListWith (+) (xs ++ ys)));
 
 negateBalance : Balance -> Balance
   | (balance bs) := balance (map (b in bs) second neg b);
@@ -30,4 +27,4 @@ sumBalances (bs : List Balance) : Balance :=
     addBalance acc b;
 
 balanceIsZero : Balance -> Bool
-  | (balance bs) := all (b in bs) snd b Int.== 0;
+  | (balance bs) := all (b in bs) snd b == 0;

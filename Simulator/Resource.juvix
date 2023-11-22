@@ -35,17 +35,17 @@ resourcesForDenom (d : Denomination) (rs : List Resource)
 quantityOfDenom (d : Denomination) (rs : List Resource)
   : Int :=
   for (acc := Int.ofNat 0) (r in resourcesForDenom d rs)
-    quantity r Int.+ acc;
+    quantity r + acc;
 
 --- Return true if the list is empty or the list has exactly 1 element and the predicate is satisfied
 zeroOrOneCheck : (Resource -> Bool) -> List Resource -> Bool
   | _ nil := true
-  | p (x :: nil) := p x
+  | p [x] := p x
   | _ _ := false;
 
 exactlyOneCheck
   : (Resource -> Bool) -> List Resource -> Bool
-  | p (x :: nil) := p x
+  | p [x] := p x
   | _ _ := false;
 
 type ResourceKind :=

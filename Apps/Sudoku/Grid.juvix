@@ -54,21 +54,21 @@ prettyGrid : Grid -> String
       showRowChunk (subGridWidth : Nat) (xs : List (List Nat))
         : String := unlines (map (showRow subGridWidth) xs);
     in case gridRows g of {
-      | nil := ""
-      | xs@(x :: _) :=
-        let
-          oneSquareWidth : Nat := 3;
-          borderOneSubgrid : String :=
-            concatStr (replicate (oneSquareWidth * subGridWidth) "-")
-              ++str "+";
-          border : String :=
-            "+"
-              ++str concatStr (replicate numSubGrids borderOneSubgrid);
-        in unlines
-          (surround
-            border
-            (map
-              (showRowChunk subGridWidth)
-              (chunksOf subGridWidth xs)))
-    }
+         | nil := ""
+         | xs@(x :: _) :=
+           let
+             oneSquareWidth : Nat := 3;
+             borderOneSubgrid : String :=
+               concatStr (replicate (oneSquareWidth * subGridWidth) "-")
+                 ++str "+";
+             border : String :=
+               "+"
+                 ++str concatStr (replicate numSubGrids borderOneSubgrid);
+           in unlines
+             (surround
+               border
+               (map
+                 (showRowChunk subGridWidth)
+                 (chunksOf subGridWidth xs)))
+       }
   | _ := "";

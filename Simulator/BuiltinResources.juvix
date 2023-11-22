@@ -10,6 +10,7 @@ open Map using {Map};
 
 module AlwaysValid;
   logicFunction : LogicFunction := λ {_ _ := true};
+
   logicHash : LogicHash := 0;
 end;
 

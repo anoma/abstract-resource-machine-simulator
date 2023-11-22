@@ -7,30 +7,25 @@ import Data.ByteString open;
 
 import Stdlib.Prelude open;
 
-import Stdlib.Data.Nat.Ord open;
-import Stdlib.Debug.Fail open;
-
-import Stdlib.Data.Nat.Ord as Nat;
-
 --- Encode a Sudoku ;Grid; to a ;ByteString;
 encode : Grid -> ByteString := flatten ∘ gridRows;
 
 --- Compute the largest ;Nat; that is less than or equal to the input ;Nat;.
 floorSquareRoot : Nat -> Nat
-| zero := zero
-| n :=
-  let
-    terminating
-    go (a : Nat) : Nat :=
-      let
-        b : Nat := div (a + div n a) 2;
-      in if (a > b) (go b) a;
-  in go n;
+  | zero := zero
+  | n :=
+    let
+      terminating
+      go (a : Nat) : Nat :=
+        let
+          b : Nat := div (a + div n a) 2;
+        in if (a > b) (go b) a;
+    in go n;
 
 --- Partial function that computes a square root. If the input ;Nat; is not a
 --- square number then fail.
-checkSquareRoot (n : Nat) : Nat
-:=  let
+checkSquareRoot {{Partial}} (n : Nat) : Nat :=
+  let
     root : Nat := floorSquareRoot n;
   in if
     (root * root == n)
@@ -38,32 +33,36 @@ checkSquareRoot (n : Nat) : Nat
     (fail "checkSquareRoot: not a square number");
 
 --- Decode a Sudoku ;Grid; from a ;ByteString;
-decode (bs : ByteString ) : Grid
-:=  let
+decode {{Partial}} (bs : ByteString) : Grid :=
+  let
     gridWidth : Nat := checkSquareRoot (length bs);
-    
+
     subGridWidth : Nat := checkSquareRoot gridWidth;
 
     rows : List (List Nat) := chunksOf gridWidth bs;
-    
-    split {A : Type} : List A -> List (List A) := chunksOf subGridWidth;
-    
-    pack : List (List Nat) -> List (List (List (List Nat)))
-      := split ∘ map split;
-    
-    unpack : List (List (List (List Nat))) -> List (List Nat) 
-      := map flatten ∘ flatten;
-    subGrids : List (List Nat) -> List (List Nat) := unpack ∘ map transpose ∘ pack;
 
-    decodeSubGrid : List Nat -> SubGrid 
-      := subGrid ∘ chunksOf subGridWidth;
+    split {A : Type} : List A -> List (List A) :=
+      chunksOf subGridWidth;
+
+    pack : List (List Nat) -> List (List (List (List Nat))) :=
+      split ∘ map split;
+
+    unpack : List (List (List (List Nat))) -> List (List Nat) :=
+      map flatten ∘ flatten;
+    subGrids : List (List Nat) -> List (List Nat) :=
+      unpack ∘ map transpose ∘ pack;
+
+    decodeSubGrid : List Nat -> SubGrid :=
+      subGrid ∘ chunksOf subGridWidth;
   in grid
     (chunksOf subGridWidth (map decodeSubGrid (subGrids rows)));
 
 --- Count the number of filled squares in a serialized ;Grid;
-filledSquares (proposal : ByteString)  : Nat
-:= length (filter (square in proposal) entryFilled? square);
+filledSquares (proposal : ByteString) : Nat :=
+  length (filter (square in proposal) entryFilled? square);
 
 --- Count the number of unfilled squares in a serialized ;Grid;
-emptySquares (proposal : ByteString)  : Nat :=
-  length (filter (square in proposal) not (entryFilled? square));
+emptySquares (proposal : ByteString) : Nat :=
+  length
+    (filter (square in proposal)
+      not (entryFilled? square));
