@@ -10,7 +10,7 @@ jobs:
       - name: Install the latest Juvix compiler
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
-          repo: anoma/juvix
+          repo: anoma/juvix-nightly-builds
           tag: latest
           chmod: 0755
 
