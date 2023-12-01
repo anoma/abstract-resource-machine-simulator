@@ -81,7 +81,7 @@ import Apps.TwoPartyExchange.Asset open;
 import Data.Map as Map;
 open Map using {Map};
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 
 --- Definitions related to Alice's intent
 module AliceIntent;

@@ -1,6 +1,6 @@
 module Apps.Sudoku.Validator;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 import Data.ByteString open;
 
 import Apps.Sudoku.Grid open public;

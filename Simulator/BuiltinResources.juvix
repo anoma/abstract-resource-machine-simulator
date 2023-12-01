@@ -3,7 +3,7 @@ module Simulator.BuiltinResources;
 import Simulator.Denomination open;
 import Simulator.Resource open;
 import Simulator.PartialTx open;
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 
 import Data.Map as Map;
 open Map using {Map};

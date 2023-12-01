@@ -1,6 +1,6 @@
 module Data.ByteString;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 
 ByteString : Type := List Nat;
 

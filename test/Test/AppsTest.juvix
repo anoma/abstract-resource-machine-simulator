@@ -5,7 +5,9 @@ import Simulator open;
 import Data.Map as Map;
 open Map using {Map};
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
+import Stdlib.System.IO.Base open;
+import Stdlib.Trait.Partial open;
 
 import Apps.TwoPartyExchange as TwoPartyExchange;
 open TwoPartyExchange hiding {logicFunctions};

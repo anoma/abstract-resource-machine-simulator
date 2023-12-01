@@ -6,7 +6,9 @@ import Simulator.Balance open public;
 import Simulator.PartialTx open public;
 import Simulator.Denomination open public;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
+import Stdlib.Trait.Partial open;
+
 import Data.ByteString open public;
 
 import Data.Map as Map;
@@ -26,7 +28,7 @@ validPartialTx {{Partial}} (m : Map
            | _ :=
              fail
                ("Could not find function associated with hash: "
-                 ++str natToString hash)
+                 ++str Show.show hash)
          };
   in all
       λ {r := getLogicFn created r ptx}

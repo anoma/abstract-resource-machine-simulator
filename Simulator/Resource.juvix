@@ -1,6 +1,6 @@
 module Simulator.Resource;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 import Data.ByteString open;
 import Simulator.Denomination open;
 
