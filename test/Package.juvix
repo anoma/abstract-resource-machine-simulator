@@ -5,13 +5,7 @@ import PackageDescription.V2 open;
 package : Package :=
   defaultPackage
     {name := "taiga-simulator-tests";
-     dependencies := [ github
-                       "anoma"
-                       "juvix-stdlib"
-                       "183d4e9329a648b339ebecf2122b3e9621c99ee8"
-                     ; github
-                       "anoma"
-                       "juvix-test"
-                       "2a6b0d7117f51d2dad4aabe34e6124ef5cb179f9"
+     dependencies := [ github "anoma" "juvix-stdlib" "v0.1.0"
+                     ; github "anoma" "juvix-test" "v0.8.0"
                      ; path "../"
                      ]};
