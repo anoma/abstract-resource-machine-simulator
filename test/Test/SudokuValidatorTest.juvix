@@ -2,7 +2,9 @@ module Test.SudokuValidatorTest;
 
 import Apps.Sudoku.Validator open;
 import Apps.Sudoku.Serializer open;
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
+import Stdlib.System.IO.Base open;
+import Stdlib.Trait.Partial open;
 
 import Test.JuvixUnit open;
 

@@ -1,6 +1,6 @@
 module Apps.Sudoku.Grid;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 import Data.ByteString open;
 import Apps.Sudoku.Extra open;
 
@@ -43,7 +43,7 @@ prettyGrid : Grid -> String
       numSubGrids : Nat := length sg;
       showSquare : Nat -> String
         | zero := "   "
-        | n := " " ++str natToString n ++str " ";
+        | n := " " ++str Show.show n ++str " ";
       showSplitRow : List Nat -> String :=
         concatStr ∘ map showSquare;
       showRow (subGridWith : Nat) (xs : List Nat) : String :=

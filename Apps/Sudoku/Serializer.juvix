@@ -5,7 +5,8 @@ import Apps.Sudoku.Extra open;
 import Apps.Sudoku.Validator open;
 import Data.ByteString open;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
+import Stdlib.Trait.Partial open;
 
 --- Encode a Sudoku ;Grid; to a ;ByteString;
 encode : Grid -> ByteString := flatten ∘ gridRows;

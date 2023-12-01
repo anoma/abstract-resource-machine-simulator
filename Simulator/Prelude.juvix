@@ -1,0 +1,16 @@
+module Simulator.Prelude;
+
+import Stdlib.Trait.Eq open public;
+import Stdlib.Trait.Ord open public;
+import Stdlib.Trait.Show open public;
+import Juvix.Builtin.V1 open public;
+import Stdlib.Data.String.Base open public;
+import Stdlib.Data.Product open public;
+import Stdlib.Data.List.Base open public;
+import Stdlib.Function open public;
+import Stdlib.Trait.Show open public;
+import Stdlib.Data.Bool.Base open public;
+import Stdlib.Data.Maybe open public;
+import Stdlib.Data.List open public;
+import Stdlib.Data.Nat open public;
+import Stdlib.Data.Int open public;

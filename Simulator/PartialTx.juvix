@@ -1,6 +1,6 @@
 module Simulator.PartialTx;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 import Simulator.Resource open;
 
 --- A partial transaction consists of two consumed resources and two

@@ -1,6 +1,6 @@
 module Simulator.Denomination;
 
-import Stdlib.Prelude open;
+import Simulator.Prelude open;
 import Data.ByteString open public;
 
 syntax alias LogicHash := Nat;
