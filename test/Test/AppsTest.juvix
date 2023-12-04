@@ -87,4 +87,4 @@ tests {{Partial}} : List Test :=
 main : IO :=
   runPartial
     λ {{{_}} :=
-      runTestSuite (testSuite "Taiga simulator" tests)};
+      runTestSuite (testSuite "AARM simulator" tests)};

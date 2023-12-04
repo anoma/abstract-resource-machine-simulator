@@ -14,7 +14,7 @@
   Alice is willing to exchange either 2 B or 1 A for 1 Dolphin.
   Bob is willing to exchange 1 A for 1 Dolphin.
 
-  How to express this in Anoma using the Taiga execution model?
+  How to express this in Anoma using the Anoma abstract resource machine model?
 
   Alice publishes a ;PartialTx; (1) to the gossip network that consumes two
   resources:
