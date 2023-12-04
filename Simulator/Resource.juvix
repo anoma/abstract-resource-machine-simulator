@@ -14,7 +14,7 @@ type Resource :=
     logicHash : LogicHash;
     -- Data which is relevant to the fungibility of the ;Resource;
     staticData : ByteString;
-    -- Extra data which is not relvabe to the fuungibility of the ;Resource;
+    -- Extra data which is not related to the fuungibility of the ;Resource;
     dynamicData : ByteString;
     -- An integer used to determine balance in transactions.
     quantity : Int
