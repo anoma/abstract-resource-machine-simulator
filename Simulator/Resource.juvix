@@ -13,7 +13,7 @@ type Resource :=
     -- The address of the ;Resource;'s logic function
     logicHash : LogicHash;
     -- Data which is relevant to the fungibility of the ;Resource;
-    staticData : ByteString;
+    label : ByteString;
     -- Extra data which is not related to the fuungibility of the ;Resource;
     dynamicData : ByteString;
     -- An integer used to determine balance in transactions.
@@ -24,7 +24,7 @@ open Resource;
 
 -- --- Extract the data which determines the ;Resource;'s fungibility.
 denomination (r : Resource) : Kind :=
-  logicHash r :: staticData r;
+  logicHash r :: label r;
 
 -- --- Find all the resources associated with a denomination
 resourcesForDenom (d : Kind) (rs : List Resource)

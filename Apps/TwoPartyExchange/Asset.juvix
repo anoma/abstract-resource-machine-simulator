@@ -11,45 +11,45 @@ import Stdlib.Data.Int.Ord open;
 
 --- Definitions related to the Dolphin ;Resource;
 module Dolphin;
-  staticData : ByteString := [0];
+  label : ByteString := [0];
 
   mkResource (n : Int) : Resource :=
     mkResource'
       (logicHash := AlwaysValid.logicHash;
-      staticData := staticData;
+      label := label;
       dynamicData := nil;
       quantity := n);
 
   denomination : Kind :=
-    AlwaysValid.logicHash :: staticData;
+    AlwaysValid.logicHash :: label;
 end;
 
 --- Definitions related to the A ;Resource;
 module A;
-  staticData : ByteString := [1];
+  label : ByteString := [1];
 
   mkResource (n : Int) : Resource :=
     mkResource'
       (logicHash := AlwaysValid.logicHash;
-      staticData := staticData;
+      label := label;
       dynamicData := nil;
       quantity := n);
 
   denomination : Kind :=
-    AlwaysValid.logicHash :: staticData;
+    AlwaysValid.logicHash :: label;
 end;
 
 --- Definitions related to the B ;Resource;
 module B;
-  staticData : ByteString := [2];
+  label : ByteString := [2];
 
   mkResource (n : Int) : Resource :=
     mkResource'
       (logicHash := AlwaysValid.logicHash;
-      staticData := staticData;
+      label := label;
       dynamicData := nil;
       quantity := n);
 
   denomination : Kind :=
-    AlwaysValid.logicHash :: staticData;
+    AlwaysValid.logicHash :: label;
 end;

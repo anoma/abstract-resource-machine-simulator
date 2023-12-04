@@ -102,14 +102,14 @@ module AliceIntent;
   --- This will be computed from the logic function
   logicHash : LogicHash := 1;
 
-  staticData : ByteString := [3];
+  label : ByteString := [3];
 
-  denomination : Kind := 1 :: staticData;
+  denomination : Kind := 1 :: label;
 
   mkResource (n : Int) : Resource :=
     mkResource'
       (logicHash := logicHash;
-      staticData := staticData;
+      label := label;
       dynamicData := nil;
       quantity := n);
 end;

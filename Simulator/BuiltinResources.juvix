@@ -17,7 +17,7 @@ end;
 dummyResource : Resource :=
   mkResource
     (logicHash := 0;
-    staticData := none;
+    label := none;
     dynamicData := none;
     quantity := 0);
 
