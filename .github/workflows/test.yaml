@@ -1,4 +1,4 @@
-name: Taiga Simulator tests
+name: AARM Simulator tests
 on: [push]
 jobs:
   test:

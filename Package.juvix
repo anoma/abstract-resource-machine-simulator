@@ -4,7 +4,7 @@ import PackageDescription.V2 open;
 
 package : Package :=
   defaultPackage
-    {name := "taiga-simulator";
+    {name := "Anoma abstract resource machine";
      dependencies := [ github "anoma" "juvix-stdlib" "v0.1.0"
                      ; github "anoma" "juvix-containers" "v0.9.0"
                      ]};

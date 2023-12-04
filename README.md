@@ -1,6 +1,6 @@
-# Taiga Simulator
+# Anoma Abstract Resource Machine Simulator
 
-The Taiga Simulator is a [Juvix](https://juvix.org) function that simulates the [Taiga](https://github.com/anoma/taiga) execution model.
+This project is a simulator for the Anoma Abstract Resource Machine (AARM) written in [Juvix](https://juvix.org).
 
 See [Simulator.juvix](Simulator.juvix) for the API.
 
