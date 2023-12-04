@@ -104,7 +104,7 @@ module AliceIntent;
 
   staticData : ByteString := [3];
 
-  denomination : Denomination := 1 :: staticData;
+  denomination : Kind := 1 :: staticData;
 
   mkResource (n : Int) : Resource :=
     mkResource'

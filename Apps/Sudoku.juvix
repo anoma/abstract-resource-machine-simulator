@@ -34,7 +34,7 @@ import Simulator.Resource open using {mkResource as mkResource'};
 import Apps.Sudoku.Validator as Sudoku;
 import Apps.Sudoku.Serializer as Sudoku;
 
-import Simulator.Denomination as D;
+import Simulator.Kind as D;
 
 import Data.Map as Map;
 open Map using {Map};
@@ -52,7 +52,7 @@ module Reward;
       dynamicData := nil;
       quantity := n);
 
-  denomination : Denomination :=
+  denomination : Kind :=
     AlwaysValid.logicHash :: staticData;
 end;
 
@@ -73,7 +73,7 @@ module Sudoku;
       dynamicData := d;
       quantity := n);
 
-  denomination (p : Puzzle) : Denomination :=
+  denomination (p : Puzzle) : Kind :=
     Puzzle.logicHash p :: Puzzle.solution p;
 end;
 
@@ -132,7 +132,7 @@ transaction then it is valid. --}
 logicFunction {{Partial}} : Sudoku.Puzzle -> LogicFunction
   | data kind tx :=
     let
-      puzzleDenom : Denomination := Sudoku.denomination data;
+      puzzleDenom : Kind := Sudoku.denomination data;
       fromResources : List Resource :=
         resourcesForDenom puzzleDenom (consumedResources tx);
       toResources : List Resource :=
@@ -187,7 +187,7 @@ module Dealer;
   staticData : Sudoku.Puzzle -> ByteString
     | _ := [2];
 
-  denomination (d : Sudoku.Puzzle) : Denomination :=
+  denomination (d : Sudoku.Puzzle) : Kind :=
     logicHash d :: staticData d;
 
   mkResource (d : Sudoku.Puzzle) (n : Int) : Resource :=

@@ -2,7 +2,7 @@ module Simulator.Resource;
 
 import Simulator.Prelude open;
 import Data.ByteString open;
-import Simulator.Denomination open;
+import Simulator.Kind open;
 
 import Stdlib.Data.Int as Int;
 
@@ -23,16 +23,16 @@ type Resource :=
 open Resource;
 
 -- --- Extract the data which determines the ;Resource;'s fungibility.
-denomination (r : Resource) : Denomination :=
+denomination (r : Resource) : Kind :=
   logicHash r :: staticData r;
 
 -- --- Find all the resources associated with a denomination
-resourcesForDenom (d : Denomination) (rs : List Resource)
+resourcesForDenom (d : Kind) (rs : List Resource)
   : List Resource :=
   filter λ {r := Eq.eq (denomination r) d} rs;
 
 --- Aggregate the quantities associated with a denomination
-quantityOfDenom (d : Denomination) (rs : List Resource)
+quantityOfDenom (d : Kind) (rs : List Resource)
   : Int :=
   for (acc := Int.ofNat 0) (r in resourcesForDenom d rs)
     quantity r + acc;
@@ -68,7 +68,7 @@ isConsumed : ResourceKind -> Bool := Eq.eq consumed;
 instance
 ordResource : Ord Resource :=
   let
-    prod (r : Resource) : Denomination × ByteString × Int :=
+    prod (r : Resource) : Kind × ByteString × Int :=
       denomination r, dynamicData r, quantity r;
 
     go (r1 : Resource) (r2 : Resource) : Ordering :=
