@@ -52,7 +52,7 @@ module Reward;
       dynamicData := nil;
       quantity := n);
 
-  denomination : Kind :=
+  kind : Kind :=
     AlwaysValid.logicHash :: label;
 end;
 
@@ -73,7 +73,7 @@ module Sudoku;
       dynamicData := d;
       quantity := n);
 
-  denomination (p : Puzzle) : Kind :=
+  kind (p : Puzzle) : Kind :=
     Puzzle.logicHash p :: Puzzle.solution p;
 end;
 
@@ -132,14 +132,14 @@ transaction then it is valid. --}
 logicFunction {{Partial}} : Sudoku.Puzzle -> LogicFunction
   | data kind tx :=
     let
-      puzzleDenom : Kind := Sudoku.denomination data;
+      puzzleDenom : Kind := Sudoku.kind data;
       fromResources : List Resource :=
-        resourcesForDenom puzzleDenom (consumedResources tx);
+        resourcesForKind puzzleDenom (consumedResources tx);
       toResources : List Resource :=
-        resourcesForDenom puzzleDenom (createdResources tx);
+        resourcesForKind puzzleDenom (createdResources tx);
       rewardResources : List Resource :=
-        resourcesForDenom
-          Reward.denomination
+        resourcesForKind
+          Reward.kind
           (createdResources tx);
     in isCreated kind
       || case fromResources, toResources, rewardResources of {
@@ -168,8 +168,8 @@ module Dealer;
     | p kind tx :=
       let
         puzzleResources : List Resource :=
-          resourcesForDenom
-            (Sudoku.denomination p)
+          resourcesForKind
+            (Sudoku.kind p)
             (createdResources tx);
 
         checkPuzzle (r : Resource) : Bool :=
@@ -187,7 +187,7 @@ module Dealer;
   label : Sudoku.Puzzle -> ByteString
     | _ := [2];
 
-  denomination (d : Sudoku.Puzzle) : Kind :=
+  kind (d : Sudoku.Puzzle) : Kind :=
     logicHash d :: label d;
 
   mkResource (d : Sudoku.Puzzle) (n : Int) : Resource :=

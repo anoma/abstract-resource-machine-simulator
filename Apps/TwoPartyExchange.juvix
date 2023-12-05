@@ -94,17 +94,17 @@ module AliceIntent;
         createdHashes : List LogicHash :=
           map Resource.logicHash createdRs;
       in isCreated kind
-        || (quantityOfDenom Dolphin.denomination createdRs == 1
-          && quantityOfDenom A.denomination createdRs == 1)
-        || quantityOfDenom Dolphin.denomination createdRs == 1
-        && quantityOfDenom B.denomination createdRs == 2;
+        || (quantityOfKind Dolphin.kind createdRs == 1
+          && quantityOfKind A.kind createdRs == 1)
+        || quantityOfKind Dolphin.kind createdRs == 1
+        && quantityOfKind B.kind createdRs == 2;
 
   --- This will be computed from the logic function
   logicHash : LogicHash := 1;
 
   label : ByteString := [3];
 
-  denomination : Kind := 1 :: label;
+  kind : Kind := 1 :: label;
 
   mkResource (n : Int) : Resource :=
     mkResource'

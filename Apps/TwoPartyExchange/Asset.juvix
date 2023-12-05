@@ -20,7 +20,7 @@ module Dolphin;
       dynamicData := nil;
       quantity := n);
 
-  denomination : Kind :=
+  kind : Kind :=
     AlwaysValid.logicHash :: label;
 end;
 
@@ -35,7 +35,7 @@ module A;
       dynamicData := nil;
       quantity := n);
 
-  denomination : Kind :=
+  kind : Kind :=
     AlwaysValid.logicHash :: label;
 end;
 
@@ -50,6 +50,6 @@ module B;
       dynamicData := nil;
       quantity := n);
 
-  denomination : Kind :=
+  kind : Kind :=
     AlwaysValid.logicHash :: label;
 end;
