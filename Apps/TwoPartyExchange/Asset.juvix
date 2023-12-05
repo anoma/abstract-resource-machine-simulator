@@ -3,11 +3,9 @@ module Apps.TwoPartyExchange.Asset;
 import Simulator open;
 import Simulator.Resource open using {mkResource as mkResource'};
 
-import Data.Map as Map;
-open Map using {Map};
+import Data.Map as Map open using {Map};
 
 import Simulator.Prelude open;
-import Stdlib.Data.Int.Ord open;
 
 --- Definitions related to the Dolphin ;Resource;
 module Dolphin;
@@ -17,7 +15,7 @@ module Dolphin;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=
@@ -32,7 +30,7 @@ module A;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=
@@ -47,7 +45,7 @@ module B;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=

@@ -3,21 +3,14 @@ module Simulator.PartialTx;
 import Simulator.Prelude open;
 import Simulator.Resource open;
 
---- A partial transaction consists of two consumed resources and two
---- of created resources
+--- A partial transaction consists of consumed resources and created resources
 type PartialTx :=
   mkPartialTx {
-    consumedPair : Resource × Resource;
-    createdPair : Resource × Resource
+    consumedResources : List Resource;
+    createdResources : List Resource
   };
 
 open PartialTx;
-
-consumedResources (ptx : PartialTx) : List Resource :=
-  case consumedPair ptx of {r1, r2 := [r1; r2]};
-
-createdResources (ptx : PartialTx) : List Resource :=
-  case createdPair ptx of {r1, r2 := [r1; r2]};
 
 {-- A function that determines whether a ;PartialTx; is valid
 

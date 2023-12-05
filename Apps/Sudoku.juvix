@@ -34,13 +34,12 @@ import Simulator.Resource open using {mkResource as mkResource'};
 import Apps.Sudoku.Validator as Sudoku;
 import Apps.Sudoku.Serializer as Sudoku;
 
-import Simulator.Kind as D;
-
-import Data.Map as Map;
-open Map using {Map};
+import Data.Map as Map open using {Map};
 
 import Simulator.Prelude open;
 import Stdlib.Trait.Partial open;
+
+open PartialTx;
 
 module Reward;
   label : ByteString := [0];
@@ -49,7 +48,7 @@ module Reward;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=
@@ -70,7 +69,7 @@ module Sudoku;
     mkResource'
       (logicHash := Puzzle.logicHash p;
       label := Puzzle.solution p;
-      dynamicData := d;
+      data := d;
       quantity := n);
 
   kind (p : Puzzle) : Kind :=
@@ -89,8 +88,8 @@ checkTransition {{Partial}} (fromResource : Resource) (toResource : Resource) (r
   : Bool :=
   let
     fromSolution : ByteString :=
-      Resource.dynamicData fromResource;
-    toSolution : ByteString := Resource.dynamicData toResource;
+      Resource.data fromResource;
+    toSolution : ByteString := Resource.data toResource;
     rewardQuantity : Int := Resource.quantity reward;
 
     -- Find the differences between the fromSolution and the toSolution,
@@ -132,11 +131,11 @@ transaction then it is valid. --}
 logicFunction {{Partial}} : Sudoku.Puzzle -> LogicFunction
   | data kind tx :=
     let
-      puzzleDenom : Kind := Sudoku.kind data;
+      puzzleKind : Kind := Sudoku.kind data;
       fromResources : List Resource :=
-        resourcesForKind puzzleDenom (consumedResources tx);
+        resourcesForKind puzzleKind (consumedResources tx);
       toResources : List Resource :=
-        resourcesForKind puzzleDenom (createdResources tx);
+        resourcesForKind puzzleKind (createdResources tx);
       rewardResources : List Resource :=
         resourcesForKind
           Reward.kind
@@ -173,7 +172,7 @@ module Dealer;
             (createdResources tx);
 
         checkPuzzle (r : Resource) : Bool :=
-          Eq.eq (Sudoku.Puzzle.solution p) (Resource.dynamicData r);
+          Sudoku.Puzzle.solution p == Resource.data r;
       in isCreated kind
         || case puzzleResources of {
              | nil := true
@@ -194,18 +193,17 @@ module Dealer;
     mkResource'
       (logicHash := logicHash d;
       label := label d;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 end;
 
 dealer (puzzle : Sudoku.Puzzle) (initialBoard : ByteString)
   : PartialTx :=
   mkPartialTx
-    (consumedPair := Reward.mkResource
-        (ofNat (Sudoku.emptySquares initialBoard))
-      , dummyResource;
-    createdPair := Dealer.mkResource puzzle 1
-      , Sudoku.mkResource puzzle initialBoard 1);
+    (consumedResources := [Reward.mkResource
+        (ofNat (Sudoku.emptySquares initialBoard))];
+    createdResources := [Dealer.mkResource puzzle 1;
+      Sudoku.mkResource puzzle initialBoard 1]);
 
 logicFunctions {{Partial}} (puzzle : Sudoku.Puzzle)
   : Map LogicHash LogicFunction :=

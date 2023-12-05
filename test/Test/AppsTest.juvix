@@ -43,26 +43,32 @@ sudoku {{Partial}} : Test :=
 
     alicePartialTx : PartialTx :=
       mkPartialTx
-        (createdPair := Sudoku.mkResource
-            puzzleData
-            (1 :: 2 :: replicate 14 0)
-            1
-          , Reward.mkResource 1;
-        consumedPair := Sudoku.mkResource
-            puzzleData
-            (1 :: replicate 15 0)
-            1
-          , dummyResource);
+        (createdResources := [ Sudoku.mkResource
+                               puzzleData
+                               (1 :: 2 :: replicate 14 0)
+                               1
+                             ; Reward.mkResource 1
+                             ];
+        consumedResources := [ Sudoku.mkResource
+                               puzzleData
+                               (1 :: replicate 15 0)
+                               1
+                             ]);
 
     bobPartialTx : PartialTx :=
       mkPartialTx
-        (createdPair := Sudoku.mkResource puzzleData solution 0
-          , Reward.mkResource 14;
-        consumedPair := Sudoku.mkResource
-            puzzleData
-            (1 :: 2 :: replicate 14 0)
-            1
-          , Dealer.mkResource puzzleData 1);
+        (createdResources := [ Sudoku.mkResource
+                               puzzleData
+                               solution
+                               0
+                             ; Reward.mkResource 14
+                             ];
+        consumedResources := [ Sudoku.mkResource
+                               puzzleData
+                               (1 :: 2 :: replicate 14 0)
+                               1
+                             ; Dealer.mkResource puzzleData 1
+                             ]);
     txs : List PartialTx :=
       [dealerPartialTx; alicePartialTx; bobPartialTx];
 

@@ -4,8 +4,6 @@ import Simulator.Prelude open;
 import Data.ByteString open;
 import Apps.Sudoku.Extra open;
 
-import Stdlib.Data.Nat.Ord open;
-
 --- A Sudoku subgrid
 type SubGrid := subGrid : List (List Nat) -> SubGrid;
 
@@ -34,7 +32,7 @@ gridRows : Grid -> List (List Nat)
 
 instance
 gridEq : Eq Grid :=
-  mkEq λ {g1 g2 := Eq.eq (gridRows g1) (gridRows g2)};
+  mkEq λ {g1 g2 := gridRows g1 == gridRows g2};
 
 prettyGrid : Grid -> String
   | g@(grid (sg@(subGrid (r :: _) :: _) :: _)) :=
