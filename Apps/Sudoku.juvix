@@ -132,11 +132,11 @@ transaction then it is valid. --}
 logicFunction {{Partial}} : Sudoku.Puzzle -> LogicFunction
   | data kind tx :=
     let
-      puzzleDenom : Kind := Sudoku.kind data;
+      puzzleKind : Kind := Sudoku.kind data;
       fromResources : List Resource :=
-        resourcesForKind puzzleDenom (consumedResources tx);
+        resourcesForKind puzzleKind (consumedResources tx);
       toResources : List Resource :=
-        resourcesForKind puzzleDenom (createdResources tx);
+        resourcesForKind puzzleKind (createdResources tx);
       rewardResources : List Resource :=
         resourcesForKind
           Reward.kind
