@@ -25,7 +25,7 @@ allEq {A : Type} {{Eq A}} : List A -> Bool
     let
       go : List A -> Bool
         | nil := true
-        | (y :: ys) := if (Eq.eq x y) (go ys) false;
+        | (y :: ys) := if (x == y) (go ys) false;
     in go xs;
 
 terminating

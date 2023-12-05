@@ -62,9 +62,9 @@ eqResourceKind : Eq ResourceKind :=
       | _ _ := false
     };
 
-isCreated : ResourceKind -> Bool := Eq.eq created;
+isCreated : ResourceKind -> Bool := (==) created;
 
-isConsumed : ResourceKind -> Bool := Eq.eq consumed;
+isConsumed : ResourceKind -> Bool := (==) consumed;
 
 instance
 ordResource : Ord Resource :=
