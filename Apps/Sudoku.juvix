@@ -34,10 +34,7 @@ import Simulator.Resource open using {mkResource as mkResource'};
 import Apps.Sudoku.Validator as Sudoku;
 import Apps.Sudoku.Serializer as Sudoku;
 
-import Simulator.Kind as D;
-
-import Data.Map as Map;
-open Map using {Map};
+import Data.Map as Map open using {Map};
 
 import Simulator.Prelude open;
 import Stdlib.Trait.Partial open;
@@ -173,7 +170,7 @@ module Dealer;
             (createdResources tx);
 
         checkPuzzle (r : Resource) : Bool :=
-          Eq.eq (Sudoku.Puzzle.solution p) (Resource.dynamicData r);
+          Sudoku.Puzzle.solution p == Resource.dynamicData r;
       in isCreated kind
         || case puzzleResources of {
              | nil := true
