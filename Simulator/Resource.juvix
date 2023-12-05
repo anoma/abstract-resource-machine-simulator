@@ -2,7 +2,7 @@ module Simulator.Resource;
 
 import Simulator.Prelude open;
 import Data.ByteString open;
-import Simulator.Denomination open;
+import Simulator.Kind open;
 
 import Stdlib.Data.Int as Int;
 
@@ -12,9 +12,9 @@ type Resource :=
   mkResource {
     -- The address of the ;Resource;'s logic function
     logicHash : LogicHash;
-    -- Data which is relevant to the fungibility of the ;Resource;
-    staticData : ByteString;
-    -- Extra data which is not relvabe to the fuungibility of the ;Resource;
+    -- Specifies the fungibility domain for the resource
+    label : ByteString;
+    -- Extra data which is not related to the fungibility of the ;Resource;
     dynamicData : ByteString;
     -- An integer used to determine balance in transactions.
     quantity : Int
@@ -22,31 +22,32 @@ type Resource :=
 
 open Resource;
 
--- --- Extract the data which determines the ;Resource;'s fungibility.
-denomination (r : Resource) : Denomination :=
-  logicHash r :: staticData r;
+--- Extract the data which determines the ;Resource;'s fungibility.
+kind (r : Resource) : Kind :=
+  logicHash r :: label r;
 
--- --- Find all the resources associated with a denomination
-resourcesForDenom (d : Denomination) (rs : List Resource)
+delta (r : Resource) : Kind × Int := Resource.label r , Resource.quantity r;
+
+--- Find all the resources associated with a kind
+resourcesForKind (d : Kind) (rs : List Resource)
   : List Resource :=
-  filter λ {r := Eq.eq (denomination r) d} rs;
+  filter λ {r := Eq.eq (kind r) d} rs;
 
---- Aggregate the quantities associated with a denomination
-quantityOfDenom (d : Denomination) (rs : List Resource)
-  : Int :=
-  for (acc := Int.ofNat 0) (r in resourcesForDenom d rs)
+--- Aggregate the quantities associated with a kind
+quantityOfKind (d : Kind) (rs : List Resource) : Int :=
+  for (acc := Int.ofNat 0) (r in resourcesForKind d rs)
     quantity r + acc;
 
 --- Return true if the list is empty or the list has exactly 1 element and the predicate is satisfied
-zeroOrOneCheck : (Resource -> Bool) -> List Resource -> Bool
-  | _ nil := true
-  | p [x] := p x
-  | _ _ := false;
+zeroOrOneCheck (p : Resource -> Bool) : List Resource -> Bool
+  | nil := true
+  | [x] := p x
+  | _ := false;
 
 exactlyOneCheck
-  : (Resource -> Bool) -> List Resource -> Bool
-  | p [x] := p x
-  | _ _ := false;
+  (p : Resource -> Bool) : List Resource -> Bool
+  | [x] := p x
+  | _ := false;
 
 type ResourceKind :=
   | created
@@ -68,8 +69,8 @@ isConsumed : ResourceKind -> Bool := Eq.eq consumed;
 instance
 ordResource : Ord Resource :=
   let
-    prod (r : Resource) : Denomination × ByteString × Int :=
-      denomination r, dynamicData r, quantity r;
+    prod (r : Resource) : Kind × ByteString × Int :=
+      kind r, dynamicData r, quantity r;
 
     go (r1 : Resource) (r2 : Resource) : Ordering :=
       Ord.cmp (prod r1) (prod r2);

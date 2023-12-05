@@ -4,7 +4,7 @@ import Simulator.Resource open public;
 import Simulator.BuiltinResources open public;
 import Simulator.Balance open public;
 import Simulator.PartialTx open public;
-import Simulator.Denomination open public;
+import Simulator.Kind open public;
 
 import Simulator.Prelude open;
 import Stdlib.Trait.Partial open;
@@ -38,7 +38,7 @@ validPartialTx {{Partial}} (m : Map
       (consumedResources ptx);
 
 mkBalance (r : Resource) : Balance :=
-  balance [denomination r, quantity r];
+  balance [kind r, quantity r];
 
 balanceDelta (tx : PartialTx) : Balance :=
   subBalance

@@ -1,6 +1,6 @@
 module Simulator.BuiltinResources;
 
-import Simulator.Denomination open;
+import Simulator.Kind open;
 import Simulator.Resource open;
 import Simulator.PartialTx open;
 import Simulator.Prelude open;
@@ -17,7 +17,7 @@ end;
 dummyResource : Resource :=
   mkResource
     (logicHash := 0;
-    staticData := none;
+    label := none;
     dynamicData := none;
     quantity := 0);
 

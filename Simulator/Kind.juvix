@@ -1,8 +1,8 @@
-module Simulator.Denomination;
+module Simulator.Kind;
 
 import Simulator.Prelude open;
 import Data.ByteString open public;
 
 syntax alias LogicHash := Nat;
 
-syntax alias Denomination := ByteString;
+syntax alias Kind := ByteString;

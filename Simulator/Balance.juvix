@@ -3,12 +3,12 @@ module Simulator.Balance;
 import Simulator.Prelude open;
 import Data.ByteString open;
 import Simulator.Resource open;
-import Simulator.Denomination open;
+import Simulator.Kind open;
 
 import Data.Map as Map;
 
 type Balance :=
-  balance : List (Denomination × Int) -> Balance;
+  balance : List (Kind × Int) -> Balance;
 
 emptyBalance : Balance := balance nil;
 
