@@ -13,7 +13,7 @@ build/AppsTest: $(wildcard *.juvix) $(wildcard ./**/*.juvix)
 	@mkdir -p build
 	juvix compile -o build/AppsTest test/Test/AppsTest.juvix
 
-build/SudokuValidatorTest: $(wildcard ./Sudoku/**/*.juvix) 
+build/SudokuValidatorTest: test/Test/SudokuValidatorTest.juvix $(wildcard ./Apps/Sudoku/**/*.juvix)
 	@mkdir -p build
 	juvix compile -o build/SudokuValidatorTest test/Test/SudokuValidatorTest.juvix
 
