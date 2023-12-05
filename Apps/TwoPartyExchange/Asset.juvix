@@ -15,7 +15,7 @@ module Dolphin;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=
@@ -30,7 +30,7 @@ module A;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=
@@ -45,7 +45,7 @@ module B;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=

@@ -111,7 +111,7 @@ module AliceIntent;
     mkResource'
       (logicHash := logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 end;
 

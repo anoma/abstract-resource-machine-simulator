@@ -48,7 +48,7 @@ module Reward;
     mkResource'
       (logicHash := AlwaysValid.logicHash;
       label := label;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 
   kind : Kind :=
@@ -69,7 +69,7 @@ module Sudoku;
     mkResource'
       (logicHash := Puzzle.logicHash p;
       label := Puzzle.solution p;
-      dynamicData := d;
+      data := d;
       quantity := n);
 
   kind (p : Puzzle) : Kind :=
@@ -88,8 +88,8 @@ checkTransition {{Partial}} (fromResource : Resource) (toResource : Resource) (r
   : Bool :=
   let
     fromSolution : ByteString :=
-      Resource.dynamicData fromResource;
-    toSolution : ByteString := Resource.dynamicData toResource;
+      Resource.data fromResource;
+    toSolution : ByteString := Resource.data toResource;
     rewardQuantity : Int := Resource.quantity reward;
 
     -- Find the differences between the fromSolution and the toSolution,
@@ -172,7 +172,7 @@ module Dealer;
             (createdResources tx);
 
         checkPuzzle (r : Resource) : Bool :=
-          Sudoku.Puzzle.solution p == Resource.dynamicData r;
+          Sudoku.Puzzle.solution p == Resource.data r;
       in isCreated kind
         || case puzzleResources of {
              | nil := true
@@ -193,7 +193,7 @@ module Dealer;
     mkResource'
       (logicHash := logicHash d;
       label := label d;
-      dynamicData := nil;
+      data := nil;
       quantity := n);
 end;
 

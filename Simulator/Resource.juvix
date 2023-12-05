@@ -15,7 +15,7 @@ type Resource :=
     -- Specifies the fungibility domain for the resource
     label : ByteString;
     -- Extra data which is not related to the fungibility of the ;Resource;
-    dynamicData : ByteString;
+    data : ByteString;
     -- An integer used to determine balance in transactions.
     quantity : Int
   };
@@ -70,7 +70,7 @@ instance
 ordResource : Ord Resource :=
   let
     prod (r : Resource) : Kind × ByteString × Int :=
-      kind r, dynamicData r, quantity r;
+      kind r, data r, quantity r;
 
     go (r1 : Resource) (r2 : Resource) : Ordering :=
       Ord.cmp (prod r1) (prod r2);
