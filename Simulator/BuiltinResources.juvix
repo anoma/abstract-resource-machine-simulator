@@ -5,21 +5,13 @@ import Simulator.Resource open;
 import Simulator.PartialTx open;
 import Simulator.Prelude open;
 
-import Data.Map as Map;
-open Map using {Map};
+import Data.Map as Map open using {Map};
 
 module AlwaysValid;
   logicFunction : LogicFunction := λ {_ _ := true};
 
   logicHash : LogicHash := 0;
 end;
-
-dummyResource : Resource :=
-  mkResource
-    (logicHash := 0;
-    label := none;
-    dynamicData := none;
-    quantity := 0);
 
 --- Create a map from ;LogicHash; to ;LogicFunction; that includes the AlwaysValid logicFunction
 mkLogicFunctionMap (xs : List (LogicHash × LogicFunction))

@@ -39,6 +39,8 @@ import Data.Map as Map open using {Map};
 import Simulator.Prelude open;
 import Stdlib.Trait.Partial open;
 
+open PartialTx;
+
 module Reward;
   label : ByteString := [0];
 
@@ -198,11 +200,10 @@ end;
 dealer (puzzle : Sudoku.Puzzle) (initialBoard : ByteString)
   : PartialTx :=
   mkPartialTx
-    (consumedPair := Reward.mkResource
-        (ofNat (Sudoku.emptySquares initialBoard))
-      , dummyResource;
-    createdPair := Dealer.mkResource puzzle 1
-      , Sudoku.mkResource puzzle initialBoard 1);
+    (consumedResources := [Reward.mkResource
+        (ofNat (Sudoku.emptySquares initialBoard))];
+    createdResources := [Dealer.mkResource puzzle 1;
+      Sudoku.mkResource puzzle initialBoard 1]);
 
 logicFunctions {{Partial}} (puzzle : Sudoku.Puzzle)
   : Map LogicHash LogicFunction :=

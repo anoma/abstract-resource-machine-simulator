@@ -14,6 +14,7 @@ import Data.ByteString open public;
 import Data.Map as Map;
 open Map using {Map};
 open Resource;
+open PartialTx;
 
 validPartialTx {{Partial}} (m : Map
   LogicHash

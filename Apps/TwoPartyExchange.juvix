@@ -78,10 +78,11 @@ import Simulator open;
 import Simulator.Resource open using {mkResource as mkResource'};
 import Apps.TwoPartyExchange.Asset open;
 
-import Data.Map as Map;
-open Map using {Map};
+import Data.Map as Map open using {Map};
 
 import Simulator.Prelude open;
+
+open PartialTx;
 
 --- Definitions related to Alice's intent
 module AliceIntent;
@@ -118,24 +119,24 @@ end;
 module Alice;
   partialTransaction : PartialTx :=
     mkPartialTx
-      (consumedPair := A.mkResource 1, B.mkResource 2;
-      createdPair := AliceIntent.mkResource 1, dummyResource);
+      (consumedResources := [A.mkResource 1 ; B.mkResource 2];
+      createdResources := [AliceIntent.mkResource 1]);
 end;
 
 --- Definitions related to Bob
 module Bob;
   partialTransaction : PartialTx :=
     mkPartialTx
-      (consumedPair := Dolphin.mkResource 1, dummyResource;
-      createdPair := A.mkResource 1, dummyResource);
+      (consumedResources := [Dolphin.mkResource 1];
+      createdResources := [A.mkResource 1]);
 end;
 
 --- Definitions related to the Solver
 module Solver;
   partialTransaction : PartialTx :=
     mkPartialTx
-      (consumedPair := AliceIntent.mkResource 1, dummyResource;
-      createdPair := Dolphin.mkResource 1, B.mkResource 2);
+      (consumedResources := [AliceIntent.mkResource 1];
+      createdResources := [Dolphin.mkResource 1; B.mkResource 2]);
 end;
 
 logicFunctions : Map LogicHash LogicFunction :=
