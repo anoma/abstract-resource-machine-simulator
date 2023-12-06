@@ -87,13 +87,10 @@ open PartialTx;
 --- Definitions related to Alice's intent
 module AliceIntent;
 
-  logicFunction : LogicFunction
-    | kind tx :=
+  logicFunction (kind : ResourceKind) (tx : PartialTx) : Bool :=
       let
         {- check if the resource associated to this logic function is among the created (output) resources. Then check if alice's intent is satisfied. -}
         createdRs : List Resource := createdResources tx;
-        createdHashes : List LogicHash :=
-          map Resource.logicHash createdRs;
       in isCreated kind
         || (quantityOfKind Dolphin.kind createdRs == 1
           && quantityOfKind A.kind createdRs == 1)

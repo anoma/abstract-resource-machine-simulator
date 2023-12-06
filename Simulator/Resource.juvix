@@ -22,6 +22,14 @@ type Resource :=
 
 open Resource;
 
+mkSimpleResource (kind : Kind) (q : Int) : Resource :=
+  mkResource@ {
+    logicHash := 0;
+    label := kind;
+    data := [];
+    quantity := q
+};
+
 --- Extract the data which determines the ;Resource;'s fungibility.
 kind (r : Resource) : Kind :=
   logicHash r :: label r;

@@ -1,0 +1,77 @@
+module Simulator.IntentDsl;
+
+import Simulator.Prelude open hiding {for; any; all};
+import Simulator open;
+
+type Asset :=
+  mkAsset {
+    quantity : Int;
+    kind : Kind
+  };
+
+type Quantifier :=
+  | Any
+  | All;
+
+type QuantifiedAssets :=
+  mkAssets {
+    quantifier : Quantifier;
+    assets : List Asset
+  };
+
+type IntentDsl :=
+  | IntentAsset Asset
+  | Or IntentDsl IntentDsl
+  | And IntentDsl IntentDsl;
+
+syntax operator of_ additive;
+syntax alias of_ := mkAsset;
+
+type Intention :=
+  | Want
+  | Give;
+
+type Clause :=
+  mkClause {
+    lhs : Intention × Asset;
+    rhs : QuantifiedAssets
+  };
+
+any (as : List Asset) : QuantifiedAssets :=
+  mkAssets@{
+    quantifier := Any;
+    assets := as
+  };
+
+all (as : List Asset) : QuantifiedAssets :=
+  mkAssets@{
+    quantifier := All;
+    assets := as
+  };
+
+exactly (a : Asset) : QuantifiedAssets :=
+  mkAssets@{
+    quantifier := All;
+    assets := [a]
+  };
+
+want (a : Asset) : Intention × Asset := Want, a;
+
+give (a : Asset) : Intention × Asset := Give, a;
+
+syntax operator for pair;
+
+for (l : Intention × Asset) (qs : QuantifiedAssets)
+  : Clause :=
+  mkClause@{
+    lhs := l;
+    rhs := qs
+  };
+
+exchangeIntent (ownedAssets : List Asset) (clauses : List Clause) : PartialTx :=
+  mkPartialTx@{
+    consumedResources :=
+      map (a in ownedAssets)
+        mkSimpleResource (Asset.kind a) (Asset.quantity a);
+    createdResources := []
+  };

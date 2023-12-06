@@ -1,0 +1,19 @@
+module Apps.Exchange;
+
+import Simulator open;
+import Simulator.Prelude open hiding {for; any; all};
+import Simulator.IntentDsl open;
+
+dolphin : Kind := [1];
+nam : Kind := [2];
+bitcoin : Kind := [3];
+
+exampleTransaction : PartialTx :=
+  exchangeIntent@{
+    ownedAssets := [3 of_ dolphin];
+    clauses :=
+      [ want (3 of_ dolphin) for any [3 of_ nam; 2 of_ bitcoin]
+      ; give (1 of_ bitcoin) for all [2 of_ dolphin; 1 of_ nam]
+      ; give (1 of_ bitcoin) for exactly (2 of_ dolphin)
+      ]
+  };
