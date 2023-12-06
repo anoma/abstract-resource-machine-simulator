@@ -51,8 +51,7 @@ module Reward;
       data := nil;
       quantity := n);
 
-  kind : Kind :=
-    AlwaysValid.logicHash :: label;
+  kind : Kind := AlwaysValid.logicHash :: label;
 end;
 
 --- Definitions related to the Sudoku ;Resource; in the application
@@ -64,8 +63,8 @@ module Sudoku;
       solution : ByteString
     };
 
-  mkResource (p : Puzzle) (d : ByteString) (n : Int)
-    : Resource :=
+  mkResource
+    (p : Puzzle) (d : ByteString) (n : Int) : Resource :=
     mkResource'
       (logicHash := Puzzle.logicHash p;
       label := Puzzle.solution p;
@@ -84,11 +83,14 @@ end;
     * The only squares that change between the previous and new solutinos
     are changes from zero (i.e unfilled) to non-zero (i.e filled).
  --}
-checkTransition {{Partial}} (fromResource : Resource) (toResource : Resource) (reward : Resource)
+checkTransition
+  {{Partial}}
+  (fromResource : Resource)
+  (toResource : Resource)
+  (reward : Resource)
   : Bool :=
   let
-    fromSolution : ByteString :=
-      Resource.data fromResource;
+    fromSolution : ByteString := Resource.data fromResource;
     toSolution : ByteString := Resource.data toResource;
     rewardQuantity : Int := Resource.quantity reward;
 
@@ -137,9 +139,7 @@ logicFunction {{Partial}} : Sudoku.Puzzle -> LogicFunction
       toResources : List Resource :=
         resourcesForKind puzzleKind (createdResources tx);
       rewardResources : List Resource :=
-        resourcesForKind
-          Reward.kind
-          (createdResources tx);
+        resourcesForKind Reward.kind (createdResources tx);
     in isCreated kind
       || case fromResources, toResources, rewardResources of {
            | nil, _, _ := true
@@ -167,9 +167,7 @@ module Dealer;
     | p kind tx :=
       let
         puzzleResources : List Resource :=
-          resourcesForKind
-            (Sudoku.kind p)
-            (createdResources tx);
+          resourcesForKind (Sudoku.kind p) (createdResources tx);
 
         checkPuzzle (r : Resource) : Bool :=
           Sudoku.Puzzle.solution p == Resource.data r;
@@ -186,8 +184,7 @@ module Dealer;
   label : Sudoku.Puzzle -> ByteString
     | _ := [2];
 
-  kind (d : Sudoku.Puzzle) : Kind :=
-    logicHash d :: label d;
+  kind (d : Sudoku.Puzzle) : Kind := logicHash d :: label d;
 
   mkResource (d : Sudoku.Puzzle) (n : Int) : Resource :=
     mkResource'
@@ -197,15 +194,21 @@ module Dealer;
       quantity := n);
 end;
 
-dealer (puzzle : Sudoku.Puzzle) (initialBoard : ByteString)
+dealer
+  (puzzle : Sudoku.Puzzle)
+  (initialBoard : ByteString)
   : PartialTx :=
   mkPartialTx
-    (consumedResources := [Reward.mkResource
-        (ofNat (Sudoku.emptySquares initialBoard))];
-    createdResources := [Dealer.mkResource puzzle 1;
-      Sudoku.mkResource puzzle initialBoard 1]);
+    (consumedResources := [ Reward.mkResource
+                            (ofNat (Sudoku.emptySquares initialBoard))
+                          ];
+    createdResources := [ Dealer.mkResource puzzle 1
+                        ; Sudoku.mkResource puzzle initialBoard 1
+                        ]);
 
-logicFunctions {{Partial}} (puzzle : Sudoku.Puzzle)
+logicFunctions
+  {{Partial}}
+  (puzzle : Sudoku.Puzzle)
   : Map LogicHash LogicFunction :=
   mkLogicFunctionMap
     [ Sudoku.Puzzle.logicHash puzzle, logicFunction puzzle

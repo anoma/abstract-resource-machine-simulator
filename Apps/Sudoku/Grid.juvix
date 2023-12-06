@@ -20,7 +20,9 @@ gridEntries : Grid -> List Nat
 gridRows : Grid -> List (List Nat)
   | (grid rows) :=
     let
-      combineSubGridRows (rs1 : List (List Nat)) (sg : SubGrid)
+      combineSubGridRows
+        (rs1 : List (List Nat))
+        (sg : SubGrid)
         : List (List Nat) :=
         case sg of {subGrid rs2 := zipWith (++) rs1 rs2};
       combineRows : List SubGrid -> List (List Nat)
@@ -49,8 +51,9 @@ prettyGrid : Grid -> String
           (surround
             "|"
             (map showSplitRow (chunksOf subGridWidth xs)));
-      showRowChunk (subGridWidth : Nat) (xs : List (List Nat))
-        : String := unlines (map (showRow subGridWidth) xs);
+      showRowChunk
+        (subGridWidth : Nat) (xs : List (List Nat)) : String :=
+        unlines (map (showRow subGridWidth) xs);
     in case gridRows g of {
          | nil := ""
          | xs@(x :: _) :=

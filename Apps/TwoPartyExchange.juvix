@@ -1,76 +1,73 @@
-{--
-  A two-party exchange
+{-- A two-party exchange
 
-  In this scenario there are ;Resource; types Dolphin, A and B.
+In this scenario there are ;Resource; types Dolphin, A and B.
 
-  There are three participants, Alice, Bob and a Solver.
+There are three participants, Alice, Bob and a Solver.
 
-  Alice has:
+Alice has:
   * 1 A and 2 B
 
-  Bob has:
+Bob has:
   * 1 Dolphin
 
-  Alice is willing to exchange either 2 B or 1 A for 1 Dolphin.
+Alice is willing to exchange either 2 B or 1 A for 1 Dolphin.
   Bob is willing to exchange 1 A for 1 Dolphin.
 
-  How to express this in Anoma using the Anoma abstract resource machine model?
+How to express this in Anoma using the Anoma abstract resource machine model?
 
-  Alice publishes a ;PartialTx; (1) to the gossip network that consumes two
+Alice publishes a ;PartialTx; (1) to the gossip network that consumes two
   resources:
 
-  1.1 An A ;Resource; with quantity 1
+1.1 An A ;Resource; with quantity 1
 
-  1.2 A B ;Resource; with quantity 2
+1.2 A B ;Resource; with quantity 2
 
-  and creates:
+and creates:
 
-  1.3 A ;Resource; with quantity 1 containing a logic function which encodes
+1.3 A ;Resource; with quantity 1 containing a logic function which encodes
   her intent. i.e she wants to participate in a transaction that contains a
   partial transaction in which she receives either 1 Dolphin and 2 B or 1
   Dolphin and 1 A.
 
-  Bob publishes a ;PartialTx; (2) to the gossip network that encodes his intent.
+Bob publishes a ;PartialTx; (2) to the gossip network that encodes his intent.
   It consumes:
 
-  2.2 A Dolphin ;Resource; with quantity 1.
+2.2 A Dolphin ;Resource; with quantity 1.
 
-  and creates:
+and creates:
 
-  2.1 An A ;Resource; with quantity 1
+2.1 An A ;Resource; with quantity 1
 
-
-  The Solver finds both Alice's and Bob's partial transactions on the gossip
+The Solver finds both Alice's and Bob's partial transactions on the gossip
   network and publishes a new parital transaction (3) such that all the tial
   transactions logic are satisfied and the resources are balanced.
 
-  The Solver's partial transaction consumes:
+The Solver's partial transaction consumes:
 
-  3.1 Alice's logic ;Resource; created in 1.3.
+3.1 Alice's logic ;Resource; created in 1.3.
 
-  and creates:
+and creates:
 
-  3.2 A Dolphin ;Resource; with quantity 1
+3.2 A Dolphin ;Resource; with quantity 1
 
-  3.3 A B ;Resource; with quantity 2
+3.3 A B ;Resource; with quantity 2
 
-  For a partial transaction to be valid, all of the logic functions associated
+For a partial transaction to be valid, all of the logic functions associated
   with its resources must be valid. In our case, Alice's logic function is
   valid when applied to partial transaction 3.
 
-  A transaction is formed from a collection of valid partial transaction that
+A transaction is formed from a collection of valid partial transaction that
   balance. i.e the quantities of created and consumed resources, for each
   resource type in the transaction must balance.
 
-  This is true for the transaction containing the partial transactions 1,2,3 above.
+This is true for the transaction containing the partial transactions 1,2,3 above.
 
-  In particular:
+In particular:
 
-  3.3 (create 2 B) balances with 1.2 (consume 2 B)
+3.3 (create 2 B) balances with 1.2 (consume 2 B)
   3.2 (create 1 Dolphin) balances with 2.2 (consume 1 Dolphin)
   3.1 (consume Alice's intent) balances with 1.3 (create Alice's intent)
-  2.1 (creates 1 A) balances with 1.1 (consume 1 A).
---}
+  2.1 (creates 1 A) balances with 1.1 (consume 1 A). --}
 
 module Apps.TwoPartyExchange;
 
@@ -87,15 +84,16 @@ open PartialTx;
 --- Definitions related to Alice's intent
 module AliceIntent;
 
-  logicFunction (kind : ResourceKind) (tx : PartialTx) : Bool :=
-      let
-        {- check if the resource associated to this logic function is among the created (output) resources. Then check if alice's intent is satisfied. -}
-        createdRs : List Resource := createdResources tx;
-      in isCreated kind
-        || (quantityOfKind Dolphin.kind createdRs == 1
-          && quantityOfKind A.kind createdRs == 1)
-        || quantityOfKind Dolphin.kind createdRs == 1
-        && quantityOfKind B.kind createdRs == 2;
+  logicFunction
+    (kind : ResourceKind) (tx : PartialTx) : Bool :=
+    let
+      {- check if the resource associated to this logic function is among the created (output) resources. Then check if alice's intent is satisfied. -}
+      createdRs : List Resource := createdResources tx;
+    in isCreated kind
+      || (quantityOfKind Dolphin.kind createdRs == 1
+        && quantityOfKind A.kind createdRs == 1)
+      || quantityOfKind Dolphin.kind createdRs == 1
+      && quantityOfKind B.kind createdRs == 2;
 
   --- This will be computed from the logic function
   logicHash : LogicHash := 1;
@@ -116,7 +114,7 @@ end;
 module Alice;
   partialTransaction : PartialTx :=
     mkPartialTx
-      (consumedResources := [A.mkResource 1 ; B.mkResource 2];
+      (consumedResources := [A.mkResource 1; B.mkResource 2];
       createdResources := [AliceIntent.mkResource 1]);
 end;
 

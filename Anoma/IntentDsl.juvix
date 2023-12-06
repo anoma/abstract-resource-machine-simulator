@@ -61,14 +61,19 @@ give (a : Asset) : Intention × Asset := Give, a;
 
 syntax operator for pair;
 
-for (l : Intention × Asset) (qs : QuantifiedAssets)
+for
+  (l : Intention × Asset)
+  (qs : QuantifiedAssets)
   : Clause :=
   mkClause@{
     lhs := l;
     rhs := qs
   };
 
-exchangeIntent (ownedAssets : List Asset) (clauses : List Clause) : PartialTx :=
+exchangeIntent
+  (ownedAssets : List Asset)
+  (clauses : List Clause)
+  : PartialTx :=
   mkPartialTx@{
     consumedResources :=
       map (a in ownedAssets)
