@@ -1,6 +1,6 @@
 module Apps.Sudoku.Extra;
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 
 import Data.Set as Set;
 open Set using {Set};

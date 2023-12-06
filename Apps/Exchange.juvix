@@ -1,11 +1,11 @@
 module Apps.Exchange;
 
-import Simulator open;
-import Simulator.Prelude open hiding {for; any; all};
-import Simulator.IntentDsl open;
+import Anoma open;
+import Anoma.Prelude open hiding {for; any; all};
+import Anoma.IntentDsl open;
 import Apps.TwoPartyExchange.Asset open;
 
--- Two party exchange intents for assets a, b and dolphin
+-- Two party exchange intents for assets a, b, and dolphin
 aliceIntent : PartialTx :=
   exchangeIntent@{
     ownedAssets := [1 of_ a; 2 of_ b];

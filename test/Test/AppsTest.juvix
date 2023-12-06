@@ -1,11 +1,11 @@
 module Test.AppsTest;
 
-import Simulator open;
+import Anoma open;
 
 import Data.Map as Map;
 open Map using {Map};
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 import Stdlib.System.IO.Base open;
 import Stdlib.Trait.Partial open;
 
@@ -93,4 +93,4 @@ tests {{Partial}} : List Test :=
 main : IO :=
   runPartial
     λ {{{_}} :=
-      runTestSuite (testSuite "AARM simulator" tests)};
+      runTestSuite (testSuite "AARM" tests)};

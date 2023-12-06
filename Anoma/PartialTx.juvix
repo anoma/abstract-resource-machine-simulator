@@ -1,7 +1,7 @@
-module Simulator.PartialTx;
+module Anoma.PartialTx;
 
-import Simulator.Prelude open;
-import Simulator.Resource open;
+import Anoma.Prelude open;
+import Anoma.Resource open;
 
 --- A partial transaction consists of consumed resources and created resources
 type PartialTx :=

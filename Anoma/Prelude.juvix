@@ -1,4 +1,4 @@
-module Simulator.Prelude;
+module Anoma.Prelude;
 
 import Stdlib.Trait.Eq open public;
 import Stdlib.Trait.Ord open public;

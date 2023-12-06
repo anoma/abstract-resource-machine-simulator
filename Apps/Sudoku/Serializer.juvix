@@ -5,7 +5,7 @@ import Apps.Sudoku.Extra open;
 import Apps.Sudoku.Validator open;
 import Data.ByteString open;
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 import Stdlib.Trait.Partial open;
 
 --- Encode a Sudoku ;Grid; to a ;ByteString;

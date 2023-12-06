@@ -2,7 +2,7 @@ module Test.SudokuValidatorTest;
 
 import Apps.Sudoku.Validator open;
 import Apps.Sudoku.Serializer open;
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 import Stdlib.System.IO.Base open;
 import Stdlib.Trait.Partial open;
 

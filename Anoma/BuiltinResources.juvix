@@ -1,9 +1,9 @@
-module Simulator.BuiltinResources;
+module Anoma.BuiltinResources;
 
-import Simulator.Kind open;
-import Simulator.Resource open;
-import Simulator.PartialTx open;
-import Simulator.Prelude open;
+import Anoma.Kind open;
+import Anoma.Resource open;
+import Anoma.PartialTx open;
+import Anoma.Prelude open;
 
 import Data.Map as Map open using {Map};
 

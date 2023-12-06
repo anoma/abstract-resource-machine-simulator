@@ -1,8 +1,8 @@
-module Simulator.Resource;
+module Anoma.Resource;
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 import Data.ByteString open;
-import Simulator.Kind open;
+import Anoma.Kind open;
 
 import Stdlib.Data.Int as Int;
 

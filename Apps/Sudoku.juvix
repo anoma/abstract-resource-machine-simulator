@@ -28,15 +28,15 @@ In the partial transaction which contains a full solution to the puzzle, the
  logic function which was created in 1.2. --}
 module Apps.Sudoku;
 
-import Simulator open;
-import Simulator.Resource open using {mkResource as mkResource'};
+import Anoma open;
+import Anoma.Resource open using {mkResource as mkResource'};
 
 import Apps.Sudoku.Validator as Sudoku;
 import Apps.Sudoku.Serializer as Sudoku;
 
 import Data.Map as Map open using {Map};
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 import Stdlib.Trait.Partial open;
 
 open PartialTx;
