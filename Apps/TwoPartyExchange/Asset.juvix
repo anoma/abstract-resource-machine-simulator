@@ -22,6 +22,8 @@ module Dolphin;
     AlwaysValid.logicHash :: label;
 end;
 
+dolphin : Kind := Dolphin.kind;
+
 --- Definitions related to the A ;Resource;
 module A;
   label : ByteString := [1];
@@ -37,6 +39,8 @@ module A;
     AlwaysValid.logicHash :: label;
 end;
 
+a : Kind := A.kind;
+
 --- Definitions related to the B ;Resource;
 module B;
   label : ByteString := [2];
@@ -51,3 +55,8 @@ module B;
   kind : Kind :=
     AlwaysValid.logicHash :: label;
 end;
+
+b : Kind := B.kind;
+
+nam : Kind := [22];
+bitcoin : Kind := [33];
