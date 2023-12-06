@@ -1,11 +1,11 @@
 module Apps.TwoPartyExchange.Asset;
 
-import Simulator open;
-import Simulator.Resource open using {mkResource as mkResource'};
+import Anoma open;
+import Anoma.Resource open using {mkResource as mkResource'};
 
 import Data.Map as Map open using {Map};
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 
 --- Definitions related to the Dolphin ;Resource;
 module Dolphin;

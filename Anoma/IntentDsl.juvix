@@ -1,7 +1,7 @@
-module Simulator.IntentDsl;
+module Anoma.IntentDsl;
 
-import Simulator.Prelude open hiding {for; any; all};
-import Simulator open;
+import Anoma.Prelude open hiding {for; any; all};
+import Anoma open;
 
 type Asset :=
   mkAsset {

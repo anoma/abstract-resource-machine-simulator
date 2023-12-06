@@ -1,9 +1,9 @@
-module Simulator.Balance;
+module Anoma.Balance;
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 import Data.ByteString open;
-import Simulator.Resource open;
-import Simulator.Kind open;
+import Anoma.Resource open;
+import Anoma.Kind open;
 
 import Data.Map as Map;
 

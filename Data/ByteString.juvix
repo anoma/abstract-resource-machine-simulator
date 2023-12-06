@@ -1,6 +1,6 @@
 module Data.ByteString;
 
-import Simulator.Prelude open;
+import Anoma.Prelude open;
 
 ByteString : Type := List Nat;
 
