@@ -13,11 +13,6 @@ type QuantifiedAssets :=
     assets : List Asset
   };
 
-type IntentDsl :=
-  | IntentAsset Asset
-  | Or IntentDsl IntentDsl
-  | And IntentDsl IntentDsl;
-
 syntax operator of_ additive;
 syntax alias of_ := mkAsset;
 
@@ -27,7 +22,7 @@ type Intention :=
 
 type Clause :=
   mkClause {
-    lhs : Intention × Asset;
+    lhs : Intention × QuantifiedAssets;
     rhs : QuantifiedAssets
   };
 
@@ -49,14 +44,18 @@ exactly (a : Asset) : QuantifiedAssets :=
     assets := [a]
   };
 
-want (a : Asset) : Intention × Asset := Want, a;
+want
+  (a : QuantifiedAssets) : Intention × QuantifiedAssets :=
+  Want, a;
 
-give (a : Asset) : Intention × Asset := Give, a;
+give
+  (a : QuantifiedAssets) : Intention × QuantifiedAssets :=
+  Give, a;
 
 syntax operator for pair;
 
 for
-  (l : Intention × Asset)
+  (l : Intention × QuantifiedAssets)
   (qs : QuantifiedAssets)
   : Clause :=
   mkClause@{
@@ -64,13 +63,21 @@ for
     rhs := qs
   };
 
-exchangeIntent
-  (ownedAssets : List Asset)
-  (clauses : List Clause)
-  : PartialTx :=
+exchangeIntent (clauses : List Clause) : PartialTx :=
   mkPartialTx@{
     consumedResources :=
-      map (a in ownedAssets)
-        mkSimpleResource (Asset.kind a) (Asset.quantity a);
+      concatMap clauseConsumedResources clauses;
+    -- map (a in ownedAssets)
+    --   mkSimpleResource (Asset.kind a) (Asset.quantity a);
     createdResources := []
   };
+
+consumedAssets (clause : Clause) : QuantifiedAssets :=
+  case Clause.lhs clause of {
+    | Give, qas := qas
+    | Want, _ := Clause.rhs clause
+  };
+
+clauseConsumedResources (clause : Clause) : List Resource :=
+  map (a in QuantifiedAssets.assets (consumedAssets clause))
+    mkSimpleResource (Asset.kind a) (Asset.quantity a);

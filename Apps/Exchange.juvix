@@ -8,22 +8,24 @@ import Apps.TwoPartyExchange.Asset open;
 -- Two party exchange intents for assets a, b, and dolphin
 aliceIntent : PartialTx :=
   exchangeIntent@{
-    ownedAssets := [1 of_ a; 2 of_ b];
-    clauses := [want (1 of_ dolphin) for any ownedAssets]
+    clauses :=
+      [ want (exactly (1 of_ dolphin))
+        for any [1 of_ a; 2 of_ b]
+      ]
   };
 
 bobIntent : PartialTx :=
   exchangeIntent@{
-    ownedAssets := [1 of_ dolphin];
-    clauses := [want (1 of_ a) for exactly (1 of_ dolphin)]
+    clauses :=
+      [want (exactly (1 of_ a)) for exactly (1 of_ dolphin)]
   };
 
 -- Example syntax
 exampleTransaction : PartialTx :=
   exchangeIntent@{
-    ownedAssets := [4 of_ nam; 2 of_ bitcoin; 1 of_ a];
     clauses :=
-      [ want (3 of_ dolphin) for any [3 of_ nam; 2 of_ bitcoin]
-      ; give (1 of_ a) for all [2 of_ b; 1 of_ nam]
+      [ want (exactly (3 of_ dolphin))
+        for any [3 of_ nam; 2 of_ bitcoin]
+      ; give (exactly (1 of_ a)) for all [2 of_ b; 1 of_ nam]
       ]
   };
