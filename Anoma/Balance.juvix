@@ -4,19 +4,36 @@ import Anoma.Prelude open;
 import Data.ByteString open;
 import Anoma.Resource open;
 import Anoma.Kind open;
+import Anoma.Asset open;
 
 import Data.Map as Map;
 
-type Balance := balance : List (Kind × Int) -> Balance;
+type Balance := mkBalance {assets : List Asset};
 
-emptyBalance : Balance := balance nil;
+emptyBalance : Balance :=
+  mkBalance@{
+    assets := []
+  };
 
-addBalance : Balance -> Balance -> Balance
-  | (balance xs) (balance ys) :=
-    balance (Map.toList (Map.fromListWith (+) (xs ++ ys)));
+addBalance (b1 : Balance) (b2 : Balance) : Balance :=
+  let
+    assetList : List (Kind × Int) :=
+      map (a in Balance.assets b1 ++ Balance.assets b2)
+        Asset.kind a, Asset.quantity a;
+    combinedAssetList : List (Kind × Int) :=
+      Map.toList (Map.fromListWith (+) assetList);
+    combinedAssets : List Asset :=
+      map (k, q in combinedAssetList)
+        mkAsset@{
+          kind := k;
+          quantity := q
+        };
+  in mkBalance combinedAssets;
 
-negateBalance : Balance -> Balance
-  | (balance bs) := balance (map (b in bs) second neg b);
+negateBalance (b : Balance) : Balance :=
+  mkBalance
+    (map (a in Balance.assets b)
+      a@Asset{quantity := neg quantity});
 
 subBalance (b1 : Balance) (b2 : Balance) : Balance :=
   addBalance b1 (negateBalance b2);
@@ -25,5 +42,6 @@ sumBalances (bs : List Balance) : Balance :=
   for (acc := emptyBalance) (b in bs)
     addBalance acc b;
 
-balanceIsZero : Balance -> Bool
-  | (balance bs) := all (b in bs) snd b == 0;
+balanceIsZero (b : Balance) : Bool :=
+  all (a in Balance.assets b)
+    Asset.quantity a == 0;

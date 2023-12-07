@@ -1,0 +1,10 @@
+module Anoma.Asset;
+
+import Anoma.Kind open;
+import Anoma.Prelude open;
+
+type Asset :=
+  mkAsset {
+    quantity : Int;
+    kind : Kind
+  };

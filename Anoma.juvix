@@ -5,6 +5,7 @@ import Anoma.BuiltinResources open public;
 import Anoma.Balance open public;
 import Anoma.PartialTx open public;
 import Anoma.Kind open public;
+import Anoma.Asset open public;
 
 import Anoma.Prelude open;
 import Stdlib.Trait.Partial open;
@@ -42,13 +43,21 @@ validPartialTx
       λ {r := getLogicFn consumed r ptx}
       (consumedResources ptx);
 
-mkBalance (r : Resource) : Balance :=
-  balance [kind r, quantity r];
+mkResourceBalance (r : Resource) : Balance :=
+  let
+    q : Int := quantity r;
+    k : Kind := kind r;
+  in mkBalance
+    [ mkAsset@{
+      kind := k;
+      quantity := q
+    }
+    ];
 
 balanceDelta (tx : PartialTx) : Balance :=
   subBalance
-    (sumBalances (map mkBalance (consumedResources tx)))
-    (sumBalances (map mkBalance (createdResources tx)));
+    (sumBalances (map mkResourceBalance (consumedResources tx)))
+    (sumBalances (map mkResourceBalance (createdResources tx)));
 
 checkTransaction
   {{Partial}}

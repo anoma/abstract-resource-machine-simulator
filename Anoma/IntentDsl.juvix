@@ -3,12 +3,6 @@ module Anoma.IntentDsl;
 import Anoma.Prelude open hiding {for; any; all};
 import Anoma open;
 
-type Asset :=
-  mkAsset {
-    quantity : Int;
-    kind : Kind
-  };
-
 type Quantifier :=
   | Any
   | All;
