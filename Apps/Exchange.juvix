@@ -9,13 +9,13 @@ import Apps.TwoPartyExchange.Asset open;
 aliceIntent : PartialTx :=
   exchangeIntent@{
     ownedAssets := [1 of_ a; 2 of_ b];
-    clauses := [want (1 of_ dolphin) for any [1 of_ a; 2 of_ b]]
+    clauses := [want (1 of_ dolphin) for any ownedAssets]
   };
 
 bobIntent : PartialTx :=
   exchangeIntent@{
     ownedAssets := [1 of_ dolphin];
-    clauses := [want (1 of_ a) for exactly (1 of_ a)]
+    clauses := [want (1 of_ a) for exactly (1 of_ dolphin)]
   };
 
 -- Example syntax

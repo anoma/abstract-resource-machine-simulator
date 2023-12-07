@@ -23,22 +23,22 @@ type Resource :=
 open Resource;
 
 mkSimpleResource (kind : Kind) (q : Int) : Resource :=
-  mkResource@ {
+  mkResource@{
     logicHash := 0;
     label := kind;
     data := [];
     quantity := q
-};
+  };
 
 --- Extract the data which determines the ;Resource;'s fungibility.
-kind (r : Resource) : Kind :=
-  logicHash r :: label r;
+kind (r : Resource) : Kind := logicHash r :: label r;
 
-delta (r : Resource) : Kind × Int := Resource.label r , Resource.quantity r;
+delta (r : Resource) : Kind × Int :=
+  Resource.label r, Resource.quantity r;
 
 --- Find all the resources associated with a kind
-resourcesForKind (d : Kind) (rs : List Resource)
-  : List Resource :=
+resourcesForKind
+  (d : Kind) (rs : List Resource) : List Resource :=
   filter λ {r := Eq.eq (kind r) d} rs;
 
 --- Aggregate the quantities associated with a kind
@@ -47,7 +47,8 @@ quantityOfKind (d : Kind) (rs : List Resource) : Int :=
     quantity r + acc;
 
 --- Return true if the list is empty or the list has exactly 1 element and the predicate is satisfied
-zeroOrOneCheck (p : Resource -> Bool) : List Resource -> Bool
+zeroOrOneCheck
+  (p : Resource -> Bool) : List Resource -> Bool
   | nil := true
   | [x] := p x
   | _ := false;

@@ -14,7 +14,8 @@ module AlwaysValid;
 end;
 
 --- Create a map from ;LogicHash; to ;LogicFunction; that includes the AlwaysValid logicFunction
-mkLogicFunctionMap (xs : List (LogicHash × LogicFunction))
+mkLogicFunctionMap
+  (xs : List (LogicHash × LogicFunction))
   : Map LogicHash LogicFunction :=
   Map.fromList
     ((AlwaysValid.logicHash, AlwaysValid.logicFunction) :: xs);
