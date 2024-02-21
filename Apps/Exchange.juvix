@@ -5,25 +5,23 @@ import Anoma.Prelude open hiding {for; any; all};
 import Anoma.IntentDsl open;
 import Apps.TwoPartyExchange.Asset open;
 
--- Two party exchange intents for assets a, b, and dolphin
 aliceIntent : PartialTx :=
   exchangeIntent@{
-    ownedAssets := [1 of_ a; 2 of_ b];
-    clauses := [want (1 of_ dolphin) for any ownedAssets]
+    ownedAssets := [1 of_ charmander; 2 of_ magikarp];
+    clauses := [want (1 of_ pikachu) for any ownedAssets]
   };
 
 bobIntent : PartialTx :=
   exchangeIntent@{
-    ownedAssets := [1 of_ dolphin];
-    clauses := [want (1 of_ a) for exactly (1 of_ dolphin)]
+    ownedAssets := [1 of_ pikachu];
+    clauses := [want (1 of_ charmander) for exactly (1 of_ pikachu)]
   };
 
 -- Example syntax
 exampleTransaction : PartialTx :=
   exchangeIntent@{
-    ownedAssets := [4 of_ nam; 2 of_ bitcoin; 1 of_ a];
+    ownedAssets := [4 of_ rattata; 2 of_ jigglypuff; 1 of_ charmander];
     clauses :=
-      [ want (3 of_ dolphin) for any [3 of_ nam; 2 of_ bitcoin]
-      ; give (1 of_ a) for all [2 of_ b; 1 of_ nam]
+      [ want (3 of_ pikachu) for any [3 of_ magikarp; 2 of_ rattata]
       ]
   };

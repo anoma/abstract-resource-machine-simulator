@@ -7,8 +7,8 @@ import Data.Map as Map open using {Map};
 
 import Anoma.Prelude open;
 
---- Definitions related to the Dolphin ;Resource;
-module Dolphin;
+--- Definitions related to the Pikachu ;Resource;
+module Pikachu;
   label : ByteString := [0];
 
   mkResource (n : Int) : Resource :=
@@ -21,10 +21,10 @@ module Dolphin;
   kind : Kind := AlwaysValid.logicHash :: label;
 end;
 
-dolphin : Kind := Dolphin.kind;
+pikachu : Kind := Pikachu.kind;
 
 --- Definitions related to the A ;Resource;
-module A;
+module Charmander;
   label : ByteString := [1];
 
   mkResource (n : Int) : Resource :=
@@ -37,10 +37,10 @@ module A;
   kind : Kind := AlwaysValid.logicHash :: label;
 end;
 
-a : Kind := A.kind;
+charmander : Kind := Charmander.kind;
 
 --- Definitions related to the B ;Resource;
-module B;
+module Magikarp;
   label : ByteString := [2];
 
   mkResource (n : Int) : Resource :=
@@ -53,8 +53,8 @@ module B;
   kind : Kind := AlwaysValid.logicHash :: label;
 end;
 
-b : Kind := B.kind;
+magikarp : Kind := Magikarp.kind;
 
-nam : Kind := [22];
+jigglypuff : Kind := [22];
 
-bitcoin : Kind := [33];
+rattata : Kind := [33];

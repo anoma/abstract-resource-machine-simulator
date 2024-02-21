@@ -1,6 +1,6 @@
 {-- A two-party exchange
 
-In this scenario there are ;Resource; types Dolphin, A and B.
+In this scenario there are ;Resource; types Pikachu, A and B.
 
 There are three participants, Alice, Bob and a Solver.
 
@@ -8,10 +8,10 @@ Alice has:
   * 1 A and 2 B
 
 Bob has:
-  * 1 Dolphin
+  * 1 Pikachu
 
-Alice is willing to exchange either 2 B or 1 A for 1 Dolphin.
-  Bob is willing to exchange 1 A for 1 Dolphin.
+Alice is willing to exchange either 2 B or 1 A for 1 Pikachu.
+  Bob is willing to exchange 1 A for 1 Pikachu.
 
 How to express this in Anoma using the Anoma abstract resource machine model?
 
@@ -26,13 +26,13 @@ and creates:
 
 1.3 A ;Resource; with quantity 1 containing a logic function which encodes
   her intent. i.e she wants to participate in a transaction that contains a
-  partial transaction in which she receives either 1 Dolphin and 2 B or 1
-  Dolphin and 1 A.
+  partial transaction in which she receives either 1 Pikachu and 2 B or 1
+  Pikachu and 1 A.
 
 Bob publishes a ;PartialTx; (2) to the gossip network that encodes his intent.
   It consumes:
 
-2.2 A Dolphin ;Resource; with quantity 1.
+2.2 A Pikachu ;Resource; with quantity 1.
 
 and creates:
 
@@ -48,7 +48,7 @@ The Solver's partial transaction consumes:
 
 and creates:
 
-3.2 A Dolphin ;Resource; with quantity 1
+3.2 A Pikachu ;Resource; with quantity 1
 
 3.3 A B ;Resource; with quantity 2
 
@@ -65,7 +65,7 @@ This is true for the transaction containing the partial transactions 1,2,3 above
 In particular:
 
 3.3 (create 2 B) balances with 1.2 (consume 2 B)
-  3.2 (create 1 Dolphin) balances with 2.2 (consume 1 Dolphin)
+  3.2 (create 1 Pikachu) balances with 2.2 (consume 1 Pikachu)
   3.1 (consume Alice's intent) balances with 1.3 (create Alice's intent)
   2.1 (creates 1 A) balances with 1.1 (consume 1 A). --}
 
@@ -90,9 +90,9 @@ module AliceIntent;
       {- check if the resource associated to this logic function is among the created (output) resources. Then check if alice's intent is satisfied. -}
       createdRs : List Resource := createdResources tx;
     in isCreated kind
-      || (quantityOfKind Dolphin.kind createdRs == 1
+      || (quantityOfKind Pikachu.kind createdRs == 1
         && quantityOfKind A.kind createdRs == 1)
-      || quantityOfKind Dolphin.kind createdRs == 1
+      || quantityOfKind Pikachu.kind createdRs == 1
       && quantityOfKind B.kind createdRs == 2;
 
   --- This will be computed from the logic function
@@ -122,7 +122,7 @@ end;
 module Bob;
   partialTransaction : PartialTx :=
     mkPartialTx
-      (consumedResources := [Dolphin.mkResource 1];
+      (consumedResources := [Pikachu.mkResource 1];
       createdResources := [A.mkResource 1]);
 end;
 
@@ -131,7 +131,7 @@ module Solver;
   partialTransaction : PartialTx :=
     mkPartialTx
       (consumedResources := [AliceIntent.mkResource 1];
-      createdResources := [Dolphin.mkResource 1; B.mkResource 2]);
+      createdResources := [Pikachu.mkResource 1; B.mkResource 2]);
 end;
 
 logicFunctions : Map LogicHash LogicFunction :=
